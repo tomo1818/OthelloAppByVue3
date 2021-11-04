@@ -1,6 +1,7 @@
 import { InjectionKey } from 'vue'
 import { createStore, Store  } from 'vuex'
 
+// stateの型を定義
 export interface State {
   count: number
   table: { [key: number]: { [key: number]: any } }
