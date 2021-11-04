@@ -13,30 +13,19 @@
       <div class="othelloContainer">
         <div class="stoneBox user1">
           <div class="box">
-            <div class="stone"></div><div class="stone"></div><div class="stone"></div><div class="stone"></div><div class="stone"></div><div class="stone"></div><div class="stone"></div><div class="stone"></div>
-            <div class="stone"></div><div class="stone"></div><div class="stone"></div><div class="stone"></div><div class="stone"></div><div class="stone"></div><div class="stone"></div><div class="stone"></div>
-            <div class="stone"></div><div class="stone"></div><div class="stone"></div><div class="stone"></div><div class="stone"></div><div class="stone"></div><div class="stone"></div><div class="stone"></div>
-            <div class="stone"></div><div class="stone"></div><div class="stone"></div><div class="stone"></div><div class="stone"></div><div class="stone"></div><div class="stone"></div><div class="stone"></div>
+            <div class="stone" v-for="(stone, index) in stone1" v-bind:key="index"></div>
           </div>
         </div>
         <table class="othelloTable">
           <tbody>
-            <tr><td/><td/><td/><td/><td/><td/><td/><td/></tr>
-            <tr><td/><td/><td/><td/><td/><td/><td/><td/></tr>
-            <tr><td/><td/><td/><td/><td/><td/><td/><td/></tr>
-            <tr><td/><td/><td/><td/><td/><td/><td/><td/></tr>
-            <tr><td/><td/><td/><td/><td/><td/><td/><td/></tr>
-            <tr><td/><td/><td/><td/><td/><td/><td/><td/></tr>
-            <tr><td/><td/><td/><td/><td/><td/><td/><td/></tr>
-            <tr><td/><td/><td/><td/><td/><td/><td/><td/></tr>
+            <tr v-for="(value, rowNum, index) in table" v-bind:key="index">
+              <td v-for="(value2, columnNum, index2) in value" v-bind:key="index2">{{ value2 }}</td>
+            </tr>
           </tbody>
         </table>
         <div class="stoneBox user2">
           <div class="box">
-            <div class="stone"></div><div class="stone"></div><div class="stone"></div><div class="stone"></div><div class="stone"></div><div class="stone"></div><div class="stone"></div><div class="stone"></div>
-            <div class="stone"></div><div class="stone"></div><div class="stone"></div><div class="stone"></div><div class="stone"></div><div class="stone"></div><div class="stone"></div><div class="stone"></div>
-            <div class="stone"></div><div class="stone"></div><div class="stone"></div><div class="stone"></div><div class="stone"></div><div class="stone"></div><div class="stone"></div><div class="stone"></div>
-            <div class="stone"></div><div class="stone"></div><div class="stone"></div><div class="stone"></div><div class="stone"></div><div class="stone"></div><div class="stone"></div><div class="stone"></div>
+            <div class="stone" v-for="(stone, index) in stone2" v-bind:key="index"></div>
           </div>
         </div>
       </div>
@@ -57,9 +46,12 @@ export default {
     return {
       // state を呼び出す場合
       count: computed(()=>store.state.count),
-      table: computed(()=>store.state.table),
+      table: computed(()=>store.state.table), // オセロ盤の状態
+      stone1: computed(()=>store.state.stone1), // user1の残りの石
+      stone2: computed(()=>store.state.stone2), // user2の残りの石
       // mutation を呼び出す場合
       increment:() =>store.commit("increment"),
+      // storeからの受け渡し確認用
       showTable:(() => {
         console.log(store.state.table);
       })
