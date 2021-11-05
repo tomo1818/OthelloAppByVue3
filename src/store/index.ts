@@ -101,7 +101,7 @@ export const store = createStore<State>({
     stone2: new Array(30).fill(0),
   },
   mutations: {
-    increment(state): void {
+    increment(state: State): void {
       state.count++
     }
   }
