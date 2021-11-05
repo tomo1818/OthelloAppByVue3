@@ -39,10 +39,10 @@ import { useStore } from 'vuex'
 import { key } from '../store'
 
 export default {
+  // eslint-disable-next-line @typescript-eslint/explicit-module-boundary-types
   setup () {
     const store = useStore(key)
 
-    // store.state.count // typed as number
     return {
       // state を呼び出す場合
       count: computed(()=>store.state.count),
