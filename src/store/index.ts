@@ -3,8 +3,10 @@ import { createStore, Store  } from 'vuex'
 
 // stateの型を定義
 export interface State {
-  count: number
-  table: { [key: number]: { [key: number]: any } }
+  count: number,
+  table: { [key: number]: { [key: number]: number | null } },
+  stone1: number[],
+  stone2: number[]
 }
 
 // インジェクションキーを定義します
@@ -93,11 +95,13 @@ export const store = createStore<State>({
         6: null,
         7: null,
         8: null,
-      },
-    }
+      }
+    },
+    stone1: new Array(30).fill(0),
+    stone2: new Array(30).fill(0),
   },
   mutations: {
-    increment(state) {
+    increment(state: State): void {
       state.count++
     }
   }
