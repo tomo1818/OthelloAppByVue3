@@ -1,6 +1,6 @@
 <template>
   <div class="othello">
-    <div class="container">
+    <div class="">
       <h1>オセロページです</h1>
       <div>
         <p>{{ count }}</p>
