@@ -70,6 +70,7 @@ table.othelloTable {
     max-width: 960px;
     margin: 0 auto;
 }
+
 table.othelloTable tr td {
     width:           54px;
     height:          54px;
@@ -77,6 +78,7 @@ table.othelloTable tr td {
     text-align:      center;
     vertical-align:  middle;
     font-size:       200%;
+    box-sizing: content-box;
 }
 table.othelloTable tr:first-child td{
   border-top: none;
@@ -86,6 +88,7 @@ table.othelloTable tr:first-child td{
   max-width: 459px;
   height: 52px;
   background-color: #000;
+  box-sizing: content-box;
 }
 .stoneBox.user1 {
   padding-top: 2px;
