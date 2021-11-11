@@ -103,6 +103,13 @@ export const store = createStore<State>({
   mutations: {
     increment(state: State): void {
       state.count++
+    },
+    returnStone(state:State): void {
+      if (state.table[4][4] == 0) state.table[4][4] = 1;
+      if (state.table[4][5] == 1) state.table[4][5] = 0;
+
+      if (state.table[5][4] == 1) state.table[5][4] = 0;
+      if (state.table[5][5] == 0) state.table[5][5] = 1;
     }
   }
 })
