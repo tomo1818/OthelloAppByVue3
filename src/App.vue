@@ -1,9 +1,6 @@
 <template>
   <div id="nav">
-    <router-link to="/">Home</router-link> |
-    <router-link to="/about">About</router-link> |
-    <router-link to="/setting">Game Setting</router-link> |
-    <router-link to="/othello">Othello</router-link>
+    <router-link class="h1" to="/" exact>オセロゲーム</router-link>
   </div>
   <router-view/>
 </template>
