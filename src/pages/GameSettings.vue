@@ -32,7 +32,7 @@
       </div>
       <!-- 良い書き方募集中です -->
       <router-link v-if="opponent == 'vsCpu'" class="btn btn-primary" :to="{ name: 'Othello', params: { mode: opponent, strength: difficulty } }">スタート</router-link>
-      <router-link disabled v-if="opponent == 'vsPlayer'" class="btn btn-primary" :to="{ name: 'Othello', params: { mode: opponent, name1: playerName1, name2: playerName2 } }">スタート</router-link>
+      <router-link disabled v-else class="btn btn-primary" :to="{ name: 'Othello', params: { mode: opponent, name1: playerName1, name2: playerName2 } }">スタート</router-link>
     </div>
   </div>
 </template>

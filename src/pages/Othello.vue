@@ -7,7 +7,7 @@
         <p>モード: {{ settingData.mode }}</p>
         <p>難易度: {{ settingData.strength }}</p>
       </div>
-      <div v-if="settingData.mode == 'vsPlayer'">
+      <div v-else>
         <p>モード: {{ settingData.mode }}</p>
         <p>プレイヤー1: {{ settingData.name1 != "" ? settingData.name1 : 'プレイヤー1(デフォルト)' }}</p>
         <p>プレイヤー2: {{ settingData.name2 != "" ? settingData.name2 : 'プレイヤー2(デフォルト)' }}</p>
@@ -44,7 +44,7 @@
 </template>
 
 <script lang="ts">
-import {computed} from "vue"
+import { computed } from "vue"
 import { useStore } from 'vuex'
 import { key } from '../store'
 import { useRoute } from 'vue-router'
