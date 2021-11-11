@@ -5,6 +5,7 @@
       <div>
         <p>{{ count }}</p>
         <button @click="increment">add count</button>
+        <button @click="returnStone">returnStone</button>
       </div>
       <div>
         <p>{{ table }}</p>
@@ -19,7 +20,7 @@
         <table class="othelloTable">
           <tbody>
             <tr v-for="(value, rowNum, index) in table" v-bind:key="index">
-              <td v-for="(value2, columnNum, index2) in value" v-bind:key="index2">{{ value2 }}</td>
+              <td  v-for="(value2, columnNum, index2) in value" v-bind:key="index2">{{ value2 }}</td>
             </tr>
           </tbody>
         </table>
@@ -51,6 +52,7 @@ export default {
       stone2: computed(()=>store.state.stone2), // user2の残りの石
       // mutation を呼び出す場合
       increment:() =>store.commit("increment"),
+      returnStone:() =>store.commit("returnStone"),
       // storeからの受け渡し確認用
       showTable:(() => {
         console.log(store.state.table);
