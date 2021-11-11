@@ -1,8 +1,12 @@
 <template>
   <div id="nav">
+
   <router-link to="/setting">Game Setting</router-link> |
     <router-link to="/othello">Othello</router-link>
     <router-view/>
+
+    <router-link class="h1" to="/" exact>オセロゲーム</router-link>
+
   </div>
 
 </template>
