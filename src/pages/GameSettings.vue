@@ -1,9 +1,9 @@
 <template>
   <div class="gemeSettings">
     <div class="container">
-      <h1>ゲームセッティングページです</h1>
+      <h2>ゲームセッティングページです</h2>
       <div class="choseOpponent mb-3">
-        <h2 class="h3">対戦形式を選択してください</h2>
+        <h3 class="h3">対戦形式を選択してください</h3>
         <input type="radio" value="vsPlayer" id="vsPlayer" v-model="opponent" checked  @change="changeOpponent" />
         <label for="vsPlayer">vs Player</label>
         <input type="radio" value="vsCpu" id="vsCpu" v-model="opponent"  @change="changeOpponent" />
@@ -11,7 +11,7 @@
       </div>
       <span>Opponent: {{ opponent }}</span>
       <div class="inputPlayerName mb-3" :class="{ displayNone: chosePlayer }">
-        <h2 class="h3">プレイヤー名を入力してください</h2>
+        <h3 class="h3">プレイヤー名を入力してください</h3>
         <div class="mb-2">
           <input v-model="playerName1" placeholder="Palyer name 1"/>
           <span>Player Name 1: {{ playerName1 }}</span>
@@ -22,7 +22,7 @@
         </div>
       </div>
       <div class="choseCpuStrength mb-3" :class="{ displayNone: choseCpu }">
-        <h2 class="h3">コンピュータの強さを選択してください</h2>
+        <h3 class="h3">コンピュータの強さを選択してください</h3>
         <input type="radio" value="easy" id="easy" v-model="difficulty" checked>
         <label for="easy">Easy</label>
         <input type="radio" value="normal" id="normal" v-model="difficulty">
@@ -30,7 +30,9 @@
         <input type="radio" value="hard" id="hard" v-model="difficulty">
         <label for="hard">Hard</label>
       </div>
-      <div class="btn btn-primary">スタート</div>
+      <!-- 良い書き方募集中です -->
+      <router-link v-if="opponent == 'vsCpu'" class="btn btn-primary" :to="{ name: 'Othello', params: { mode: opponent, strength: difficulty } }">スタート</router-link>
+      <router-link disabled v-if="opponent == 'vsPlayer'" class="btn btn-primary" :to="{ name: 'Othello', params: { mode: opponent, name1: playerName1, name2: playerName2 } }">スタート</router-link>
     </div>
   </div>
 </template>
@@ -40,7 +42,7 @@ import { defineComponent } from 'vue'
 export default defineComponent({
   data() {
     return {
-      opponent: '',
+      opponent: 'vsPlayer',
       playerName1: '',
       playerName2: '',
       difficulty: '',
@@ -49,7 +51,7 @@ export default defineComponent({
     }
   },
   methods: {
-    changeOpponent() {
+    changeOpponent(): void {
       if (this.chosePlayer == true) {
         this.chosePlayer = false
         this.choseCpu = true
