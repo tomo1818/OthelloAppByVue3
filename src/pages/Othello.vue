@@ -1,6 +1,6 @@
 <template>
   <div class="othello">
-    <div class="">
+    <div>
       <h2>オセロページです</h2>
       <!-- データの受け渡し -->
       <div v-if="settingData.mode == 'vsCpu'">
