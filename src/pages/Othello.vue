@@ -1,6 +1,6 @@
 <template>
   <div class="othello">
-    <div>
+    <div class="">
       <h2>オセロページです</h2>
       <!-- データの受け渡し -->
       <div v-if="settingData.mode == 'vsCpu'">
@@ -9,8 +9,22 @@
       </div>
       <div v-else>
         <p>モード: {{ settingData.mode }}</p>
-        <p>プレイヤー1: {{ settingData.name1 != "" ? settingData.name1 : 'プレイヤー1(デフォルト)' }}</p>
-        <p>プレイヤー2: {{ settingData.name2 != "" ? settingData.name2 : 'プレイヤー2(デフォルト)' }}</p>
+        <p>
+          プレイヤー1:
+          {{
+            settingData.name1 != ""
+              ? settingData.name1
+              : "プレイヤー1(デフォルト)"
+          }}
+        </p>
+        <p>
+          プレイヤー2:
+          {{
+            settingData.name2 != ""
+              ? settingData.name2
+              : "プレイヤー2(デフォルト)"
+          }}
+        </p>
       </div>
       <div>
         <p>{{ count }}</p>
@@ -64,36 +78,33 @@
 </template>
 
 <script lang="ts">
-
-
-import { computed, ref, onMounted } from "vue"
-import { useStore } from 'vuex'
-import { key } from '../store'
-import { useRoute } from 'vue-router'
+import { computed, ref, onMounted } from "vue";
+import { useStore } from "vuex";
+import { key } from "../store";
+import { useRoute } from "vue-router";
 
 export default {
   // eslint-disable-next-line @typescript-eslint/explicit-module-boundary-types
-  setup () {
-    const store = useStore(key)
+  setup() {
+    const store = useStore(key);
     // this.$routeと同義
-    const route = useRoute()
+    const route = useRoute();
     // settingPageからのデータ
-    const settingData = route.params
+    const settingData = route.params;
 
-    
     //const divs = ref([])
     //onMounted(() => {
-        //console.log(divs.value) // [li, li ,li]
-    //}) 
+    //console.log(divs.value) // [li, li ,li]
+    //})
 
     //const flip = () => {el.classList.toggle("flipped")}
 
     return {
       // state を呼び出す場合
-      count: computed(()=>store.state.count),
-      table: computed(()=>store.state.table), // オセロ盤の状態
-      stone1: computed(()=>store.state.stone1), // user1の残りの石
-      stone2: computed(()=>store.state.stone2), // user2の残りの石
+      count: computed(() => store.state.count),
+      table: computed(() => store.state.table), // オセロ盤の状態
+      stone1: computed(() => store.state.stone1), // user1の残りの石
+      stone2: computed(() => store.state.stone2), // user2の残りの石
       settingData,
       // mutation を呼び出す場合
       increment: () => store.commit("increment"),
@@ -101,7 +112,8 @@ export default {
       showTable: () => {
         console.log(store.state.table);
       },
-      /* flip: function() => {
+      /*石をひっくり返すモーションをつける関数 
+        flip: function() => {
         console.log(this.$refs.card);
         console.log(this.$refs.card.classList);
         this.$refs.card.classList.toggle("flipped");
@@ -202,3 +214,5 @@ table.othelloTable tr:first-child td {
   transform: rotateY(180deg);
 }
 </style>
+
+
