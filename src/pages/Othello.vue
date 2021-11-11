@@ -1,7 +1,17 @@
 <template>
   <div class="othello">
     <div class="">
-      <h1>オセロページです</h1>
+      <h2>オセロページです</h2>
+      <!-- データの受け渡し -->
+      <div v-if="settingData.mode == 'vsCpu'">
+        <p>モード: {{ settingData.mode }}</p>
+        <p>難易度: {{ settingData.strength }}</p>
+      </div>
+      <div v-else>
+        <p>モード: {{ settingData.mode }}</p>
+        <p>プレイヤー1: {{ settingData.name1 != "" ? settingData.name1 : 'プレイヤー1(デフォルト)' }}</p>
+        <p>プレイヤー2: {{ settingData.name2 != "" ? settingData.name2 : 'プレイヤー2(デフォルト)' }}</p>
+      </div>
       <div>
         <p>{{ count }}</p>
         <button @click="increment">add count</button>
@@ -34,14 +44,19 @@
 </template>
 
 <script lang="ts">
-import {computed} from "vue"
+import { computed } from "vue"
 import { useStore } from 'vuex'
 import { key } from '../store'
+import { useRoute } from 'vue-router'
 
 export default {
   // eslint-disable-next-line @typescript-eslint/explicit-module-boundary-types
   setup () {
     const store = useStore(key)
+    // this.$routeと同義
+    const route = useRoute()
+    // settingPageからのデータ
+    const settingData = route.params
 
     return {
       // state を呼び出す場合
@@ -49,6 +64,7 @@ export default {
       table: computed(()=>store.state.table), // オセロ盤の状態
       stone1: computed(()=>store.state.stone1), // user1の残りの石
       stone2: computed(()=>store.state.stone2), // user2の残りの石
+      settingData,
       // mutation を呼び出す場合
       increment:() =>store.commit("increment"),
       // storeからの受け渡し確認用
