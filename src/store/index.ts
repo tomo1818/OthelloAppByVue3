@@ -104,12 +104,12 @@ export const store = createStore<State>({
     increment(state: State): void {
       state.count++
     },
-    returnStone(state:State): void {
-      if (state.table[4][4] == 0) state.table[4][4] = 1;
-      if (state.table[4][5] == 1) state.table[4][5] = 0;
-
-      if (state.table[5][4] == 1) state.table[5][4] = 0;
-      if (state.table[5][5] == 0) state.table[5][5] = 1;
+    putStone(state: State, payload: {turn: number, position: number[]}): void {
+      state.table[payload.position[0]][payload.position[1]] = payload.turn;
+    },
+    reduceStone(state: State, payload: {turn: number}): void {
+      if (payload.turn == 1) state.stone1.pop();
+      else state.stone2.pop();
     }
   }
 })
