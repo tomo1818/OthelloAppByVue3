@@ -1,0 +1,2 @@
+(window["webpackJsonp"]=window["webpackJsonp"]||[]).push([["chunk-2d21a719"],{bc13:function(t,n,e){"use strict";e.r(n);var c=e("7a23"),r={class:"home"},a=Object(c["g"])("ゲーム設定画面へ");function b(t,n){var e=Object(c["y"])("router-link");return Object(c["r"])(),Object(c["e"])("div",r,[Object(c["h"])(e,{class:"btn btn-primary",to:"/setting"},{default:Object(c["F"])((function(){return[a]})),_:1})])}var o=e("6b0d"),s=e.n(o);const u={},i=s()(u,[["render",b]]);n["default"]=i}}]);
+//# sourceMappingURL=chunk-2d21a719.ae42d2e5.js.map
