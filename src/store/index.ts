@@ -103,6 +103,13 @@ export const store = createStore<State>({
   mutations: {
     increment(state: State): void {
       state.count++
+    },
+    putStone(state: State, payload: {turn: number, position: number[]}): void {
+      state.table[payload.position[0]][payload.position[1]] = payload.turn;
+    },
+    reduceStone(state: State, payload: {turn: number}): void {
+      if (payload.turn == 1) state.stone1.pop();
+      else state.stone2.pop();
     }
   }
 })

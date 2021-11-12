@@ -51,13 +51,16 @@
                 v-for="(value2, columnNum, index2) in value"
                 v-bind:key="index2"
               >
-                <div ref="root" class="stoneCon" v-if="value2 == 0">
+                <div ref="root" class="stoneCon" v-if="value2 == 1">
                   <i class="fas fa-circle fa-lg black front"></i>
                   <i class="fas fa-circle fa-lg white back"></i>
                 </div>
-                <div ref="root" class="stoneCon" v-if="value2 == 1">
+                <div ref="root" class="stoneCon" v-else-if="value2 == 0">
                   <i class="fas fa-circle fa-lg white front"></i>
                   <i class="fas fa-circle fa-lg black back"></i>
+                </div>
+                <div class="full"  v-else>
+                  <button class="full massBtn" @click="putStone(turn, [rowNum, columnNum]), changeTurn()"></button>
                 </div>
               </td>
             </tr>
@@ -78,7 +81,7 @@
 </template>
 
 <script lang="ts">
-import { computed, ref, onMounted } from "vue";
+import { computed, ref, onMounted, reactive } from "vue";
 import { useStore } from "vuex";
 import { key } from "../store";
 import { useRoute } from "vue-router";
@@ -91,13 +94,22 @@ export default {
     const route = useRoute();
     // settingPageからのデータ
     const settingData = route.params;
+    const state = reactive<{turn: number}>({
+      turn: 1
+    });
 
-    //const divs = ref([])
-    //onMounted(() => {
-    //console.log(divs.value) // [li, li ,li]
-    //})
+    // method
+    // turnの変更
+    const changeTurn = (): void => {
+      state.turn = state.turn == 1 ? 0 : 1;
+    }
 
-    //const flip = () => {el.classList.toggle("flipped")}
+    // const divs = ref([])
+    // onMounted(() => {
+    // console.log(divs.value) // [li, li ,li]
+    // })
+
+    // const flip = () => {el.classList.toggle("flipped")}
 
     return {
       // state を呼び出す場合
@@ -106,13 +118,20 @@ export default {
       stone1: computed(() => store.state.stone1), // user1の残りの石
       stone2: computed(() => store.state.stone2), // user2の残りの石
       settingData,
+      turn: computed((): number => state.turn),
+      changeTurn,
       // mutation を呼び出す場合
       increment: () => store.commit("increment"),
       // storeからの受け渡し確認用
       showTable: () => {
         console.log(store.state.table);
       },
-      /*石をひっくり返すモーションをつける関数 
+      // 石を置く
+      putStone: (turn: number, position: number[]) => {
+        store.commit("putStone", {turn: turn, position: position})
+        store.commit("reduceStone", {turn: turn})
+      }
+      /*石をひっくり返すモーションをつける関数
         flip: function() => {
         console.log(this.$refs.card);
         console.log(this.$refs.card.classList);
@@ -187,6 +206,16 @@ table.othelloTable tr:first-child td {
   color: white;
 }
 
+.full {
+  width: 100%;
+  height: 100%;
+}
+
+.massBtn {
+  background-color: transparent;
+  border-color: transparent;
+}
+
 /* ここから石をひっくり返すcss */
 .front,
 .back {
@@ -214,5 +243,3 @@ table.othelloTable tr:first-child td {
   transform: rotateY(180deg);
 }
 </style>
-
-
