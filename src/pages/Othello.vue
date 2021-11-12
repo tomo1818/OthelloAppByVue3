@@ -1,6 +1,6 @@
 <template>
   <div class="othello">
-    <div class="container">
+    <div class="">
       <h1>オセロページです</h1>
       <div>
         <p>{{ count }}</p>
@@ -13,30 +13,19 @@
       <div class="othelloContainer">
         <div class="stoneBox user1">
           <div class="box">
-            <div class="stone"></div><div class="stone"></div><div class="stone"></div><div class="stone"></div><div class="stone"></div><div class="stone"></div><div class="stone"></div><div class="stone"></div>
-            <div class="stone"></div><div class="stone"></div><div class="stone"></div><div class="stone"></div><div class="stone"></div><div class="stone"></div><div class="stone"></div><div class="stone"></div>
-            <div class="stone"></div><div class="stone"></div><div class="stone"></div><div class="stone"></div><div class="stone"></div><div class="stone"></div><div class="stone"></div><div class="stone"></div>
-            <div class="stone"></div><div class="stone"></div><div class="stone"></div><div class="stone"></div><div class="stone"></div><div class="stone"></div><div class="stone"></div><div class="stone"></div>
+            <div class="stone" v-for="(stone, index) in stone1" v-bind:key="index"></div>
           </div>
         </div>
         <table class="othelloTable">
           <tbody>
-            <tr><td/><td/><td/><td/><td/><td/><td/><td/></tr>
-            <tr><td/><td/><td/><td/><td/><td/><td/><td/></tr>
-            <tr><td/><td/><td/><td/><td/><td/><td/><td/></tr>
-            <tr><td/><td/><td/><td/><td/><td/><td/><td/></tr>
-            <tr><td/><td/><td/><td/><td/><td/><td/><td/></tr>
-            <tr><td/><td/><td/><td/><td/><td/><td/><td/></tr>
-            <tr><td/><td/><td/><td/><td/><td/><td/><td/></tr>
-            <tr><td/><td/><td/><td/><td/><td/><td/><td/></tr>
+            <tr v-for="(value, rowNum, index) in table" v-bind:key="index">
+              <td v-for="(value2, columnNum, index2) in value" v-bind:key="index2">{{ value2 }}</td>
+            </tr>
           </tbody>
         </table>
         <div class="stoneBox user2">
           <div class="box">
-            <div class="stone"></div><div class="stone"></div><div class="stone"></div><div class="stone"></div><div class="stone"></div><div class="stone"></div><div class="stone"></div><div class="stone"></div>
-            <div class="stone"></div><div class="stone"></div><div class="stone"></div><div class="stone"></div><div class="stone"></div><div class="stone"></div><div class="stone"></div><div class="stone"></div>
-            <div class="stone"></div><div class="stone"></div><div class="stone"></div><div class="stone"></div><div class="stone"></div><div class="stone"></div><div class="stone"></div><div class="stone"></div>
-            <div class="stone"></div><div class="stone"></div><div class="stone"></div><div class="stone"></div><div class="stone"></div><div class="stone"></div><div class="stone"></div><div class="stone"></div>
+            <div class="stone" v-for="(stone, index) in stone2" v-bind:key="index"></div>
           </div>
         </div>
       </div>
@@ -50,16 +39,19 @@ import { useStore } from 'vuex'
 import { key } from '../store'
 
 export default {
+  // eslint-disable-next-line @typescript-eslint/explicit-module-boundary-types
   setup () {
     const store = useStore(key)
 
-    // store.state.count // typed as number
     return {
       // state を呼び出す場合
       count: computed(()=>store.state.count),
-      table: computed(()=>store.state.table),
+      table: computed(()=>store.state.table), // オセロ盤の状態
+      stone1: computed(()=>store.state.stone1), // user1の残りの石
+      stone2: computed(()=>store.state.stone2), // user2の残りの石
       // mutation を呼び出す場合
       increment:() =>store.commit("increment"),
+      // storeからの受け渡し確認用
       showTable:(() => {
         console.log(store.state.table);
       })
@@ -78,6 +70,7 @@ table.othelloTable {
     max-width: 960px;
     margin: 0 auto;
 }
+
 table.othelloTable tr td {
     width:           54px;
     height:          54px;
@@ -85,6 +78,7 @@ table.othelloTable tr td {
     text-align:      center;
     vertical-align:  middle;
     font-size:       200%;
+    box-sizing: content-box;
 }
 table.othelloTable tr:first-child td{
   border-top: none;
@@ -94,6 +88,7 @@ table.othelloTable tr:first-child td{
   max-width: 459px;
   height: 52px;
   background-color: #000;
+  box-sizing: content-box;
 }
 .stoneBox.user1 {
   padding-top: 2px;

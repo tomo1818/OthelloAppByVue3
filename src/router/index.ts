@@ -16,6 +16,11 @@ const routes: Array<RouteRecordRaw> = [
     component: () => import(/* webpackChunkName: "about" */ '../views/About.vue')
   },
   {
+    path: '/setting',
+    name: 'GameSettings',
+    component: () => import('../pages/GameSettings.vue')
+  },
+  {
     path: '/othello',
     name: 'Othello',
     component: () => import('../pages/Othello.vue')
