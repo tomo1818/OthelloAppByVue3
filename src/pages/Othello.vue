@@ -27,11 +27,7 @@
         </p>
       </div>
       <div>
-        <p>{{ count }}</p>
-        <button @click="increment">add count</button>
-      </div>
-      <div>
-        <p>{{ table }}</p>
+        <p>{{ state.table }}</p>
         <button @click="showTable">show table at console</button>
       </div>
       <div class="othelloContainer">
@@ -39,14 +35,14 @@
           <div class="box">
             <div
               class="stone"
-              v-for="(stone, index) in stone1"
+              v-for="(stone, index) in state.stone1"
               v-bind:key="index"
             ></div>
           </div>
         </div>
         <table class="othelloTable">
           <tbody>
-            <tr v-for="(value, rowNum, index) in table" v-bind:key="index">
+            <tr v-for="(value, rowNum, index) in state.table" v-bind:key="index">
               <td
                 v-for="(value2, columnNum, index2) in value"
                 v-bind:key="index2"
@@ -60,7 +56,8 @@
                   <i class="fas fa-circle fa-lg black back"></i>
                 </div>
                 <div class="full"  v-else>
-                  <button class="full massBtn" @click="putStone(turn, [rowNum, columnNum]), changeTurn()"></button>
+                  <button class="full massBtn" @click="putStone(state.turn, [rowNum, columnNum]), returnStone(state.turn, [rowNum, columnNum], check, state.table), changeTurn()"></button>
+                  <!-- , returnTop(turn, [rowNum, columnNum], checkTop(table, [rowNum, columnNum], turn)), returnBottom(turn, [rowNum, columnNum], checkBottom) -->
                 </div>
               </td>
             </tr>
@@ -70,7 +67,7 @@
           <div class="box">
             <div
               class="stone"
-              v-for="(stone, index) in stone2"
+              v-for="(stone, index) in state.stone2"
               v-bind:key="index"
             ></div>
           </div>
@@ -94,15 +91,140 @@ export default {
     const route = useRoute();
     // settingPageからのデータ
     const settingData = route.params;
-    const state = reactive<{turn: number}>({
-      turn: 1
+
+    // dataの型付
+    interface State {
+      turn: number,
+      table: { [key: number]: { [key: number]: number | null }},
+      stone1: number[],
+      stone2: number[],
+    }
+
+    // optionAPIのdataと同様の扱い
+    const state = reactive<State>({
+      turn: 1,
+      table: store.state.table,
+      stone1: store.state.stone1,
+      stone2: store.state.stone2,
     });
 
     // method
     // turnの変更
     const changeTurn = (): void => {
       state.turn = state.turn == 1 ? 0 : 1;
+    };
+
+    // 各方向でひっくり返せるか判定
+    const check = {
+      top: (table: {[key: number]: { [key: number]: number | null }}, turn: number, position: [number, number]): boolean => {
+        if (position[0] <= 2) return false;
+        if (table[Number(position[0]) - 1][position[1]] === null || table[Number(position[0]) - 1][position[1]] === turn) return false;
+        let i: number = Number(position[0]) - 2;
+        while(table[i][position[1]] !== null && i >= 1) {
+          if (table[i][position[1]] === turn) {
+            return true;
+          }
+          i--;
+        }
+        return false;
+      },
+      bottom: (table: {[key: number]: { [key: number]: number | null }}, turn: number, position: [number, number]): boolean => {
+        if (position[0] >= 7) return false;
+        if (table[Number(position[0]) + 1][position[1]] === null || table[Number(position[0]) + 1][position[1]] === turn) return false;
+        let i: number = Number(position[0]) + 2;
+        while(table[i][position[1]] !== null && i <= 8) {
+          if (table[i][position[1]] === turn) {
+            return true;
+          }
+          i++;
+        }
+        return false;
+      },
+      left: (table: {[key: number]: { [key: number]: number | null }}, turn: number, position: [number, number]): boolean => {
+        if (position[1] <= 2) return false;
+        if (table[position[0]][Number(position[1]) - 1] === null || table[position[0]][Number(position[1]) - 1] === turn) return false;
+        let i: number = Number(position[1]) - 2;
+        while(table[position[0]][i] !== null && i >= 1) {
+          if (table[position[0]][i] === turn) {
+            return true;
+          }
+          i--;
+        }
+        return false;
+      },
+      right: (table: {[key: number]: { [key: number]: number | null }}, turn: number, position: [number, number]): boolean => {
+        if (position[1] >= 7) return false;
+        if (table[position[0]][Number(position[1]) + 1] === null || table[position[0]][Number(position[1]) + 1] === turn) return false;
+        let i: number = Number(position[1]) + 2;
+        while(table[position[0]][i] !== null && i <= 8) {
+          if (table[position[0]][i] === turn) {
+            return true;
+          }
+          i++;
+        }
+        return false;
+      },
+      upLeft: (table: {[key: number]: { [key: number]: number | null }}, turn: number, position: [number, number]): boolean => {
+        if (position[0] <= 2 || position[1] <= 2) return false;
+        if (table[Number(position[0]) - 1][Number(position[1]) - 1] === null || table[Number(position[0]) - 1][Number(position[1]) - 1] === turn) return false
+        let i: number = Number(position[0]) - 2;
+        let j: number = Number(position[1]) - 2;
+        while(table[i][j] !== null && i >= 1 && j >= 1) {
+          if (table[i][j] === turn) {
+            return true;
+          }
+          i--;
+          j--;
+        }
+        return false;
+      },
+      upRight: (table: {[key: number]: { [key: number]: number | null }}, turn: number, position: [number, number]): boolean => {
+        if (position[0] <= 2 || position[1] >= 7) return false;
+        if (table[Number(position[0]) - 1][Number(position[1]) + 1] === null || table[Number(position[0]) - 1][Number(position[1]) + 1] === turn) return false;
+        let i: number = Number(position[0]) - 2;
+        let j: number = Number(position[1]) + 2;
+        while(table[i][j] !== null && i >= 1 && j <= 8) {
+          if (table[i][j] === turn) {
+            return true;
+          }
+          i--;
+          j++;
+        }
+        return false;
+      },
+      bottomLeft: (table: {[key: number]: { [key: number]: number | null }}, turn: number, position: [number, number]): boolean => {
+        if (position[0] >= 7 || position[1] <= 2) return false;
+        if (table[Number(position[0]) + 1][Number(position[1]) - 1] === null || table[Number(position[0]) + 1][Number(position[1]) - 1] === turn) return false
+        let i: number = Number(position[0]) + 2;
+        let j: number = Number(position[1]) - 2;
+        while(table[i][j] !== null && i <= 8 && j >= 1) {
+          if (table[i][j] === turn) {
+            return true;
+          }
+          i++;
+          j--;
+        }
+        return false;
+      },
+      bottomRight: (table: {[key: number]: { [key: number]: number | null }}, turn: number, position: [number, number]): boolean => {
+        if (position[0] >= 7 || position[1] >= 7) return false;
+        if (table[Number(position[0]) + 1][Number(position[1]) + 1] === null || table[Number(position[0]) + 1][Number(position[1]) + 1] === turn) return false;
+        let i: number = Number(position[0]) + 2;
+        let j: number = Number(position[1]) + 2;
+        while(table[i][j] !== null && i <= 8 && j <= 8) {
+          if (table[i][j] === turn) {
+            return true;
+          }
+          i++;
+          j++;
+        }
+        return false;
+      },
     }
+
+    // computed
+    // const stone1Num = computed((): number => state.stone1.length)
+    // const stone2Num = computed((): number => state.stone2.length)
 
     // const divs = ref([])
     // onMounted(() => {
@@ -112,25 +234,18 @@ export default {
     // const flip = () => {el.classList.toggle("flipped")}
 
     return {
-      // state を呼び出す場合
-      count: computed(() => store.state.count),
-      table: computed(() => store.state.table), // オセロ盤の状態
-      stone1: computed(() => store.state.stone1), // user1の残りの石
-      stone2: computed(() => store.state.stone2), // user2の残りの石
       settingData,
-      turn: computed((): number => state.turn),
+      state,
       changeTurn,
-      // mutation を呼び出す場合
-      increment: () => store.commit("increment"),
       // storeからの受け渡し確認用
       showTable: () => {
         console.log(store.state.table);
       },
       // 石を置く
-      putStone: (turn: number, position: number[]) => {
+      putStone: (turn: number, position: [number, number]) => {
         store.commit("putStone", {turn: turn, position: position})
         store.commit("reduceStone", {turn: turn})
-      }
+      },
       /*石をひっくり返すモーションをつける関数
         flip: function() => {
         console.log(this.$refs.card);
@@ -138,6 +253,18 @@ export default {
         this.$refs.card.classList.toggle("flipped");
         要素.classList.toggole("flipped");
       } */
+      // ひっくり返す
+      returnStone: (turn: number, position: [number, number], check: any, table: { [key: number]: { [key: number]: number | null }}) => {
+        store.commit("returnTop", {turn: turn, position: position, canOrNot: check.top(table, turn, position)});
+        store.commit("returnBottom", {turn: turn, position: position, canOrNot: check.bottom(table, turn, position)});
+        store.commit("returnLeft", {turn: turn, position: position, canOrNot: check.left(table, turn, position)});
+        store.commit("returnRight", {turn: turn, position: position, canOrNot: check.right(table, turn, position)});
+        store.commit("returnUpLeft", {turn: turn, position: position, canOrNot: check.upLeft(table, turn, position)});
+        store.commit("returnUpRight", {turn: turn, position: position, canOrNot: check.upRight(table, turn, position)});
+        store.commit("returnBottomLeft", {turn: turn, position: position, canOrNot: check.bottomLeft(table, turn, position)});
+        store.commit("returnBottomRight", {turn: turn, position: position, canOrNot: check.bottomRight(table, turn, position)});
+      },
+      check,
     };
   },
 };

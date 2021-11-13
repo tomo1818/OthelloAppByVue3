@@ -3,7 +3,6 @@ import { createStore, Store  } from 'vuex'
 
 // stateの型を定義
 export interface State {
-  count: number,
   table: { [key: number]: { [key: number]: number | null } },
   stone1: number[],
   stone2: number[]
@@ -14,7 +13,6 @@ export const key: InjectionKey<Store<State>> = Symbol()
 
 export const store = createStore<State>({
   state: {
-    count: 0,
     table: {
       1: {
         1: null,
@@ -101,16 +99,97 @@ export const store = createStore<State>({
     stone2: new Array(30).fill(0),
   },
   mutations: {
-    increment(state: State): void {
-      state.count++
-    },
-    putStone(state: State, payload: {turn: number, position: number[]}): void {
+    putStone(state: State, payload: { turn: number, position: [number, number]}): void {
       state.table[payload.position[0]][payload.position[1]] = payload.turn;
     },
     reduceStone(state: State, payload: {turn: number}): void {
       if (payload.turn == 1) state.stone1.pop();
       else state.stone2.pop();
-    }
+    },
+    returnTop(state: State, payload: {turn: number, position: [number, number], canOrNot: boolean}): void {
+      if (payload.canOrNot) {
+        let currRow: number = Number(payload.position[0]) - 1;
+        const column: number = payload.position[1];
+        while (state.table[currRow][column] != payload.turn) {
+          state.table[currRow][column] = payload.turn;
+          currRow--;
+        }
+      }
+    },
+    returnBottom(state: State, payload: { turn: number, position: [number, number], canOrNot: boolean }): void {
+      if (payload.canOrNot) {
+        let currRow: number = Number(payload.position[0]) + 1;
+        const column: number = payload.position[1];
+        while (state.table[currRow][column] != payload.turn) {
+          state.table[currRow][column] = payload.turn;
+          currRow++;
+        }
+      }
+    },
+    returnLeft(state: State, payload: { turn: number, position: [number, number], canOrNot: boolean }): void {
+      if (payload.canOrNot) {
+        const row: number = payload.position[0];
+        let currColumn: number = Number(payload.position[1]) - 1;
+        while (state.table[row][currColumn] != payload.turn) {
+          state.table[row][currColumn] = payload.turn;
+          currColumn--;
+        }
+      }
+    },
+    returnRight(state: State, payload: { turn: number, position: [number, number], canOrNot: boolean }): void {
+      if (payload.canOrNot) {
+        const row: number = payload.position[0];
+        let currColumn: number = Number(payload.position[1]) + 1;
+        while (state.table[row][currColumn] != payload.turn) {
+          state.table[row][currColumn] = payload.turn;
+          currColumn++;
+        }
+      }
+    },
+    returnUpLeft(state: State, payload: { turn: number, position: [number, number], canOrNot: boolean }): void {
+      if (payload.canOrNot) {
+        let currRow: number = Number(payload.position[0]) - 1;
+        let currColumn: number = Number(payload.position[1]) - 1;
+        while (state.table[currRow][currColumn] != payload.turn) {
+          state.table[currRow][currColumn] = payload.turn;
+          currRow--;
+          currColumn--;
+        }
+      }
+    },
+    returnUpRight(state: State, payload: { turn: number, position: [number, number], canOrNot: boolean }): void {
+      if (payload.canOrNot) {
+        let currRow: number = Number(payload.position[0]) - 1;
+        let currColumn: number = Number(payload.position[1]) + 1;
+        while (state.table[currRow][currColumn] != payload.turn) {
+          state.table[currRow][currColumn] = payload.turn;
+          currRow--;
+          currColumn++;
+        }
+      }
+    },
+    returnBottomLeft(state: State, payload: { turn: number, position: [number, number], canOrNot: boolean }): void {
+      if (payload.canOrNot) {
+        let currRow: number = Number(payload.position[0]) + 1;
+        let currColumn: number = Number(payload.position[1]) - 1;
+        while (state.table[currRow][currColumn] != payload.turn) {
+          state.table[currRow][currColumn] = payload.turn;
+          currRow++;
+          currColumn--;
+        }
+      }
+    },
+    returnBottomRight(state: State, payload: { turn: number, position: [number, number], canOrNot: boolean }): void {
+      if (payload.canOrNot) {
+        let currRow: number = Number(payload.position[0]) + 1;
+        let currColumn: number = Number(payload.position[1]) + 1;
+        while (state.table[currRow][currColumn] != payload.turn) {
+          state.table[currRow][currColumn] = payload.turn;
+          currRow++;
+          currColumn++;
+        }
+      }
+    },
   }
 })
 
