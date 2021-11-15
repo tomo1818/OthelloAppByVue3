@@ -116,12 +116,12 @@ export default {
 
     // 各方向でひっくり返せるか判定
     const check = {
-      top: (table: {[key: number]: { [key: number]: number | null }}, turn: number, position: [number, number]): boolean => {
+      top: (position: [number, number]): boolean => {
         if (position[0] <= 2) return false;
-        if (table[Number(position[0]) - 1][position[1]] === null || table[Number(position[0]) - 1][position[1]] === turn) return false;
+        if (state.table[Number(position[0]) - 1][position[1]] === null || state.table[Number(position[0]) - 1][position[1]] === state.turn) return false;
         let i: number = Number(position[0]) - 2;
-        while(table[i][position[1]] !== null && i >= 1) {
-          if (table[i][position[1]] === turn) {
+        while(state.table[i][position[1]] !== null && i >= 1) {
+          if (state.table[i][position[1]] === state.turn) {
             return true;
           }
           i--;
@@ -255,7 +255,7 @@ export default {
       } */
       // ひっくり返す
       returnStone: (turn: number, position: [number, number], check: any, table: { [key: number]: { [key: number]: number | null }}) => {
-        store.commit("returnTop", {turn: turn, position: position, canOrNot: check.top(table, turn, position)});
+        store.commit("returnTop", {turn: turn, position: position, canOrNot: check.top(position)});
         store.commit("returnBottom", {turn: turn, position: position, canOrNot: check.bottom(table, turn, position)});
         store.commit("returnLeft", {turn: turn, position: position, canOrNot: check.left(table, turn, position)});
         store.commit("returnRight", {turn: turn, position: position, canOrNot: check.right(table, turn, position)});
