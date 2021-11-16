@@ -129,7 +129,6 @@ export default {
       const row = Number(position[0]) + direction[0];
       const column = Number(position[1]) + direction[1]
       if (checkPosition([row, column]) && (state.table[row][column] === null || state.table[row][column] === state.turn)) return true;
-      // if (state.table[Number(position[0]) + direction[0]][Number(position[1]) + direction[1]] === null || state.table[Number(position[0]) + direction[0]][Number(position[1]) + direction[1]] === state.turn) return true;
       return false;
     };
 
@@ -149,7 +148,7 @@ export default {
       let row = determinStartPosition(Number(position[0]), direction[0]);
       let column = determinStartPosition(Number(position[1]), direction[1]);
       if (checkPosition([row, column])) {
-        while(state.table[row][column] !== null && checkPosition([row, column])) {
+        while(checkPosition([row, column]) && state.table[row][column] !== null) {
           if (state.table[row][column] === state.turn) {
             return true;
           }
