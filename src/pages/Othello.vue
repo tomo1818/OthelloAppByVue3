@@ -56,8 +56,7 @@
                   <i class="fas fa-circle fa-lg black back"></i>
                 </div>
                 <div class="full"  v-else>
-                  <button class="full massBtn" @click="putStone(state.turn, [rowNum, columnNum]), returnStone(state.turn, [rowNum, columnNum], check, state.table), changeTurn()"></button>
-                  <!-- , returnTop(turn, [rowNum, columnNum], checkTop(table, [rowNum, columnNum], turn)), returnBottom(turn, [rowNum, columnNum], checkBottom) -->
+                  <button class="full massBtn" @click="putStone(state.turn, [rowNum, columnNum]), returnStone([rowNum, columnNum]), changeTurn()"></button>
                 </div>
               </td>
             </tr>
@@ -98,6 +97,7 @@ export default {
       table: { [key: number]: { [key: number]: number | null }},
       stone1: number[],
       stone2: number[],
+      directions: {[key: string] : [number, number]},
     }
 
     // optionAPIのdataと同様の扱い
@@ -106,6 +106,16 @@ export default {
       table: store.state.table,
       stone1: store.state.stone1,
       stone2: store.state.stone2,
+      directions: {
+        "top": [-1, 0],
+        "bottom": [1, 0],
+        "left": [0, -1],
+        "right": [0, 1],
+        "topLeft": [-1, -1],
+        "topRight": [-1, 1],
+        "bottomLeft": [1, -1],
+        "bottomRight": [1, 1]
+      }
     });
 
     // method
@@ -114,112 +124,41 @@ export default {
       state.turn = state.turn == 1 ? 0 : 1;
     };
 
+    // 隣の石をチェック
+    const checkNext = (position: [number, number], direction: [number, number]): boolean => {
+      if (state.table[Number(position[0]) + direction[0]][Number(position[1]) + direction[1]] === null || state.table[Number(position[0]) + direction[0]][Number(position[1]) + direction[1]] === state.turn) return true;
+      return false;
+    };
+
+    // ループのスタートポジションを決定
+    const determinStartPosition = (position: number, num: number): number => {
+      return num === 0 ? position : num === 1 ? position + 2 : position - 2;
+    };
+
+    // マス目外に出ているかチェック
+    const checkPosition = (position: [number, number]): boolean => {
+      if (position[0] <= 8 && position[0] >= 1 && position[1] <= 8 && position[1] >= 1) return true;
+      return false;
+    }
+
+    // 各方向でループ
+    const checkLine = (position: [number, number], direction: [number, number]): boolean => {
+      let row = determinStartPosition(Number(position[0]), direction[0]);
+      let column = determinStartPosition(Number(position[1]), direction[1]);
+      while(state.table[row][column] !== null && checkPosition(position)) {
+        if (state.table[row][column] === state.turn) {
+          return true;
+        }
+        row += direction[0];
+        column += direction[1];
+      }
+      return false;
+    };
+
     // 各方向でひっくり返せるか判定
-    const check = {
-      top: (position: [number, number]): boolean => {
-        if (position[0] <= 2) return false;
-        if (state.table[Number(position[0]) - 1][position[1]] === null || state.table[Number(position[0]) - 1][position[1]] === state.turn) return false;
-        let i: number = Number(position[0]) - 2;
-        while(state.table[i][position[1]] !== null && i >= 1) {
-          if (state.table[i][position[1]] === state.turn) {
-            return true;
-          }
-          i--;
-        }
-        return false;
-      },
-      bottom: (table: {[key: number]: { [key: number]: number | null }}, turn: number, position: [number, number]): boolean => {
-        if (position[0] >= 7) return false;
-        if (table[Number(position[0]) + 1][position[1]] === null || table[Number(position[0]) + 1][position[1]] === turn) return false;
-        let i: number = Number(position[0]) + 2;
-        while(table[i][position[1]] !== null && i <= 8) {
-          if (table[i][position[1]] === turn) {
-            return true;
-          }
-          i++;
-        }
-        return false;
-      },
-      left: (table: {[key: number]: { [key: number]: number | null }}, turn: number, position: [number, number]): boolean => {
-        if (position[1] <= 2) return false;
-        if (table[position[0]][Number(position[1]) - 1] === null || table[position[0]][Number(position[1]) - 1] === turn) return false;
-        let i: number = Number(position[1]) - 2;
-        while(table[position[0]][i] !== null && i >= 1) {
-          if (table[position[0]][i] === turn) {
-            return true;
-          }
-          i--;
-        }
-        return false;
-      },
-      right: (table: {[key: number]: { [key: number]: number | null }}, turn: number, position: [number, number]): boolean => {
-        if (position[1] >= 7) return false;
-        if (table[position[0]][Number(position[1]) + 1] === null || table[position[0]][Number(position[1]) + 1] === turn) return false;
-        let i: number = Number(position[1]) + 2;
-        while(table[position[0]][i] !== null && i <= 8) {
-          if (table[position[0]][i] === turn) {
-            return true;
-          }
-          i++;
-        }
-        return false;
-      },
-      upLeft: (table: {[key: number]: { [key: number]: number | null }}, turn: number, position: [number, number]): boolean => {
-        if (position[0] <= 2 || position[1] <= 2) return false;
-        if (table[Number(position[0]) - 1][Number(position[1]) - 1] === null || table[Number(position[0]) - 1][Number(position[1]) - 1] === turn) return false
-        let i: number = Number(position[0]) - 2;
-        let j: number = Number(position[1]) - 2;
-        while(table[i][j] !== null && i >= 1 && j >= 1) {
-          if (table[i][j] === turn) {
-            return true;
-          }
-          i--;
-          j--;
-        }
-        return false;
-      },
-      upRight: (table: {[key: number]: { [key: number]: number | null }}, turn: number, position: [number, number]): boolean => {
-        if (position[0] <= 2 || position[1] >= 7) return false;
-        if (table[Number(position[0]) - 1][Number(position[1]) + 1] === null || table[Number(position[0]) - 1][Number(position[1]) + 1] === turn) return false;
-        let i: number = Number(position[0]) - 2;
-        let j: number = Number(position[1]) + 2;
-        while(table[i][j] !== null && i >= 1 && j <= 8) {
-          if (table[i][j] === turn) {
-            return true;
-          }
-          i--;
-          j++;
-        }
-        return false;
-      },
-      bottomLeft: (table: {[key: number]: { [key: number]: number | null }}, turn: number, position: [number, number]): boolean => {
-        if (position[0] >= 7 || position[1] <= 2) return false;
-        if (table[Number(position[0]) + 1][Number(position[1]) - 1] === null || table[Number(position[0]) + 1][Number(position[1]) - 1] === turn) return false
-        let i: number = Number(position[0]) + 2;
-        let j: number = Number(position[1]) - 2;
-        while(table[i][j] !== null && i <= 8 && j >= 1) {
-          if (table[i][j] === turn) {
-            return true;
-          }
-          i++;
-          j--;
-        }
-        return false;
-      },
-      bottomRight: (table: {[key: number]: { [key: number]: number | null }}, turn: number, position: [number, number]): boolean => {
-        if (position[0] >= 7 || position[1] >= 7) return false;
-        if (table[Number(position[0]) + 1][Number(position[1]) + 1] === null || table[Number(position[0]) + 1][Number(position[1]) + 1] === turn) return false;
-        let i: number = Number(position[0]) + 2;
-        let j: number = Number(position[1]) + 2;
-        while(table[i][j] !== null && i <= 8 && j <= 8) {
-          if (table[i][j] === turn) {
-            return true;
-          }
-          i++;
-          j++;
-        }
-        return false;
-      },
+    const isReturn = (position: [number, number], direction: [number, number]): boolean => {
+      if (checkNext(position, direction)) return false;
+      return checkLine(position, direction);
     }
 
     // computed
@@ -254,17 +193,9 @@ export default {
         要素.classList.toggole("flipped");
       } */
       // ひっくり返す
-      returnStone: (turn: number, position: [number, number], check: any, table: { [key: number]: { [key: number]: number | null }}) => {
-        store.commit("returnTop", {turn: turn, position: position, canOrNot: check.top(position)});
-        store.commit("returnBottom", {turn: turn, position: position, canOrNot: check.bottom(table, turn, position)});
-        store.commit("returnLeft", {turn: turn, position: position, canOrNot: check.left(table, turn, position)});
-        store.commit("returnRight", {turn: turn, position: position, canOrNot: check.right(table, turn, position)});
-        store.commit("returnUpLeft", {turn: turn, position: position, canOrNot: check.upLeft(table, turn, position)});
-        store.commit("returnUpRight", {turn: turn, position: position, canOrNot: check.upRight(table, turn, position)});
-        store.commit("returnBottomLeft", {turn: turn, position: position, canOrNot: check.bottomLeft(table, turn, position)});
-        store.commit("returnBottomRight", {turn: turn, position: position, canOrNot: check.bottomRight(table, turn, position)});
-      },
-      check,
+      returnStone: (position: [number, number]) => {
+        for (let key in state.directions) store.commit("returnStone", {turn: state.turn, position: position, isReturn: isReturn(position, state.directions[key]), direction: state.directions[key]});
+      }
     };
   },
 };
