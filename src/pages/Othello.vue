@@ -126,7 +126,10 @@ export default {
 
     // 隣の石をチェック
     const checkNext = (position: [number, number], direction: [number, number]): boolean => {
-      if (state.table[Number(position[0]) + direction[0]][Number(position[1]) + direction[1]] === null || state.table[Number(position[0]) + direction[0]][Number(position[1]) + direction[1]] === state.turn) return true;
+      const row = Number(position[0]) + direction[0];
+      const column = Number(position[1]) + direction[1]
+      if (checkPosition([row, column]) && (state.table[row][column] === null || state.table[row][column] === state.turn)) return true;
+      // if (state.table[Number(position[0]) + direction[0]][Number(position[1]) + direction[1]] === null || state.table[Number(position[0]) + direction[0]][Number(position[1]) + direction[1]] === state.turn) return true;
       return false;
     };
 
@@ -145,12 +148,14 @@ export default {
     const checkLine = (position: [number, number], direction: [number, number]): boolean => {
       let row = determinStartPosition(Number(position[0]), direction[0]);
       let column = determinStartPosition(Number(position[1]), direction[1]);
-      while(state.table[row][column] !== null && checkPosition(position)) {
-        if (state.table[row][column] === state.turn) {
-          return true;
+      if (checkPosition([row, column])) {
+        while(state.table[row][column] !== null && checkPosition([row, column])) {
+          if (state.table[row][column] === state.turn) {
+            return true;
+          }
+          row += direction[0];
+          column += direction[1];
         }
-        row += direction[0];
-        column += direction[1];
       }
       return false;
     };
