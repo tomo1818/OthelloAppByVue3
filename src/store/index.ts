@@ -110,7 +110,64 @@ export const store = createStore<State>({
     reduceStone(state: State, payload: {turn: number}): void {
       if (payload.turn == 1) state.stone1.pop();
       else state.stone2.pop();
+    },
+    checkTable(state: State, playerTurn:number): void {
+      //store.tableの3を消す。（要リファクタリング）
+      store.commit("refreshTable");
+      const opponet = playerTurn == 1 ? 0 : 1;
+      //テーブルの石をチェック
+      for(let y = 1; y < 9; y++ ){
+        for(let x = 1; x < 9; x++){
+          //自分の色のこまを見つける
+          if(state.table[y][x] == playerTurn){
+            type directionType = {
+              y: number,
+              x: number,
+            };
+            const allDirections: directionType[] = 
+            [
+                {x: 0, y: 1}, 
+                {x: 1, y: 1}, 
+                {x: 1, y: 0}, 
+                {x: 1, y: -1}, 
+                {x: 0, y: -1}, 
+                {x: -1, y: -1}, 
+                {x: -1, y: 0}, 
+                {x: -1, y: 1}
+            ]
+            //見つけた石の8方向チェック
+            for(const value of allDirections ){
+              let xCheck: number = x + value.x;
+              let yCheck: number = y + value.y;
+              if ( (xCheck > 7 || yCheck > 7) || (xCheck < 2 || yCheck < 2)) continue;
+              //相手の石を見つける
+              else if(state.table[yCheck][xCheck] == opponet ){
+                //見つけた石の方向に進んでその先に石を置ける場所を探す
+                while((xCheck < 8 || yCheck < 8) && (xCheck > 1 || yCheck > 1)){
+                  xCheck = xCheck + value.x;
+                  yCheck = yCheck + value.y;
+                  if(state.table[yCheck][xCheck] == playerTurn) break;
+                  else if(state.table[yCheck][xCheck] == null ){
+                    state.table[yCheck][xCheck] = 3;
+                    break;
+                  }
+                }
+              }
+            }
+          }
+        }
+      }
+      console.log("done")
+
+    },
+    refreshTable(state: State){
+      for(let y = 1; y < 9; y++ ){
+        for(let x = 1; x < 9; x++){
+          if(state.table[y][x] == 3 ) state.table[y][x] = null;
+        }
+      }
     }
+
   }
 })
 

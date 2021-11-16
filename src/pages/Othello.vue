@@ -60,7 +60,9 @@
                   <i class="fas fa-circle fa-lg black back"></i>
                 </div>
                 <div class="full"  v-else>
-                  <button class="full massBtn" @click="putStone(turn, [rowNum, columnNum]), changeTurn()"></button>
+                  <button class="full massBtn" @click="putStone(turn, [rowNum, columnNum]), changeTurn(), checkTable(turn)">
+                    <i v-if="value2 == 3" class="far fa-circle fa-xs"></i>
+                  </button>
                 </div>
               </td>
             </tr>
@@ -81,7 +83,7 @@
 </template>
 
 <script lang="ts">
-import { computed, ref, onMounted, reactive } from "vue";
+import { computed, ref, onMounted, reactive, onUpdated} from "vue";
 import { useStore } from "vuex";
 import { key } from "../store";
 import { useRoute } from "vue-router";
@@ -103,6 +105,15 @@ export default {
     const changeTurn = (): void => {
       state.turn = state.turn == 1 ? 0 : 1;
     }
+    onMounted(() =>{
+      console.log("mounted!")
+      store.commit("checkTable", state.turn)
+    })
+
+    /* onUpdated(() => {
+      console.log("updated!");
+      store.commit("checkTable", state.turn)
+    }) */
 
     // const divs = ref([])
     // onMounted(() => {
@@ -130,7 +141,12 @@ export default {
       putStone: (turn: number, position: number[]) => {
         store.commit("putStone", {turn: turn, position: position})
         store.commit("reduceStone", {turn: turn})
-      }
+      },
+      checkTable: (turn: number) => {
+        store.commit("checkTable", turn)
+      },
+
+      
       /*石をひっくり返すモーションをつける関数
         flip: function() => {
         console.log(this.$refs.card);
@@ -139,7 +155,7 @@ export default {
         要素.classList.toggole("flipped");
       } */
     };
-  },
+  }
 };
 </script>
 
