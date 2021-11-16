@@ -83,7 +83,7 @@
 </template>
 
 <script lang="ts">
-import { computed, ref, onMounted, reactive, onUpdated} from "vue";
+import { computed, ref, onMounted, reactive} from "vue";
 import { useStore } from "vuex";
 import { key } from "../store";
 import { useRoute } from "vue-router";
@@ -110,16 +110,10 @@ export default {
       store.commit("checkTable", state.turn)
     })
 
-    /* onUpdated(() => {
-      console.log("updated!");
-      store.commit("checkTable", state.turn)
-    }) */
-
     // const divs = ref([])
     // onMounted(() => {
     // console.log(divs.value) // [li, li ,li]
     // })
-
     // const flip = () => {el.classList.toggle("flipped")}
 
     return {

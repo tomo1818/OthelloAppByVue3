@@ -157,8 +157,6 @@ export const store = createStore<State>({
           }
         }
       }
-      console.log("done")
-
     },
     refreshTable(state: State){
       for(let y = 1; y < 9; y++ ){
