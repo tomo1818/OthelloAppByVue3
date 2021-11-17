@@ -8,6 +8,16 @@ export interface State {
   stone2: number[]
 }
 
+export type Position = {
+  y: number,
+  x: number
+}
+
+export type Direction = {
+  y: number,
+  x: number
+}
+
 // インジェクションキーを定義します
 export const key: InjectionKey<Store<State>> = Symbol()
 
@@ -99,21 +109,21 @@ export const store = createStore<State>({
     stone2: new Array(30).fill(0),
   },
   mutations: {
-    putStone(state: State, payload: { turn: number, position: [number, number]}): void {
-      state.table[payload.position[0]][payload.position[1]] = payload.turn;
+    putStone(state: State, payload: { turn: number, position: Position}): void {
+      state.table[payload.position.y][payload.position.x] = payload.turn;
     },
     reduceStone(state: State, payload: {turn: number}): void {
       if (payload.turn == 1) state.stone1.pop();
       else state.stone2.pop();
     },
-    returnStone(state: State, payload: { turn: number, position: [number, number], isReturn: boolean, direction: [number, number] }): void {
+    returnStone(state: State, payload: { turn: number, position: Position, isReturn: boolean, direction: Direction }): void {
       if (payload.isReturn) {
-        let row = Number(payload.position[0]) + payload.direction[0];
-        let column = Number(payload.position[1]) + payload.direction[1];
+        let row = Number(payload.position.y) + Number(payload.direction.y);
+        let column = Number(payload.position.x) + Number(payload.direction.x);
         while (state.table[row][column] != payload.turn) {
           state.table[row][column] = payload.turn;
-          row += payload.direction[0];
-          column += payload.direction[1];
+          row += payload.direction.y;
+          column += payload.direction.x;
         }
       }
     }

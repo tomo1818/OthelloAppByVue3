@@ -56,7 +56,7 @@
                   <i class="fas fa-circle fa-lg black back"></i>
                 </div>
                 <div class="full"  v-else>
-                  <button class="full massBtn" @click="putStone(state.turn, [rowNum, columnNum]), returnStone([rowNum, columnNum]), changeTurn()"></button>
+                  <button class="full massBtn" @click="putStone(state.turn, {y: rowNum, x: columnNum}), returnStone({y: rowNum, x: columnNum}), changeTurn()"></button>
                 </div>
               </td>
             </tr>
@@ -97,7 +97,17 @@ export default {
       table: { [key: number]: { [key: number]: number | null }},
       stone1: number[],
       stone2: number[],
-      directions: {[key: string] : [number, number]},
+      directions: {[key: string] : {y: number, x: number}},
+    }
+
+    type Position = {
+      y: number,
+      x: number
+    }
+
+    type Direction = {
+      y: number,
+      x: number
     }
 
     // optionAPIのdataと同様の扱い
@@ -107,14 +117,14 @@ export default {
       stone1: store.state.stone1,
       stone2: store.state.stone2,
       directions: {
-        "top": [-1, 0],
-        "bottom": [1, 0],
-        "left": [0, -1],
-        "right": [0, 1],
-        "topLeft": [-1, -1],
-        "topRight": [-1, 1],
-        "bottomLeft": [1, -1],
-        "bottomRight": [1, 1]
+        "top": {y: -1, x: 0},
+        "bottom": {y: 1, x: 0},
+        "left": {y: 0, x: -1},
+        "right": {y: 0, x: 1},
+        "topLeft": {y: -1, x: -1},
+        "topRight": {y: -1, x: 1},
+        "bottomLeft": {y: 1, x: -1},
+        "bottomRight": {y: 1, x: 1}
       }
     });
 
@@ -125,10 +135,10 @@ export default {
     };
 
     // 隣の石をチェック
-    const checkNextStone = (position: [number, number], direction: [number, number]): boolean => {
-      const row = Number(position[0]) + direction[0];
-      const column = Number(position[1]) + direction[1]
-      if (checkOutOfRange([row, column]) && (state.table[row][column] === null || state.table[row][column] === state.turn)) return true;
+    const checkNextStone = (position: Position, direction: Direction): boolean => {
+      const row = Number(position.y) + Number(direction.y);
+      const column = Number(position.x) + Number(direction.x);
+      if (checkOutOfRange({y: row,x: column}) && (state.table[row][column] === null || state.table[row][column] === state.turn)) return true;
       return false;
     };
 
@@ -138,29 +148,29 @@ export default {
     };
 
     // マス目外に出ているかチェック
-    const checkOutOfRange = (position: [number, number]): boolean => {
-      if (position[0] <= 8 && position[0] >= 1 && position[1] <= 8 && position[1] >= 1) return true;
+    const checkOutOfRange = (position: Position): boolean => {
+      if (position.y <= 8 && position.y >= 1 && position.x <= 8 && position.x >= 1) return true;
       return false;
     }
 
     // 各方向でループ
-    const checkLine = (position: [number, number], direction: [number, number]): boolean => {
-      let row = determinCheckStartPosition(Number(position[0]), direction[0]);
-      let column = determinCheckStartPosition(Number(position[1]), direction[1]);
-      if (checkOutOfRange([row, column])) {
-        while(checkOutOfRange([row, column]) && state.table[row][column] !== null) {
+    const checkLine = (position: Position, direction: Direction): boolean => {
+      let row = determinCheckStartPosition(Number(position.y), direction.y);
+      let column = determinCheckStartPosition(Number(position.x), direction.x);
+      if (checkOutOfRange({y: row,x: column})) {
+        while(checkOutOfRange({y: row,x: column}) && state.table[row][column] !== null) {
           if (state.table[row][column] === state.turn) {
             return true;
           }
-          row += direction[0];
-          column += direction[1];
+          row += direction.y;
+          column += direction.x;
         }
       }
       return false;
     };
 
     // 各方向でひっくり返せるか判定
-    const isReturn = (position: [number, number], direction: [number, number]): boolean => {
+    const isReturn = (position: Position, direction: Direction): boolean => {
       if (checkNextStone(position, direction)) return false;
       return checkLine(position, direction);
     }
@@ -185,7 +195,7 @@ export default {
         console.log(store.state.table);
       },
       // 石を置く
-      putStone: (turn: number, position: [number, number]) => {
+      putStone: (turn: number, position: Position) => {
         store.commit("putStone", {turn: turn, position: position})
         store.commit("reduceStone", {turn: turn})
       },
@@ -197,7 +207,7 @@ export default {
         要素.classList.toggole("flipped");
       } */
       // ひっくり返す
-      returnStone: (position: [number, number]) => {
+      returnStone: (position: Position) => {
         for (let key in state.directions) store.commit("returnStone", {turn: state.turn, position: position, isReturn: isReturn(position, state.directions[key]), direction: state.directions[key]});
       }
     };
