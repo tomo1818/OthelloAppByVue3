@@ -125,30 +125,30 @@ export default {
     };
 
     // 隣の石をチェック
-    const checkNext = (position: [number, number], direction: [number, number]): boolean => {
+    const checkNextStone = (position: [number, number], direction: [number, number]): boolean => {
       const row = Number(position[0]) + direction[0];
       const column = Number(position[1]) + direction[1]
-      if (checkPosition([row, column]) && (state.table[row][column] === null || state.table[row][column] === state.turn)) return true;
+      if (checkOutOfRange([row, column]) && (state.table[row][column] === null || state.table[row][column] === state.turn)) return true;
       return false;
     };
 
     // ループのスタートポジションを決定
-    const determinStartPosition = (position: number, num: number): number => {
+    const determinCheckStartPosition = (position: number, num: number): number => {
       return num === 0 ? position : num === 1 ? position + 2 : position - 2;
     };
 
     // マス目外に出ているかチェック
-    const checkPosition = (position: [number, number]): boolean => {
+    const checkOutOfRange = (position: [number, number]): boolean => {
       if (position[0] <= 8 && position[0] >= 1 && position[1] <= 8 && position[1] >= 1) return true;
       return false;
     }
 
     // 各方向でループ
     const checkLine = (position: [number, number], direction: [number, number]): boolean => {
-      let row = determinStartPosition(Number(position[0]), direction[0]);
-      let column = determinStartPosition(Number(position[1]), direction[1]);
-      if (checkPosition([row, column])) {
-        while(checkPosition([row, column]) && state.table[row][column] !== null) {
+      let row = determinCheckStartPosition(Number(position[0]), direction[0]);
+      let column = determinCheckStartPosition(Number(position[1]), direction[1]);
+      if (checkOutOfRange([row, column])) {
+        while(checkOutOfRange([row, column]) && state.table[row][column] !== null) {
           if (state.table[row][column] === state.turn) {
             return true;
           }
@@ -161,7 +161,7 @@ export default {
 
     // 各方向でひっくり返せるか判定
     const isReturn = (position: [number, number], direction: [number, number]): boolean => {
-      if (checkNext(position, direction)) return false;
+      if (checkNextStone(position, direction)) return false;
       return checkLine(position, direction);
     }
 
