@@ -81,6 +81,7 @@ import { computed, ref, onMounted, reactive } from "vue";
 import { useStore } from "vuex";
 import { key } from "../store";
 import { useRoute } from "vue-router";
+import { State, Position, Direction } from "@/types/type" // 型定義を読み取る
 
 export default {
   // eslint-disable-next-line @typescript-eslint/explicit-module-boundary-types
@@ -90,25 +91,6 @@ export default {
     const route = useRoute();
     // settingPageからのデータ
     const settingData = route.params;
-
-    // dataの型付
-    interface State {
-      turn: number,
-      table: { [key: number]: { [key: number]: number | null }},
-      stone1: number[],
-      stone2: number[],
-      directions: {[key: string] : {y: number, x: number}},
-    }
-
-    type Position = {
-      y: number,
-      x: number
-    }
-
-    type Direction = {
-      y: number,
-      x: number
-    }
 
     // optionAPIのdataと同様の扱い
     const state = reactive<State>({

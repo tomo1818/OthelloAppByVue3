@@ -1,22 +1,7 @@
 import { InjectionKey } from 'vue'
-import { createStore, Store  } from 'vuex'
-
-// stateの型を定義
-export interface State {
-  table: { [key: number]: { [key: number]: number | null } },
-  stone1: number[],
-  stone2: number[]
-}
-
-export type Position = {
-  y: number,
-  x: number
-}
-
-export type Direction = {
-  y: number,
-  x: number
-}
+import { createStore, Store } from 'vuex'
+import { Position, Direction } from "@/types/type";
+import { State } from "@/types/vuex";
 
 // インジェクションキーを定義します
 export const key: InjectionKey<Store<State>> = Symbol()
