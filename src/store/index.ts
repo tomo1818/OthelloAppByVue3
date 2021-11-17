@@ -110,6 +110,22 @@ export const store = createStore<State>({
     reduceStone(state: State, payload: {turn: number}): void {
       if (payload.turn == 1) state.stone1.pop();
       else state.stone2.pop();
+    },
+    winLoseJudgment(state:State,payload:{turn:number,position:number[]}):void {
+        // console.log(state.table)
+        // console.log(state.stone1.length == 0)
+        // console.log(state.stone2.length == 0)
+        const count = {};
+
+        for (const st in state.table) {
+         for (const ss in Object.values(state.table[st])) {
+          //  console.log(state.table[st][ss] == 1)  //black stone1
+        //    console.log(state.table[st][ss] == 0)
+            count[state.table[st][ss]] = (count[state.table[st][ss]] || 0)+1
+            // console.log(count)
+         }
+        }
+        // console.log(count[1])
     }
   }
 })

@@ -60,7 +60,7 @@
                   <i class="fas fa-circle fa-lg black back"></i>
                 </div>
                 <div class="full"  v-else>
-                  <button class="full massBtn" @click="putStone(turn, [rowNum, columnNum]), changeTurn()"></button>
+                  <button class="full massBtn" @click="putStone(turn, [rowNum, columnNum]), changeTurn(),winLoseJudgment(turn,[rowNum,columnNum])"></button>
                 </div>
               </td>
             </tr>
@@ -130,7 +130,10 @@ export default {
       putStone: (turn: number, position: number[]) => {
         store.commit("putStone", {turn: turn, position: position})
         store.commit("reduceStone", {turn: turn})
-      }
+      },
+      winLoseJudgment: (turn:number,position:number[]) => {
+          store.commit("winLoseJudgment",{turn:turn,position:position})
+      },
       /*石をひっくり返すモーションをつける関数
         flip: function() => {
         console.log(this.$refs.card);
