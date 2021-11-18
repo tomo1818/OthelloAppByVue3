@@ -1,20 +1,13 @@
 import { InjectionKey } from 'vue'
-import { createStore, Store  } from 'vuex'
-
-// stateの型を定義
-export interface State {
-  count: number,
-  table: { [key: number]: { [key: number]: number | null } },
-  stone1: number[],
-  stone2: number[]
-}
+import { createStore, Store } from 'vuex'
+import { Position, Direction } from "@/types/type";
+import { State } from "@/types/vuex";
 
 // インジェクションキーを定義します
 export const key: InjectionKey<Store<State>> = Symbol()
 
 export const store = createStore<State>({
   state: {
-    count: 0,
     table: {
       1: {
         1: null,
@@ -101,30 +94,41 @@ export const store = createStore<State>({
     stone2: new Array(30).fill(0),
   },
   mutations: {
-    increment(state: State): void {
-      state.count++
-    },
-    putStone(state: State, payload: {turn: number, position: number[]}): void {
-      state.table[payload.position[0]][payload.position[1]] = payload.turn;
+    putStone(state: State, payload: { turn: number, position: Position}): void {
+      state.table[payload.position.y][payload.position.x] = payload.turn;
     },
     reduceStone(state: State, payload: {turn: number}): void {
       if (payload.turn == 1) state.stone1.pop();
       else state.stone2.pop();
     },
-    winLoseJudgment(state:State,payload:{turn:number,position:number[]}):void {
-        // console.log(state.stone1.length == 0)
-        let count: number | null = 0;
+    returnStone(state: State, payload: { turn: number, position: Position, isReturn: boolean, direction: Direction }): void {
+        if (payload.isReturn) {
+        let row = Number(payload.position.y) + Number(payload.direction.y);
+        let column = Number(payload.position.x) + Number(payload.direction.x);
+        while (state.table[row][column] != payload.turn) {
+          state.table[row][column] = payload.turn;
+          row += payload.direction.y;
+          column += payload.direction.x;
+        }
+      }
+    },
+    winLoseJudgment(state:State):void {
+        let countPlayer1: number | null = 0;
+        let countPlayer2: number | null = 0;
+        const squaresNum = 64;
 
         for (const i in state.table) {
             for (const j in Object.values(state.table[i])) {
-            //  console.log(state.table[st][ss] == 1)  //black stone1
                 if (state.table[i][j]  == 0) {
-                    count += state.table[i][j] as number;
-                    count++;
+                    countPlayer1 += state.table[i][j] as number;
+                    countPlayer1++;
+                } else if (state.table[i][j]  == 1) {
+                    countPlayer2 += state.table[i][j] as number;
                 }
             }
         }
-        console.log(count)
+        if (squaresNum-countPlayer1 == 64 || state.stone2.length == 0 && countPlayer1 > countPlayer2) alert("win player1");
+        if (squaresNum-countPlayer2 == 64 || state.stone1.length == 0 && countPlayer1 < countPlayer2) alert("win player2");
     }
   }
 })
