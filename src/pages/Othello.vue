@@ -59,7 +59,7 @@
                   <i class="fas fa-circle fa-lg white front"></i>
                   <i class="fas fa-circle fa-lg black back"></i>
                 </div>
-                <div class="full"  v-else>
+                <div class="full"  v-else-if="value2 == 3">
                   <button class="full massBtn" @click="putStone(turn, [rowNum, columnNum]), changeTurn(), checkTable(turn)">
                     <i v-if="value2 == 3" class="far fa-circle fa-xs"></i>
                   </button>

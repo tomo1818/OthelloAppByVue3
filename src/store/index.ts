@@ -126,31 +126,32 @@ export const store = createStore<State>({
             };
             const allDirections: directionType[] = 
             [
-                {x: 0, y: 1}, 
-                {x: 1, y: 1}, 
-                {x: 1, y: 0}, 
-                {x: 1, y: -1}, 
                 {x: 0, y: -1}, 
-                {x: -1, y: -1}, 
+                {x: 1, y: -1}, 
+                {x: 1, y: 0}, 
+                {x: 1, y: 1}, 
+                {x: 0, y: 1}, 
+                {x: -1, y: 1}, 
                 {x: -1, y: 0}, 
-                {x: -1, y: 1}
+                {x: -1, y: -1}
             ]
             //見つけた石の8方向チェック
             for(const value of allDirections ){
-              let xCheck: number = x + value.x;
               let yCheck: number = y + value.y;
-              if ( (xCheck > 7 || yCheck > 7) || (xCheck < 2 || yCheck < 2)) continue;
+              let xCheck: number = x + value.x;
+              if(yCheck >= 9 || yCheck <= 0) continue
+              //if ( (xCheck > 7 || yCheck > 7) || (xCheck < 2 || yCheck < 2)) continue;
               //相手の石を見つける
-              else if(state.table[yCheck][xCheck] == opponet ){
+              if(state.table[yCheck][xCheck] == opponet ){
                 //見つけた石の方向に進んでその先に石を置ける場所を探す
-                while((xCheck < 8 || yCheck < 8) && (xCheck > 1 || yCheck > 1)){
-                  xCheck = xCheck + value.x;
-                  yCheck = yCheck + value.y;
-                  if(state.table[yCheck][xCheck] == playerTurn) break;
-                  else if(state.table[yCheck][xCheck] == null ){
+                while((xCheck < 9 && yCheck < 9) && (xCheck > 0 && yCheck > 0)){
+                  if(state.table[yCheck][xCheck] == null ){
                     state.table[yCheck][xCheck] = 3;
                     break;
                   }
+                  else if(state.table[yCheck][xCheck] != opponet) break;
+                  yCheck = yCheck + value.y;
+                  xCheck = xCheck + value.x;
                 }
               }
             }

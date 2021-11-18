@@ -9,7 +9,6 @@ declare module '@vue/runtime-core' {
     stone1: number[],
     stone2: number[],
   }
-
   // `this.$store` の型付けを提供する
   interface ComponentCustomProperties {
     $store: Store<State>
