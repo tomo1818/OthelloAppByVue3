@@ -1,20 +1,13 @@
 import { InjectionKey } from 'vue'
-import { createStore, Store  } from 'vuex'
-
-// stateの型を定義
-export interface State {
-  count: number,
-  table: { [key: number]: { [key: number]: number | null } },
-  stone1: number[],
-  stone2: number[]
-}
+import { createStore, Store } from 'vuex'
+import { Position, Direction } from "@/types/type";
+import { State } from "@/types/vuex";
 
 // インジェクションキーを定義します
 export const key: InjectionKey<Store<State>> = Symbol()
 
 export const store = createStore<State>({
   state: {
-    count: 0,
     table: {
       1: {
         1: null,
@@ -101,25 +94,33 @@ export const store = createStore<State>({
     stone2: new Array(30).fill(0),
   },
   mutations: {
-    increment(state: State): void {
-      state.count++
-    },
-    putStone(state: State, payload: {turn: number, position: number[]}): void {
-      state.table[payload.position[0]][payload.position[1]] = payload.turn;
+    putStone(state: State, payload: { turn: number, position: Position}): void {
+      state.table[payload.position.y][payload.position.x] = payload.turn;
     },
     reduceStone(state: State, payload: {turn: number}): void {
       if (payload.turn == 1) state.stone1.pop();
       else state.stone2.pop();
     },
-    checkTable(state: State, playerTurn:number): void {
+    returnStone(state: State, payload: { turn: number, position: Position, isReturn: boolean, direction: Direction }): void {
+      if (payload.isReturn) {
+        let row = Number(payload.position.y) + Number(payload.direction.y);
+        let column = Number(payload.position.x) + Number(payload.direction.x);
+        while (state.table[row][column] != payload.turn) {
+          state.table[row][column] = payload.turn;
+          row += payload.direction.y;
+          column += payload.direction.x;
+        }
+      }
+    },
+    checkTable(state: State, payload: {turn: number, direction: Direction[]}): void {
       //store.tableの3を消す。（要リファクタリング）
       store.commit("refreshTable");
-      const opponet = playerTurn == 1 ? 0 : 1;
+      const opponet:number = payload.turn == 1 ? 0 : 1;
       //テーブルの石をチェック
       for(let y = 1; y < 9; y++ ){
         for(let x = 1; x < 9; x++){
           //自分の色のこまを見つける
-          if(state.table[y][x] == playerTurn){
+          if(state.table[y][x] == payload.turn){
             type directionType = {
               y: number,
               x: number,
@@ -165,8 +166,7 @@ export const store = createStore<State>({
           if(state.table[y][x] == 3 ) state.table[y][x] = null;
         }
       }
-    }
-
+    },
   }
 })
 

@@ -27,11 +27,7 @@
         </p>
       </div>
       <div>
-        <p>{{ count }}</p>
-        <button @click="increment">add count</button>
-      </div>
-      <div>
-        <p>{{ table }}</p>
+        <p>{{ state.table }}</p>
         <button @click="showTable">show table at console</button>
       </div>
       <div class="othelloContainer">
@@ -39,14 +35,14 @@
           <div class="box">
             <div
               class="stone"
-              v-for="(stone, index) in stone1"
+              v-for="(stone, index) in state.stone1"
               v-bind:key="index"
             ></div>
           </div>
         </div>
         <table class="othelloTable">
           <tbody>
-            <tr v-for="(value, rowNum, index) in table" v-bind:key="index">
+            <tr v-for="(value, rowNum, index) in state.table" v-bind:key="index">
               <td
                 v-for="(value2, columnNum, index2) in value"
                 v-bind:key="index2"
@@ -60,7 +56,7 @@
                   <i class="fas fa-circle fa-lg black back"></i>
                 </div>
                 <div class="full"  v-else-if="value2 == 3">
-                  <button class="full massBtn" @click="putStone(turn, [rowNum, columnNum]), changeTurn(), checkTable(turn)">
+                  <button class="full massBtn" @click="putStone(state.turn, {y: rowNum, x: columnNum}), returnStone({y: rowNum, x: columnNum}), changeTurn(), checkTable(state.turn, state.directions)">
                     <i v-if="value2 == 3" class="far fa-circle fa-xs"></i>
                   </button>
                 </div>
@@ -72,7 +68,7 @@
           <div class="box">
             <div
               class="stone"
-              v-for="(stone, index) in stone2"
+              v-for="(stone, index) in state.stone2"
               v-bind:key="index"
             ></div>
           </div>
@@ -87,6 +83,7 @@ import { computed, ref, onMounted, reactive} from "vue";
 import { useStore } from "vuex";
 import { key } from "../store";
 import { useRoute } from "vue-router";
+import { State, Position, Direction } from "@/types/type" // 型定義を読み取る
 
 export default {
   // eslint-disable-next-line @typescript-eslint/explicit-module-boundary-types
@@ -96,19 +93,79 @@ export default {
     const route = useRoute();
     // settingPageからのデータ
     const settingData = route.params;
-    const state = reactive<{turn: number}>({
-      turn: 1
+
+    // optionAPIのdataと同様の扱い
+    const state = reactive<State>({
+      turn: 1,
+      table: store.state.table,
+      stone1: store.state.stone1,
+      stone2: store.state.stone2,
+      directions: {
+        "top": {y: -1, x: 0},
+        "bottom": {y: 1, x: 0},
+        "left": {y: 0, x: -1},
+        "right": {y: 0, x: 1},
+        "topLeft": {y: -1, x: -1},
+        "topRight": {y: -1, x: 1},
+        "bottomLeft": {y: 1, x: -1},
+        "bottomRight": {y: 1, x: 1}
+      }
     });
 
     // method
     // turnの変更
     const changeTurn = (): void => {
       state.turn = state.turn == 1 ? 0 : 1;
+    };
+
+    // 隣の石をチェック
+    const checkNextStone = (position: Position, direction: Direction): boolean => {
+      const row = Number(position.y) + Number(direction.y);
+      const column = Number(position.x) + Number(direction.x);
+      if (checkOutOfRange({y: row,x: column}) && (state.table[row][column] === null || state.table[row][column] === state.turn)) return true;
+      return false;
+    };
+
+    // ループのスタートポジションを決定
+    const determinCheckStartPosition = (position: number, num: number): number => {
+      return num === 0 ? position : num === 1 ? position + 2 : position - 2;
+    };
+
+    // マス目外に出ているかチェック
+    const checkOutOfRange = (position: Position): boolean => {
+      if (position.y <= 8 && position.y >= 1 && position.x <= 8 && position.x >= 1) return true;
+      return false;
     }
     onMounted(() =>{
       console.log("mounted!")
-      store.commit("checkTable", state.turn)
+      store.commit("checkTable", {turn: state.turn, direction: state.directions});
     })
+
+    // 各方向でループ
+    const checkLine = (position: Position, direction: Direction): boolean => {
+      let row = determinCheckStartPosition(Number(position.y), direction.y);
+      let column = determinCheckStartPosition(Number(position.x), direction.x);
+      if (checkOutOfRange({y: row,x: column})) {
+        while(checkOutOfRange({y: row,x: column}) && state.table[row][column] !== null) {
+          if (state.table[row][column] === state.turn) {
+            return true;
+          }
+          row += direction.y;
+          column += direction.x;
+        }
+      }
+      return false;
+    };
+
+    // 各方向でひっくり返せるか判定
+    const isReturn = (position: Position, direction: Direction): boolean => {
+      if (checkNextStone(position, direction)) return false;
+      return checkLine(position, direction);
+    }
+
+    // computed
+    // const stone1Num = computed((): number => state.stone1.length)
+    // const stone2Num = computed((): number => state.stone2.length)
 
     // const divs = ref([])
     // onMounted(() => {
@@ -117,30 +174,25 @@ export default {
     // const flip = () => {el.classList.toggle("flipped")}
 
     return {
-      // state を呼び出す場合
-      count: computed(() => store.state.count),
-      table: computed(() => store.state.table), // オセロ盤の状態
-      stone1: computed(() => store.state.stone1), // user1の残りの石
-      stone2: computed(() => store.state.stone2), // user2の残りの石
       settingData,
-      turn: computed((): number => state.turn),
+      state,
       changeTurn,
-      // mutation を呼び出す場合
-      increment: () => store.commit("increment"),
       // storeからの受け渡し確認用
       showTable: () => {
         console.log(store.state.table);
       },
       // 石を置く
-      putStone: (turn: number, position: number[]) => {
+      putStone: (turn: number, position: Position) => {
         store.commit("putStone", {turn: turn, position: position})
         store.commit("reduceStone", {turn: turn})
       },
-      checkTable: (turn: number) => {
-        store.commit("checkTable", turn)
+      checkTable: (turn: number, directions: Direction[]) => {
+        store.commit("checkTable", {turn: state.turn, direction: state.directions});
       },
-
-      
+      // ひっくり返す
+      returnStone: (position: Position) => {
+        for (let key in state.directions) store.commit("returnStone", {turn: state.turn, position: position, isReturn: isReturn(position, state.directions[key]), direction: state.directions[key]});
+      }
       /*石をひっくり返すモーションをつける関数
         flip: function() => {
         console.log(this.$refs.card);
