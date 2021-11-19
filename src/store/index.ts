@@ -103,7 +103,7 @@ export const store = createStore<Table>({
       { y: 6, x: 3 },
       { y: 6, x: 4 },
       { y: 6, x: 5 },
-      { y: 6, x: 7 },
+      { y: 6, x: 6 },
     ],
   },
   mutations: {
