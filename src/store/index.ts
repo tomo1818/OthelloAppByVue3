@@ -1,12 +1,11 @@
 import { InjectionKey } from 'vue'
 import { createStore, Store } from 'vuex'
-import { Position, Direction } from "@/types/type";
-import { State } from "@/types/vuex";
+import { Table, Position, Direction } from "@/types/type";
 
 // インジェクションキーを定義します
-export const key: InjectionKey<Store<State>> = Symbol()
+export const key: InjectionKey<Store<Table>> = Symbol()
 
-export const store = createStore<State>({
+export const store = createStore<Table>({
   state: {
     table: {
       1: {
@@ -94,14 +93,14 @@ export const store = createStore<State>({
     stone2: new Array(30).fill(0),
   },
   mutations: {
-    putStone(state: State, payload: { turn: number, position: Position}): void {
+    putStone(state: Table, payload: { turn: number, position: Position}): void {
       state.table[payload.position.y][payload.position.x] = payload.turn;
     },
-    reduceStone(state: State, payload: {turn: number}): void {
+    reduceStone(state: Table, payload: {turn: number}): void {
       if (payload.turn == 1) state.stone1.pop();
       else state.stone2.pop();
     },
-    returnStone(state: State, payload: { turn: number, position: Position, isReturn: boolean, direction: Direction }): void {
+    returnStone(state: Table, payload: { turn: number, position: Position, isReturn: boolean, direction: Direction }): void {
       if (payload.isReturn) {
         let row = Number(payload.position.y) + Number(payload.direction.y);
         let column = Number(payload.position.x) + Number(payload.direction.x);

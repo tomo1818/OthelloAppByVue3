@@ -1,8 +1,11 @@
-export interface State {
-  turn: number,
+export interface Table {
   table: { [key: number]: { [key: number]: number | null } },
   stone1: number[],
-  stone2: number[],
+  stone2: number[]
+}
+
+export interface State extends Table {
+  turn: number,
   directions: { [key: string]: { y: number, x: number } },
 }
 
