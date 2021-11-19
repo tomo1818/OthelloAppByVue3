@@ -56,7 +56,7 @@
                   <i class="fas fa-circle fa-lg black back"></i>
                 </div>
                 <div class="full"  v-else>
-                  <button class="full massBtn" @click="putStone(state.turn, {y: rowNum, x: columnNum}), returnStone({y: rowNum, x: columnNum}), changeTurn()"></button>
+                  <button class="full massBtn" @click="putStone(state.turn, {y: rowNum, x: columnNum}), returnStone({y: rowNum, x: columnNum}), changeTurn(),winLoseJudgment()"></button>
                 </div>
               </td>
             </tr>
@@ -132,7 +132,7 @@ export default {
     // マス目外に出ているかチェック
     const checkOutOfRange = (position: Position): boolean => {
       if (position.y <= 8 && position.y >= 1 && position.x <= 8 && position.x >= 1) return true;
-      return false;
+      return false
     }
 
     // 各方向でループ
@@ -181,6 +181,13 @@ export default {
         store.commit("putStone", {turn: turn, position: position})
         store.commit("reduceStone", {turn: turn})
       },
+      // ひっくり返す
+      returnStone: (position: Position) => {
+          for (let key in state.directions) store.commit("returnStone", {turn: state.turn, position: position, isReturn: isReturn(position, state.directions[key]), direction: state.directions[key]});
+      },
+      winLoseJudgment: () => {
+          store.commit("winLoseJudgment")
+      },
       /*石をひっくり返すモーションをつける関数
         flip: function() => {
         console.log(this.$refs.card);
@@ -188,10 +195,6 @@ export default {
         this.$refs.card.classList.toggle("flipped");
         要素.classList.toggole("flipped");
       } */
-      // ひっくり返す
-      returnStone: (position: Position) => {
-        for (let key in state.directions) store.commit("returnStone", {turn: state.turn, position: position, isReturn: isReturn(position, state.directions[key]), direction: state.directions[key]});
-      }
     };
   },
 };
