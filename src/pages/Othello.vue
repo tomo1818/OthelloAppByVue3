@@ -58,16 +58,17 @@
                   <i class="fas fa-circle fa-lg white front"></i>
                   <i class="fas fa-circle fa-lg black back"></i>
                 </div>
-                <div class="full" v-else>
+                <div class="full" v-else-if="value2 == 3">
                   <button
                     class="full massBtn"
                     @click="
                       putStone(state.turn, { y: rowNum, x: columnNum }),
                         returnStone({ y: rowNum, x: columnNum }),
                         changeTurn(),
+                        showPlaceStoneCanBePut(),
                         winLoseJudgment()
                     "
-                  ></button>
+                  ><i v-if="value2 == 3" class="far fa-circle fa-xs"></i></button>
                 </div>
               </td>
             </tr>
@@ -109,6 +110,7 @@ export default {
       table: store.state.table,
       stone1: store.state.stone1,
       stone2: store.state.stone2,
+      aroundStone: store.state.aroundStone,
       directions: {
         top: { y: -1, x: 0 },
         bottom: { y: 1, x: 0 },
@@ -137,7 +139,7 @@ export default {
       if (
         checkOutOfRange({ y: row, x: column }) &&
         (state.table[row][column] === null ||
-          state.table[row][column] === state.turn)
+          state.table[row][column] === state.turn || state.table[row][column] === 3)
       )
         return true;
       return false;
@@ -170,7 +172,7 @@ export default {
       if (checkOutOfRange({ y: row, x: column })) {
         while (
           checkOutOfRange({ y: row, x: column }) &&
-          state.table[row][column] !== null
+          state.table[row][column] !== null && state.table[row][column] !== 3
         ) {
           if (state.table[row][column] === state.turn) {
             return true;
@@ -188,6 +190,13 @@ export default {
       return checkLine(position, direction);
     };
 
+    onMounted(() => {
+      console.log("mounted!");
+      store.commit("showPlaceStoneCanBePut", {
+        turn: state.turn,
+        allDirections: Object.values(state.directions),
+      });
+    });
     // computed
     // const stone1Num = computed((): number => state.stone1.length)
     // const stone2Num = computed((): number => state.stone2.length)
@@ -211,6 +220,17 @@ export default {
       putStone: (turn: number, position: Position) => {
         store.commit('putStone', { turn: turn, position: position });
         store.commit('reduceStone', { turn: turn });
+        store.commit("checkAroundStone", {
+          turn: turn,
+          position: position,
+          allDirections: Object.values(state.directions),
+        });
+      },
+      showPlaceStoneCanBePut: () => {
+        store.commit("showPlaceStoneCanBePut", {
+          turn: state.turn,
+          allDirections: Object.values(state.directions),
+        });
       },
       // ひっくり返す
       returnStone: (position: Position) => {
