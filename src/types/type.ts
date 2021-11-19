@@ -3,22 +3,19 @@ export interface Table {
   stone1: number[],
   stone2: number[],
   aroundStone: {y: number, x: number}[]
-/*   playerChoices: {y: number, x: number}[]
- */}
+}
 
 export interface State extends Table {
-  turn: number,
-  directions: { [key: string]: { y: number, x: number } },
+  turn: number;
+  directions: { [key: string]: { y: number; x: number } };
 }
 
 export type Position = {
-  y: number,
-  x: number
-}
+  y: number;
+  x: number;
+};
 
 export type Direction = {
-  y: number,
-  x: number
-}
-
-
+  y: number;
+  x: number;
+};

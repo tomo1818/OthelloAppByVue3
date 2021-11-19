@@ -1,6 +1,6 @@
-import { InjectionKey } from "vue";
-import { createStore, Store } from "vuex";
-import { Table, Position, Direction } from "@/types/type";
+import { InjectionKey } from 'vue';
+import { createStore, Store } from 'vuex';
+import { Table, Position, Direction } from '@/types/type';
 
 // インジェクションキーを定義します
 export const key: InjectionKey<Store<Table>> = Symbol();
@@ -218,23 +218,30 @@ export const store = createStore<Table>({
       const squares = 64;
 
       for (const i in state.table) {
-          for  (const j in state.table[i]) {
-              if (state.table[i][j] == 1) {
-                countPlayer1++;
-              } else if (state.table[i][j] == 0)  {
-                  countPlayer2++;
-              }
+        for (const j in state.table[i]) {
+          if (state.table[i][j] == 1) {
+            countPlayer1++;
+          } else if (state.table[i][j] == 0) {
+            countPlayer2++;
           }
+        }
       }
-      const restSquares = squares-(countPlayer1+countPlayer2);
+      const restSquares = squares - (countPlayer1 + countPlayer2);
 
-      if (countPlayer2 == 0 || restSquares == 0 && countPlayer1 > countPlayer2) alert("Player1の勝ち")
-      if (countPlayer1 == 0 || restSquares == 0 && countPlayer1 < countPlayer2) alert("Player2の勝ち")
-      if (countPlayer1 == 32 && countPlayer2 == 32) alert("引き分け")
-    }
+      if (
+        countPlayer2 == 0 ||
+        (restSquares == 0 && countPlayer1 > countPlayer2)
+      )
+        alert('Player1の勝ち');
+      if (
+        countPlayer1 == 0 ||
+        (restSquares == 0 && countPlayer1 < countPlayer2)
+      )
+        alert('Player2の勝ち');
+      if (countPlayer1 == 32 && countPlayer2 == 32) alert('引き分け');
+    },
   },
 });
-
 
 export default createStore({
   state: {},

@@ -12,17 +12,17 @@
         <p>
           プレイヤー1:
           {{
-            settingData.name1 != ""
+            settingData.name1 != ''
               ? settingData.name1
-              : "プレイヤー1(デフォルト)"
+              : 'プレイヤー1(デフォルト)'
           }}
         </p>
         <p>
           プレイヤー2:
           {{
-            settingData.name2 != ""
+            settingData.name2 != ''
               ? settingData.name2
-              : "プレイヤー2(デフォルト)"
+              : 'プレイヤー2(デフォルト)'
           }}
         </p>
       </div>
@@ -61,7 +61,7 @@
                 <div class="full" v-else-if="value2 == 3">
                   <button
                     class="full massBtn"
-                    @click="putStone(state.turn, { y: rowNum, x: columnNum }), returnStone({ y: rowNum, x: columnNum }), changeTurn(), showPlaceStoneCanBePut()">
+                    @click="putStone(state.turn, { y: Number(rowNum), x: Number(columnNum) }), returnStone({ y: Number(rowNum), x: Number(rowNum) }), changeTurn(), showPlaceStoneCanBePut()">
                     <i v-if="value2 == 3" class="far fa-circle fa-xs"></i>
                   </button>
                 </div>
@@ -84,11 +84,11 @@
 </template>
 
 <script lang="ts">
-import { computed, ref, onMounted, reactive } from "vue";
-import { useStore } from "vuex";
-import { key } from "../store";
-import { useRoute } from "vue-router";
-import { State, Position, Direction } from "@/types/type"; // 型定義を読み取る
+import { computed, ref, onMounted, reactive } from 'vue';
+import { useStore } from 'vuex';
+import { key } from '../store';
+import { useRoute } from 'vue-router';
+import { State, Position, Direction } from '@/types/type'; // 型定義を読み取る
 
 export default {
   // eslint-disable-next-line @typescript-eslint/explicit-module-boundary-types
@@ -150,9 +150,15 @@ export default {
 
     // マス目外に出ているかチェック
     const checkOutOfRange = (position: Position): boolean => {
-      if (position.y <= 8 && position.y >= 1 && position.x <= 8 && position.x >= 1) return true;
-      return false
-    }
+      if (
+        position.y <= 8 &&
+        position.y >= 1 &&
+        position.x <= 8 &&
+        position.x >= 1
+      )
+        return true;
+      return false;
+    };
 
     // 各方向でループ
     const checkLine = (position: Position, direction: Direction): boolean => {
@@ -224,10 +230,16 @@ export default {
       
       // ひっくり返す
       returnStone: (position: Position) => {
-          for (let key in state.directions) store.commit("returnStone", {turn: state.turn, position: position, isReturn: isReturn(position, state.directions[key]), direction: state.directions[key]});
+        for (let key in state.directions)
+          store.commit('returnStone', {
+            turn: state.turn,
+            position: position,
+            isReturn: isReturn(position, state.directions[key]),
+            direction: state.directions[key],
+          });
       },
       winLoseJudgment: () => {
-          store.commit("winLoseJudgment")
+        store.commit('winLoseJudgment');
       },
       /*石をひっくり返すモーションをつける関数
         flip: function() => {
