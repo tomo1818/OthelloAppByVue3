@@ -61,13 +61,7 @@
                 <div class="full" v-else-if="value2 == 3">
                   <button
                     class="full massBtn"
-                    @click="
-                      putStone(state.turn, { y: rowNum, x: columnNum }),
-                        returnStone({ y: rowNum, x: columnNum }),
-                        changeTurn(),
-                        showPlaceStoneCanBePut(state.turn)
-                    "
-                  >
+                    @click="putStone(state.turn, { y: rowNum, x: columnNum }), returnStone({ y: rowNum, x: columnNum }), changeTurn(), showPlaceStoneCanBePut()">
                     <i v-if="value2 == 3" class="far fa-circle fa-xs"></i>
                   </button>
                 </div>
@@ -140,7 +134,7 @@ export default {
       if (
         checkOutOfRange({ y: row, x: column }) &&
         (state.table[row][column] === null ||
-          state.table[row][column] === state.turn)
+          state.table[row][column] === state.turn || state.table[row][column] === 3)
       )
         return true;
       return false;
@@ -173,7 +167,7 @@ export default {
       if (checkOutOfRange({ y: row, x: column })) {
         while (
           checkOutOfRange({ y: row, x: column }) &&
-          state.table[row][column] !== null
+          state.table[row][column] !== null && state.table[row][column] !== 3
         ) {
           if (state.table[row][column] === state.turn) {
             return true;
