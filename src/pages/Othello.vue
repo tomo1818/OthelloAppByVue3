@@ -56,7 +56,7 @@
                   <i class="fas fa-circle fa-lg black back"></i>
                 </div>
                 <div class="full"  v-else-if="value2 == 3">
-                  <button class="full massBtn" @click="putStone(state.turn, {y: rowNum, x: columnNum}), returnStone({y: rowNum, x: columnNum}), changeTurn(), checkTable(state.turn, state.directions)">
+                  <button class="full massBtn" @click="putStone(state.turn, {y: rowNum, x: columnNum}), returnStone({y: rowNum, x: columnNum}), changeTurn(), showPlaceStoneCanBePut(state.turn)">
                     <i v-if="value2 == 3" class="far fa-circle fa-xs"></i>
                   </button>
                 </div>
@@ -138,7 +138,7 @@ export default {
     }
     onMounted(() =>{
       console.log("mounted!")
-      store.commit("checkTable", {turn: state.turn, direction: state.directions});
+      store.commit("showPlaceStoneCanBePut", {turn: state.turn, allDirections: Object.values(state.directions)});
     })
 
     // 各方向でループ
@@ -185,14 +185,15 @@ export default {
       putStone: (turn: number, position: Position) => {
         store.commit("putStone", {turn: turn, position: position})
         store.commit("reduceStone", {turn: turn})
+        store.commit("checkAroundStone", {turn: turn, position: position, allDirections: Object.values(state.directions)})
       },
-      checkTable: (turn: number, directions: Direction[]) => {
-        store.commit("checkTable", {turn: state.turn, direction: state.directions});
+      showPlaceStoneCanBePut: () => {
+        store.commit("showPlaceStoneCanBePut", {turn: state.turn, allDirections: Object.values(state.directions)});
       },
       // ひっくり返す
       returnStone: (position: Position) => {
         for (let key in state.directions) store.commit("returnStone", {turn: state.turn, position: position, isReturn: isReturn(position, state.directions[key]), direction: state.directions[key]});
-      }
+      },
       /*石をひっくり返すモーションをつける関数
         flip: function() => {
         console.log(this.$refs.card);

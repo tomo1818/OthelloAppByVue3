@@ -93,6 +93,20 @@ export const store = createStore<State>({
     },
     stone1: new Array(30).fill(0),
     stone2: new Array(30).fill(0),
+    aroundStone: [
+      {y: 3, x: 3},
+      {y: 3, x: 4},
+      {y: 3, x: 5},
+      {y: 3, x: 6},
+      {y: 4, x: 3},
+      {y: 4, x: 6},
+      {y: 5, x: 3},
+      {y: 5, x: 6},
+      {y: 6, x: 3},
+      {y: 6, x: 4},
+      {y: 6, x: 5},
+      {y: 6, x: 7}
+    ]
   },
   mutations: {
     putStone(state: State, payload: { turn: number, position: Position}): void {
@@ -101,6 +115,17 @@ export const store = createStore<State>({
     reduceStone(state: State, payload: {turn: number}): void {
       if (payload.turn == 1) state.stone1.pop();
       else state.stone2.pop();
+    },
+    checkAroundStone(state: State, payload: {turn: number, position: Position, allDirections: Direction[]}): void {
+      state.aroundStone = state.aroundStone.filter(function(e){ 
+        return !(e.y == payload.position.y && e.x == payload.position.x)
+      });
+      for(const value of payload.allDirections){
+        const yCheck: number = Number(payload.position.y) + value.y;
+        const xCheck: number = Number(payload.position.x) + value.x;
+        if(yCheck < 1 || xCheck < 1 || yCheck > 8 || xCheck > 8 || state.aroundStone.some(e => e.y == yCheck && e.x == xCheck)) continue;
+        else if (state.table[yCheck][xCheck] == null )  state.aroundStone.push({y: yCheck, x: xCheck});
+      }
     },
     returnStone(state: State, payload: { turn: number, position: Position, isReturn: boolean, direction: Direction }): void {
       if (payload.isReturn) {
@@ -113,61 +138,32 @@ export const store = createStore<State>({
         }
       }
     },
-    checkTable(state: State, payload: {turn: number, direction: Direction[]}): void {
-      //store.tableの3を消す。（要リファクタリング）
-      store.commit("refreshTable");
-      const opponet:number = payload.turn == 1 ? 0 : 1;
-      //テーブルの石をチェック
-      for(let y = 1; y < 9; y++ ){
-        for(let x = 1; x < 9; x++){
-          //自分の色のこまを見つける
-          if(state.table[y][x] == payload.turn){
-            type directionType = {
-              y: number,
-              x: number,
-            };
-            const allDirections: directionType[] = 
-            [
-                {x: 0, y: -1}, 
-                {x: 1, y: -1}, 
-                {x: 1, y: 0}, 
-                {x: 1, y: 1}, 
-                {x: 0, y: 1}, 
-                {x: -1, y: 1}, 
-                {x: -1, y: 0}, 
-                {x: -1, y: -1}
-            ]
-            //見つけた石の8方向チェック
-            for(const value of allDirections ){
-              let yCheck: number = y + value.y;
-              let xCheck: number = x + value.x;
-              if(yCheck >= 9 || yCheck <= 0) continue
-              //if ( (xCheck > 7 || yCheck > 7) || (xCheck < 2 || yCheck < 2)) continue;
-              //相手の石を見つける
-              if(state.table[yCheck][xCheck] == opponet ){
-                //見つけた石の方向に進んでその先に石を置ける場所を探す
-                while((xCheck < 9 && yCheck < 9) && (xCheck > 0 && yCheck > 0)){
-                  if(state.table[yCheck][xCheck] == null ){
-                    state.table[yCheck][xCheck] = 3;
-                    break;
-                  }
-                  else if(state.table[yCheck][xCheck] != opponet) break;
-                  yCheck = yCheck + value.y;
-                  xCheck = xCheck + value.x;
-                }
-              }
-            }
+    showPlaceStoneCanBePut(state: State, payload: {turn: number, allDirections: Direction[]}):void {
+      const opponent:number = payload.turn == 1 ? 0 : 1;
+      for(const value of state.aroundStone){
+        if(state.table[value.y][value.x] == 3) state.table[value.y][value.x] = null;
+        for(const direction of payload.allDirections){
+          const yCheck: number = value.y + direction.y;
+          const xCheck: number = value.x + direction.x;
+          if(yCheck < 1 || xCheck < 1 || yCheck > 8 || xCheck > 8) continue;
+          else if(state.table[yCheck][xCheck] == opponent){
+            store.commit("isPlaceable", {turn: payload.turn, opponent: opponent, yCheck: yCheck, xCheck: xCheck, value: value, direction: direction });
           }
         }
       }
     },
-    refreshTable(state: State){
-      for(let y = 1; y < 9; y++ ){
-        for(let x = 1; x < 9; x++){
-          if(state.table[y][x] == 3 ) state.table[y][x] = null;
+    isPlaceable(state: State, payload: {turn: number, opponent: number, yCheck: number, xCheck: number, value: Position, direction: Direction }): void {
+      while(payload.xCheck < 9 && payload.yCheck < 9 && payload.xCheck > 0 && payload.yCheck > 0){
+        if(state.table[payload.yCheck][payload.xCheck] == payload.turn ){
+          state.table[payload.value.y][payload.value.x] = 3;
+          break;
         }
+        else if(state.table[payload.yCheck][payload.xCheck] != payload.opponent) break;
+        payload.yCheck = payload.yCheck + payload.direction.y;
+        payload.xCheck = payload.xCheck + payload.direction.x;
       }
-    },
+    }
+    
   }
 })
 

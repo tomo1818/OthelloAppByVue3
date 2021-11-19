@@ -16,8 +16,5 @@ export type Direction = {
   x: number
 }
 
-export type Around = {
-  aroundStone: { y: number, x: number }[]
-}
 
 
