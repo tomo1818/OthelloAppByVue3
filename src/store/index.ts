@@ -113,22 +113,25 @@ export const store = createStore<State>({
       }
     },
     winLoseJudgment(state:State):void {
-        let countPlayer1: number | null = 0;
-        let countPlayer2: number | null = 0;
-        const squaresNum = 64;
+        let countPlayer1 = 0;
+        let countPlayer2 = 0;
+        let squares = 0;
 
         for (const i in state.table) {
-            for (const j in Object.values(state.table[i])) {
-                if (state.table[i][j]  == 0) {
-                    countPlayer1 += state.table[i][j] as number;
+            squares += Object.keys(state.table[i]).length;
+            for  (const j in state.table[i]) {
+                if (state.table[i][j] == 1) {
                     countPlayer1++;
-                } else if (state.table[i][j]  == 1) {
-                    countPlayer2 += state.table[i][j] as number;
+                } else if (state.table[i][j] == 0)  {
+                    countPlayer2++;
                 }
             }
-        }
-        if (squaresNum-countPlayer1 == 64 || state.stone2.length == 0 && countPlayer1 > countPlayer2) alert("win player1");
-        if (squaresNum-countPlayer2 == 64 || state.stone1.length == 0 && countPlayer1 < countPlayer2) alert("win player2");
+          }
+          const restSquares = squares - (countPlayer1+countPlayer2);
+
+          if (countPlayer2 == 0 || restSquares == 0 && countPlayer1 > countPlayer2) alert("win Player1")
+          if (countPlayer1 == 0 || restSquares == 0 && countPlayer1 < countPlayer2) alert("win Player2")
+          if (countPlayer1 == 32 && countPlayer2 == 32) alert("引き分け")
     }
   }
 })

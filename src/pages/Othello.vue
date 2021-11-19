@@ -56,7 +56,7 @@
                   <i class="fas fa-circle fa-lg black back"></i>
                 </div>
                 <div class="full"  v-else>
-                  <button class="full massBtn" @click="putStone(state.turn, {y: rowNum, x: columnNum}), returnStone({y: rowNum, x: columnNum}), changeTurn(),winLoseJudgment(turn)"></button>
+                  <button class="full massBtn" @click="putStone(state.turn, {y: rowNum, x: columnNum}), returnStone({y: rowNum, x: columnNum}), changeTurn(),winLoseJudgment()"></button>
                 </div>
               </td>
             </tr>
@@ -185,8 +185,8 @@ export default {
       returnStone: (position: Position) => {
           for (let key in state.directions) store.commit("returnStone", {turn: state.turn, position: position, isReturn: isReturn(position, state.directions[key]), direction: state.directions[key]});
       },
-      winLoseJudgment: (turn:number,position:number[]) => {
-          store.commit("winLoseJudgment",{turn:turn})
+      winLoseJudgment: () => {
+          store.commit("winLoseJudgment")
       },
       /*石をひっくり返すモーションをつける関数
         flip: function() => {
