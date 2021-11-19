@@ -150,15 +150,9 @@ export default {
 
     // マス目外に出ているかチェック
     const checkOutOfRange = (position: Position): boolean => {
-      if (
-        position.y <= 8 &&
-        position.y >= 1 &&
-        position.x <= 8 &&
-        position.x >= 1
-      )
-        return true;
-      return false;
-    };
+      if (position.y <= 8 && position.y >= 1 && position.x <= 8 && position.x >= 1) return true;
+      return false
+    }
 
     // 各方向でループ
     const checkLine = (position: Position, direction: Direction): boolean => {
@@ -227,15 +221,13 @@ export default {
           allDirections: Object.values(state.directions),
         });
       },
+      
       // ひっくり返す
       returnStone: (position: Position) => {
-        for (let key in state.directions)
-          store.commit("returnStone", {
-            turn: state.turn,
-            position: position,
-            isReturn: isReturn(position, state.directions[key]),
-            direction: state.directions[key],
-          });
+          for (let key in state.directions) store.commit("returnStone", {turn: state.turn, position: position, isReturn: isReturn(position, state.directions[key]), direction: state.directions[key]});
+      },
+      winLoseJudgment: () => {
+          store.commit("winLoseJudgment")
       },
       /*石をひっくり返すモーションをつける関数
         flip: function() => {
@@ -244,7 +236,6 @@ export default {
         this.$refs.card.classList.toggle("flipped");
         要素.classList.toggole("flipped");
       } */
-      // ひっくり返す
     };
   },
 };
