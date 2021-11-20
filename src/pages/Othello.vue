@@ -5,7 +5,6 @@
       <!-- データの受け渡し -->
       <div>
         <p>ターン: {{ turn }}</p>
-        <p>ターン: {{ state.turn }}</p>
       </div>
       <div v-if="settingData.mode == 'vsCpu'">
         <p>モード: {{ settingData.mode }}</p>
@@ -108,24 +107,23 @@ export default {
     const settingData = route.params;
 
     const turn: ComputedRef<number> = computed(() => store.state.turn);
+    const directions: { [key: string]: { y: number; x: number } } = {
+      top: { y: -1, x: 0 },
+      bottom: { y: 1, x: 0 },
+      left: { y: 0, x: -1 },
+      right: { y: 0, x: 1 },
+      topLeft: { y: -1, x: -1 },
+      topRight: { y: -1, x: 1 },
+      bottomLeft: { y: 1, x: -1 },
+      bottomRight: { y: 1, x: 1 },
+    }
 
     // optionAPIのdataと同様の扱い
     const state = reactive<State>({
-      turn: turn.value,
       table: store.state.table,
       stone1: store.state.stone1,
       stone2: store.state.stone2,
       aroundStone: store.state.aroundStone,
-      directions: {
-        top: { y: -1, x: 0 },
-        bottom: { y: 1, x: 0 },
-        left: { y: 0, x: -1 },
-        right: { y: 0, x: 1 },
-        topLeft: { y: -1, x: -1 },
-        topRight: { y: -1, x: 1 },
-        bottomLeft: { y: 1, x: -1 },
-        bottomRight: { y: 1, x: 1 },
-      },
     });
 
     // method
@@ -202,7 +200,7 @@ export default {
     onMounted(() => {
       console.log("mounted!");
       store.commit("showPlaceStoneCanBePut", {
-        allDirections: Object.values(state.directions),
+        allDirections: Object.values(directions),
       });
     });
     // computed
@@ -229,21 +227,21 @@ export default {
         store.commit('reduceStone');
         store.commit("checkAroundStone", {
           position: position,
-          allDirections: Object.values(state.directions),
+          allDirections: Object.values(directions),
         });
       },
       showPlaceStoneCanBePut: () => {
         store.commit("showPlaceStoneCanBePut", {
-          allDirections: Object.values(state.directions),
+          allDirections: Object.values(directions),
         });
       },
       // ひっくり返す
       returnStone: (position: Position) => {
-        for (let key in state.directions)
+        for (let key in directions)
           store.commit('returnStone', {
             position: position,
-            isReturn: isReturn(position, state.directions[key]),
-            direction: state.directions[key],
+            isReturn: isReturn(position, directions[key]),
+            direction: directions[key],
           });
       },
       winLoseJudgment: () => {
