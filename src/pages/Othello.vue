@@ -4,7 +4,11 @@
       <h2>オセロページです</h2>
       <!-- データの受け渡し -->
       <div>
-        <p>ターン: {{ turn }}</p>
+        <p>ターン: {{ turn == 1 ? state.player.black : state.player.white }}</p>
+      </div>
+      <div>
+        <p>黒石: {{ state.player.black}}</p>
+        <p>白石: {{ state.player.white}}</p>
       </div>
       <div v-if="settingData.mode == 'vsCpu'">
         <p>モード: {{ settingData.mode }}</p>
@@ -13,7 +17,7 @@
       <div v-else>
         <p>モード: {{ settingData.mode }}</p>
         <p>
-          プレイヤー1:
+          黒石(先手):
           {{
             settingData.name1 != ''
               ? settingData.name1
@@ -21,7 +25,7 @@
           }}
         </p>
         <p>
-          プレイヤー2:
+          白石(後手):
           {{
             settingData.name2 != ''
               ? settingData.name2
@@ -117,9 +121,9 @@ export default {
       bottomLeft: { y: 1, x: -1 },
       bottomRight: { y: 1, x: 1 },
     }
-
     // optionAPIのdataと同様の扱い
     const state = reactive<State>({
+      player: store.state.player,
       table: store.state.table,
       stone1: store.state.stone1,
       stone2: store.state.stone2,

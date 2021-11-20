@@ -8,6 +8,11 @@ export const key: InjectionKey<Store<Table>> = Symbol();
 export const store = createStore<Table>({
   state: {
     turn: 1,
+    player: {
+      black: 'player1',
+      white: 'player2'
+    },
+    mode: 'vsPlayer',
     table: {
       1: {
         1: null,
@@ -240,7 +245,15 @@ export const store = createStore<Table>({
     },
     changeTurn(state: Table) {
       state.turn = state.turn == 1 ? 0 : 1;
-      console.log(state.turn);
+    },
+    determineFirstMove(state: Table, payload: {firstMove: string, name1: string, name2: string}): void {
+      if (state.mode == "vsPlayer") {
+        state.player.black = payload.firstMove == 'player1' ? payload.name1 : payload.name2;
+        state.player.white = payload.firstMove != 'player1' ? payload.name1 : payload.name2;
+      } else {
+        state.player.black = payload.firstMove == 'player1' ? 'player1' : 'CPU';
+        state.player.white = payload.firstMove != 'player1' ? 'player1' : 'CPU';
+      }
     }
   },
 });
