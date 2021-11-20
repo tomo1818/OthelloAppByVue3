@@ -243,11 +243,6 @@ export const store = createStore<Table>({
       console.log(state.turn);
     }
   },
-  getters: {
-    getTurn(state: Table): number {
-      return state.turn;
-    }
-  }
 });
 
 export default createStore({
