@@ -22,7 +22,6 @@
         />
         <label for="vsCpu">vs CPU</label>
       </div>
-      <span>Opponent: {{ opponent }}</span>
       <div class="inputPlayerName mb-3" :class="{ displayNone: chosePlayer }">
         <h3 class="h3">プレイヤー名を入力してください</h3>
         <div class="mb-2">
@@ -48,6 +47,25 @@
         <label for="normal">Normal</label>
         <input type="radio" value="hard" id="hard" v-model="difficulty" />
         <label for="hard">Hard</label>
+      </div>
+      <div class="determinFirstMove mb-3">
+        <h3 class="h3">先攻(黒石)のプレイヤーを決定します</h3>
+        <input
+          type="radio"
+          value="player1"
+          id="player1"
+          v-model="firstMove"
+          checked
+        />
+        <label for="player1">Player1</label>
+        <input
+          type="radio"
+          value="player2"
+          id="player2"
+          v-model="firstMove"
+        />
+        <label for="player2">Player2</label>
+        <p>first move: {{ firstMove }}</p>
       </div>
       <!-- 良い書き方募集中です -->
       <router-link
@@ -84,6 +102,7 @@ export default defineComponent({
       difficulty: '',
       chosePlayer: false,
       choseCpu: true,
+      firstMove: 'player1'
     };
   },
   methods: {
