@@ -128,7 +128,7 @@ export default {
       opponent: 'vsPlayer',
       playerName1: 'player1',
       playerName2: 'player2',
-      difficulty: '',
+      difficulty: 'easy',
       chosePlayer: false,
       choseCpu: true,
       firstMove: 'player1',
@@ -145,7 +145,11 @@ export default {
     }
 
     const determineFirstMove = (): void => {
-      store.commit('determineFirstMove', {firstMove: setting.firstMove, name1: setting.playerName1, name2: setting.playerName2})
+      if (setting.opponent == 'vsPlayer') {
+        store.commit('determineFirstMove', {firstMove: setting.firstMove, name1: setting.playerName1, name2: setting.playerName2})
+      } else {
+        store.commit('determineFirstMove', {firstMove: setting.firstMove, name1: 'player1', name2: 'CPU'})
+      }
     }
     return {
       setting,

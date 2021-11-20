@@ -246,15 +246,17 @@ export const store = createStore<Table>({
     changeTurn(state: Table) {
       state.turn = state.turn == 1 ? 0 : 1;
     },
+    determineStoneColor(state: Table, payload: { firstMove: string, name1: string, name2: string }): void {
+      state.player.black = payload.firstMove == 'player1' ? payload.name1 : payload.name2;
+      state.player.white = payload.firstMove != 'player1' ? payload.name1 : payload.name2;
+    },
     determineFirstMove(state: Table, payload: {firstMove: string, name1: string, name2: string}): void {
       if (state.mode == "vsPlayer") {
-        state.player.black = payload.firstMove == 'player1' ? payload.name1 : payload.name2;
-        state.player.white = payload.firstMove != 'player1' ? payload.name1 : payload.name2;
+        store.commit('determineStoneColor', {firstMove: payload.firstMove, name1: payload.name1, name2: payload.name2})
       } else {
-        state.player.black = payload.firstMove == 'player1' ? 'player1' : 'CPU';
-        state.player.white = payload.firstMove != 'player1' ? 'player1' : 'CPU';
+        store.commit('determineStoneColor', { firstMove: payload.firstMove, name1: 'player1', name2: 'CPU' })
       }
-    }
+    },
   },
 });
 
