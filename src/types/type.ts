@@ -1,5 +1,3 @@
-import { ComputedRef } from 'vue';
-
 export interface Table {
   turn: number;
   table: { [key: number]: { [key: number]: number | null } };
