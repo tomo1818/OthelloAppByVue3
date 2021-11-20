@@ -1,4 +1,7 @@
+import { ComputedRef } from 'vue';
+
 export interface Table {
+  turn: number;
   table: { [key: number]: { [key: number]: number | null } };
   stone1: number[];
   stone2: number[];
@@ -6,7 +9,6 @@ export interface Table {
 }
 
 export interface State extends Table {
-  turn: number;
   directions: { [key: string]: { y: number; x: number } };
 }
 
