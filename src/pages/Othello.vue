@@ -4,7 +4,7 @@
       <h2>オセロページです</h2>
       <!-- データの受け渡し -->
       <div>
-        <p>ターン: {{ turn == 1 ? state.player.black : state.player.white }}</p>
+        <p>手番: {{ turn == 1 ? state.player.black : state.player.white }}</p>
       </div>
       <div>
         <p>黒石: {{ state.player.black}}</p>
@@ -16,22 +16,6 @@
       </div>
       <div v-else>
         <p>モード: {{ settingData.mode }}</p>
-        <p>
-          黒石(先手):
-          {{
-            settingData.name1 != ''
-              ? settingData.name1
-              : 'プレイヤー1(デフォルト)'
-          }}
-        </p>
-        <p>
-          白石(後手):
-          {{
-            settingData.name2 != ''
-              ? settingData.name2
-              : 'プレイヤー2(デフォルト)'
-          }}
-        </p>
       </div>
       <div>
         <p>{{ state.table }}</p>
