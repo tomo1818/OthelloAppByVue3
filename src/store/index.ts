@@ -7,6 +7,7 @@ export const key: InjectionKey<Store<Table>> = Symbol();
 
 export const store = createStore<Table>({
   state: {
+    turn: 1,
     table: {
       1: {
         1: null,
@@ -109,17 +110,17 @@ export const store = createStore<Table>({
   mutations: {
     putStone(
       state: Table,
-      payload: { turn: number; position: Position }
+      payload: {position: Position }
     ): void {
-      state.table[payload.position.y][payload.position.x] = payload.turn;
+      state.table[payload.position.y][payload.position.x] = state.turn;
     },
-    reduceStone(state: Table, payload: { turn: number }): void {
-      if (payload.turn == 1) state.stone1.pop();
+    reduceStone(state: Table): void {
+      if (state.turn == 1) state.stone1.pop();
       else state.stone2.pop();
     },
     checkAroundStone(
       state: Table,
-      payload: { turn: number; position: Position; allDirections: Direction[] }
+      payload: { position: Position; allDirections: Direction[] }
     ): void {
       state.aroundStone = state.aroundStone.filter(function (e) {
         return !(e.y == payload.position.y && e.x == payload.position.x);
@@ -142,7 +143,6 @@ export const store = createStore<Table>({
     returnStone(
       state: Table,
       payload: {
-        turn: number;
         position: Position;
         isReturn: boolean;
         direction: Direction;
@@ -151,8 +151,8 @@ export const store = createStore<Table>({
       if (payload.isReturn) {
         let row = Number(payload.position.y) + Number(payload.direction.y);
         let column = Number(payload.position.x) + Number(payload.direction.x);
-        while (state.table[row][column] != payload.turn) {
-          state.table[row][column] = payload.turn;
+        while (state.table[row][column] != state.turn) {
+          state.table[row][column] = state.turn;
           row += payload.direction.y;
           column += payload.direction.x;
         }
@@ -188,9 +188,9 @@ export const store = createStore<Table>({
     },
     showPlaceStoneCanBePut(
       state: Table,
-      payload: { turn: number; allDirections: Direction[] }
+      payload: { allDirections: Direction[] }
     ): void {
-      const opponent: number = payload.turn == 1 ? 0 : 1;
+      const opponent: number = state.turn == 1 ? 0 : 1;
       for (const value of state.aroundStone) {
         if (state.table[value.y][value.x] == 3)
           state.table[value.y][value.x] = null;
@@ -200,7 +200,7 @@ export const store = createStore<Table>({
           if (yCheck < 1 || xCheck < 1 || yCheck > 8 || xCheck > 8) continue;
           else if (state.table[yCheck][xCheck] == opponent) {
             store.commit('isPlaceable', {
-              turn: payload.turn,
+              turn: state.turn,
               opponent: opponent,
               yCheck: yCheck,
               xCheck: xCheck,
@@ -214,7 +214,6 @@ export const store = createStore<Table>({
     isPlaceable(
       state: Table,
       payload: {
-        turn: number;
         opponent: number;
         yCheck: number;
         xCheck: number;
@@ -228,7 +227,7 @@ export const store = createStore<Table>({
         payload.xCheck > 0 &&
         payload.yCheck > 0
       ) {
-        if (state.table[payload.yCheck][payload.xCheck] == payload.turn) {
+        if (state.table[payload.yCheck][payload.xCheck] == state.turn) {
           state.table[payload.value.y][payload.value.x] = 3;
           break;
         } else if (
@@ -239,6 +238,10 @@ export const store = createStore<Table>({
         payload.xCheck = payload.xCheck + payload.direction.x;
       }
     },
+    changeTurn(state: Table) {
+      state.turn = state.turn == 1 ? 0 : 1;
+      console.log(state.turn);
+    }
   },
 });
 
