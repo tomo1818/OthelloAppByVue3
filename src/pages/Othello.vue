@@ -83,7 +83,7 @@ import { computed, ref, onMounted, reactive, ComputedRef } from 'vue';
 import { useStore } from 'vuex';
 import { key } from '../store';
 import { useRoute } from 'vue-router';
-import { State, Position, Direction } from '@/types/type'; // 型定義を読み取る
+import { State, Coordinate, Directions } from '@/types/type'; // 型定義を読み取る
 
 export default {
   // eslint-disable-next-line @typescript-eslint/explicit-module-boundary-types
@@ -95,7 +95,7 @@ export default {
     const settingData = route.params;
 
     const turn: ComputedRef<number> = computed(() => store.state.turn);
-    const directions: { [key: string]: { y: number; x: number } } = {
+    const directions: Directions = {
       top: { y: -1, x: 0 },
       bottom: { y: 1, x: 0 },
       left: { y: 0, x: -1 },
@@ -115,19 +115,11 @@ export default {
     });
 
     // method
-    // turnの変更
-    // const changeTurn = (): void => {
-    //   state.turn = state.turn == 1 ? 0 : 1;
-    // };
-    // const changeTurn = (): void => {
-    //   store.commit('changeTurn');
-    //   console.log(state.turn);
-    // }
 
     // 隣の石をチェック
     const checkNextStone = (
-      position: Position,
-      direction: Direction
+      position: Coordinate,
+      direction: Coordinate
     ): boolean => {
       const row = Number(position.y) + Number(direction.y);
       const column = Number(position.x) + Number(direction.x);
@@ -149,7 +141,7 @@ export default {
     };
 
     // マス目外に出ているかチェック
-    const checkOutOfRange = (position: Position): boolean => {
+    const checkOutOfRange = (position: Coordinate): boolean => {
       if (
         position.y <= 8 &&
         position.y >= 1 &&
@@ -161,7 +153,7 @@ export default {
     };
 
     // 各方向でループ
-    const checkLine = (position: Position, direction: Direction): boolean => {
+    const checkLine = (position: Coordinate, direction: Coordinate): boolean => {
       let row = determinCheckStartPosition(Number(position.y), direction.y);
       let column = determinCheckStartPosition(Number(position.x), direction.x);
       if (checkOutOfRange({ y: row, x: column })) {
@@ -180,7 +172,7 @@ export default {
     };
 
     // 各方向でひっくり返せるか判定
-    const isReturn = (position: Position, direction: Direction): boolean => {
+    const isReturn = (position: Coordinate, direction: Coordinate): boolean => {
       if (checkNextStone(position, direction)) return false;
       return checkLine(position, direction);
     };
@@ -210,7 +202,7 @@ export default {
         store.commit('changeTurn');
       },
       // 石を置く
-      putStone: (position: Position) => {
+      putStone: (position: Coordinate) => {
         store.commit('putStone', { position: position });
         store.commit('reduceStone');
         store.commit("checkAroundStone", {
@@ -224,7 +216,7 @@ export default {
         });
       },
       // ひっくり返す
-      returnStone: (position: Position) => {
+      returnStone: (position: Coordinate) => {
         for (let key in directions)
           store.commit('returnStone', {
             position: position,

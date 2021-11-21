@@ -1,6 +1,6 @@
 import { InjectionKey } from 'vue';
 import { createStore, Store } from 'vuex';
-import { Table, Position, Direction } from '@/types/type';
+import { Table, Coordinate } from '@/types/type';
 
 // インジェクションキーを定義します
 export const key: InjectionKey<Store<Table>> = Symbol();
@@ -115,7 +115,7 @@ export const store = createStore<Table>({
   mutations: {
     putStone(
       state: Table,
-      payload: {position: Position }
+      payload: { position: Coordinate }
     ): void {
       state.table[payload.position.y][payload.position.x] = state.turn;
     },
@@ -125,7 +125,7 @@ export const store = createStore<Table>({
     },
     checkAroundStone(
       state: Table,
-      payload: { position: Position; allDirections: Direction[] }
+      payload: { position: Coordinate; allDirections: Coordinate[] }
     ): void {
       state.aroundStone = state.aroundStone.filter(function (e) {
         return !(e.y == payload.position.y && e.x == payload.position.x);
@@ -148,9 +148,9 @@ export const store = createStore<Table>({
     returnStone(
       state: Table,
       payload: {
-        position: Position;
+        position: Coordinate;
         isReturn: boolean;
-        direction: Direction;
+        direction: Coordinate;
       }
     ): void {
       if (payload.isReturn) {
@@ -193,7 +193,7 @@ export const store = createStore<Table>({
     },
     showPlaceStoneCanBePut(
       state: Table,
-      payload: { allDirections: Direction[] }
+      payload: { allDirections: Coordinate[] }
     ): void {
       const opponent: number = state.turn == 1 ? 0 : 1;
       for (const value of state.aroundStone) {
@@ -222,8 +222,8 @@ export const store = createStore<Table>({
         opponent: number;
         yCheck: number;
         xCheck: number;
-        value: Position;
-        direction: Direction;
+        value: Coordinate;
+        direction: Coordinate;
       }
     ): void {
       while (

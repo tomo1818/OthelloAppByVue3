@@ -22,12 +22,9 @@ export interface SettingData {
   firstMove: string,
 }
 
-export type Position = {
+export type Coordinate = {
   y: number;
   x: number;
-};
+}
 
-export type Direction = {
-  y: number;
-  x: number;
-};
+export type Directions = {[key: string]: {x: number, y: number}}
