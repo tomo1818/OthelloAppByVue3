@@ -8,7 +8,7 @@
           type="radio"
           value="vsPlayer"
           id="vsPlayer"
-          v-model="opponent"
+          v-model="setting.opponent"
           checked
           @change="changeOpponent"
         />
@@ -17,45 +17,86 @@
           type="radio"
           value="vsCpu"
           id="vsCpu"
-          v-model="opponent"
+          v-model="setting.opponent"
           @change="changeOpponent"
         />
         <label for="vsCpu">vs CPU</label>
       </div>
-      <span>Opponent: {{ opponent }}</span>
-      <div class="inputPlayerName mb-3" :class="{ displayNone: chosePlayer }">
+      <div class="inputPlayerName mb-3" :class="{ displayNone: setting.chosePlayer }">
         <h3 class="h3">プレイヤー名を入力してください</h3>
         <div class="mb-2">
-          <input v-model="playerName1" placeholder="Palyer name 1" />
-          <span>Player Name 1: {{ playerName1 }}</span>
+          <input v-model="setting.playerName1" placeholder="Palyer name 1" />
+          <span>Player Name 1: {{ setting.playerName1 }}</span>
         </div>
         <div class="mb-2">
-          <input v-model="playerName2" placeholder="Palyer name 2" />
-          <span>Player Name 2: {{ playerName2 }}</span>
+          <input v-model="setting.playerName2" placeholder="Palyer name 2" />
+          <span>Player Name 2: {{ setting.playerName2 }}</span>
         </div>
       </div>
-      <div class="choseCpuStrength mb-3" :class="{ displayNone: choseCpu }">
+      <div class="choseCpuStrength mb-3" :class="{ displayNone: setting.choseCpu }">
         <h3 class="h3">コンピュータの強さを選択してください</h3>
         <input
           type="radio"
           value="easy"
           id="easy"
-          v-model="difficulty"
+          v-model="setting.difficulty"
           checked
         />
         <label for="easy">Easy</label>
-        <input type="radio" value="normal" id="normal" v-model="difficulty" />
+        <input type="radio" value="normal" id="normal" v-model="setting.difficulty" />
         <label for="normal">Normal</label>
-        <input type="radio" value="hard" id="hard" v-model="difficulty" />
+        <input type="radio" value="hard" id="hard" v-model="setting.difficulty" />
         <label for="hard">Hard</label>
+      </div>
+      <div class="determinFirstMove mb-3" :class="{ displayNone: setting.chosePlayer }">
+        <h3 class="h3">先攻(黒石)のプレイヤーを決定します</h3>
+        <input
+          type="radio"
+          value="player1"
+          id="player1"
+          v-model="setting.firstMove"
+          @change="determineFirstMove"
+          checked
+        />
+        <label for="player1">Player1</label>
+        <input
+          type="radio"
+          value="player2"
+          id="player2"
+          v-model="setting.firstMove"
+          @change="determineFirstMove"
+        />
+        <label for="player2">Player2</label>
+        <p>first move: {{ setting.firstMove }}</p>
+      </div>
+      <div class="determinFirstMove mb-3" :class="{ displayNone: setting.choseCpu }">
+        <h3 class="h3">先攻(黒石)のプレイヤーを決定します</h3>
+        <input
+          type="radio"
+          value="player1"
+          id="player1"
+          v-model="setting.firstMove"
+          @change="determineFirstMove"
+          checked
+        />
+        <label for="player1">Player1</label>
+        <input
+          type="radio"
+          value="CPU"
+          id="player2"
+          v-model="setting.firstMove"
+          @change="determineFirstMove"
+        />
+        <label for="player2">CPU</label>
+        <p>first move: {{ setting.firstMove }}</p>
       </div>
       <!-- 良い書き方募集中です -->
       <router-link
-        v-if="opponent == 'vsCpu'"
+        v-if="setting.opponent == 'vsCpu'"
         class="btn btn-primary"
         :to="{
           name: 'Othello',
-          params: { mode: opponent, strength: difficulty },
+          params: { mode: setting.opponent, strength: setting.difficulty },
         }"
         >スタート</router-link
       >
@@ -65,7 +106,7 @@
         class="btn btn-primary"
         :to="{
           name: 'Othello',
-          params: { mode: opponent, name1: playerName1, name2: playerName2 },
+          params: { mode: setting.opponent, name1: setting.playerName1, name2: setting.playerName2, firstMove: setting.firstMove },
         }"
         >スタート</router-link
       >
@@ -74,30 +115,49 @@
 </template>
 
 <script lang="ts">
-import { defineComponent } from 'vue';
-export default defineComponent({
-  data() {
-    return {
+import { reactive } from 'vue';
+import { SettingData } from '@/types/type';
+import { useStore } from 'vuex';
+import { key } from '../store';
+
+export default {
+  // eslint-disable-next-line @typescript-eslint/explicit-module-boundary-types
+  setup() {
+    const store = useStore(key);
+    const setting = reactive<SettingData>({
       opponent: 'vsPlayer',
-      playerName1: '',
-      playerName2: '',
-      difficulty: '',
+      playerName1: 'player1',
+      playerName2: 'player2',
+      difficulty: 'easy',
       chosePlayer: false,
       choseCpu: true,
+      firstMove: 'player1',
+    })
+
+    const changeOpponent = (): void => {
+      if (setting.chosePlayer == true) {
+        setting.chosePlayer = false;
+        setting.choseCpu = true;
+      } else {
+        setting.chosePlayer = true;
+        setting.choseCpu = false;
+      }
+    }
+
+    const determineFirstMove = (): void => {
+      if (setting.opponent == 'vsPlayer') {
+        store.commit('determineFirstMove', {firstMove: setting.firstMove, name1: setting.playerName1, name2: setting.playerName2})
+      } else {
+        store.commit('determineFirstMove', {firstMove: setting.firstMove, name1: 'player1', name2: 'CPU'})
+      }
+    }
+    return {
+      setting,
+      changeOpponent,
+      determineFirstMove
     };
   },
-  methods: {
-    changeOpponent(): void {
-      if (this.chosePlayer == true) {
-        this.chosePlayer = false;
-        this.choseCpu = true;
-      } else {
-        this.chosePlayer = true;
-        this.choseCpu = false;
-      }
-    },
-  },
-});
+};
 </script>
 
 <style scoped>
