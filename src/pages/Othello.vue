@@ -20,6 +20,13 @@
       <div>
         <p>{{ state.table }}</p>
       </div>
+      <div>
+        <p v-for="(value, index) in state.tableData" v-bind:key="index">{{ value }}</p>
+        <!-- <p>{{ state.tableData }}</p> -->
+      </div>
+      <div>
+        <button class="btn btn-primary" @click="moveBack(), changeTurn(), showPlaceStoneCanBePut()">一手戻す</button>
+      </div>
       <div class="othelloContainer">
         <div class="stoneBox user1">
           <div class="box">
@@ -52,6 +59,7 @@
                   <button
                     class="full massBtn"
                     @click="
+                      addTableData(),
                       putStone({ y: rowNum, x: columnNum }),
                       returnStone({ y: rowNum, x: columnNum }),
                       changeTurn(),
@@ -112,9 +120,18 @@ export default {
       stone1: store.state.stone1,
       stone2: store.state.stone2,
       aroundStone: store.state.aroundStone,
+      tableData: store.state.tableData
     });
 
     // method
+
+    const addTableData = (): void => {
+      store.commit('addTableData')
+    }
+
+    const moveBack = (): void => {
+      store.commit('moveBack');
+    }
 
     // 隣の石をチェック
     const checkNextStone = (
@@ -198,17 +215,25 @@ export default {
       settingData,
       turn,
       state,
+      addTableData,
+      moveBack,
       changeTurn: () => {
         store.commit('changeTurn');
       },
       // 石を置く
       putStone: (position: Coordinate) => {
+        // console.log(state.table[3][4]);
+        // store.commit('addTableData')
+        console.log(state.tableData[0][3][4])
         store.commit('putStone', { position: position });
+        console.log(state.tableData[0][3][4])
         store.commit('reduceStone');
+        console.log(state.tableData[0][3][4])
         store.commit("checkAroundStone", {
           position: position,
           allDirections: Object.values(directions),
         });
+        console.log(state.tableData[0][3][4])
       },
       showPlaceStoneCanBePut: () => {
         store.commit("showPlaceStoneCanBePut", {

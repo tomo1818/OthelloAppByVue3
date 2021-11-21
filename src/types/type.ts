@@ -4,12 +4,14 @@ export interface State {
   stone1: number[];
   stone2: number[];
   aroundStone: { y: number; x: number }[];
+  tableData: { [key: number]: { [key: number]: number | null } }[];
 }
 
 export interface Table extends State {
   turn: number;
   player: {black: string, white: string};
-  mode: string
+  mode: string;
+  // tableData: { [key: number]: { [key: number]: number | null } }[];
 }
 
 export interface SettingData {

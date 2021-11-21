@@ -111,6 +111,9 @@ export const store = createStore<Table>({
       { y: 6, x: 5 },
       { y: 6, x: 6 },
     ],
+    tableData: [
+
+    ],
   },
   mutations: {
     putStone(
@@ -256,6 +259,18 @@ export const store = createStore<Table>({
       } else {
         store.commit('determineStoneColor', { firstMove: payload.firstMove, name1: 'player1', name2: 'CPU' })
       }
+    },
+    addTableData(state: Table): void {
+      // console.log(state.table[3][4]);
+      const beforeTable = Object.assign({}, state.table);
+      // console.log(beforeTable[3][4]);
+      state.tableData.push(beforeTable);
+      // console.log(state.tableData[0][3][4])
+    },
+    moveBack(state: Table): void {
+      const beforeTable = Object.assign({}, state.tableData[state.tableData.length - 1]);
+      state.table = beforeTable;
+      // state.tableData.pop();
     },
   },
 });
