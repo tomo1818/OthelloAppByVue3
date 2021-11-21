@@ -3,6 +3,9 @@
     <div>
       <h2>オセロページです</h2>
       <!-- データの受け渡し -->
+      <div>
+        <p>ターン: {{ turn }}</p>
+      </div>
       <div v-if="settingData.mode == 'vsCpu'">
         <p>モード: {{ settingData.mode }}</p>
         <p>難易度: {{ settingData.strength }}</p>
@@ -28,7 +31,6 @@
       </div>
       <div>
         <p>{{ state.table }}</p>
-        <button @click="showTable">show table at console</button>
       </div>
       <div class="othelloContainer">
         <div class="stoneBox user1">
@@ -62,11 +64,11 @@
                   <button
                     class="full massBtn"
                     @click="
-                      putStone(state.turn, { y: rowNum, x: columnNum }),
-                        returnStone({ y: rowNum, x: columnNum }),
-                        changeTurn(),
-                        showPlaceStoneCanBePut(),
-                        winLoseJudgment()
+                      putStone({ y: rowNum, x: columnNum }),
+                      returnStone({ y: rowNum, x: columnNum }),
+                      changeTurn(),
+                      showPlaceStoneCanBePut(),
+                      winLoseJudgment()
                     "
                   ><i v-if="value2 == 3" class="far fa-circle fa-xs"></i></button>
                 </div>
@@ -89,7 +91,7 @@
 </template>
 
 <script lang="ts">
-import { computed, ref, onMounted, reactive } from 'vue';
+import { computed, ref, onMounted, reactive, ComputedRef } from 'vue';
 import { useStore } from 'vuex';
 import { key } from '../store';
 import { useRoute } from 'vue-router';
@@ -104,30 +106,35 @@ export default {
     // settingPageからのデータ
     const settingData = route.params;
 
+    const turn: ComputedRef<number> = computed(() => store.state.turn);
+    const directions: { [key: string]: { y: number; x: number } } = {
+      top: { y: -1, x: 0 },
+      bottom: { y: 1, x: 0 },
+      left: { y: 0, x: -1 },
+      right: { y: 0, x: 1 },
+      topLeft: { y: -1, x: -1 },
+      topRight: { y: -1, x: 1 },
+      bottomLeft: { y: 1, x: -1 },
+      bottomRight: { y: 1, x: 1 },
+    }
+
     // optionAPIのdataと同様の扱い
     const state = reactive<State>({
-      turn: 1,
       table: store.state.table,
       stone1: store.state.stone1,
       stone2: store.state.stone2,
       aroundStone: store.state.aroundStone,
-      directions: {
-        top: { y: -1, x: 0 },
-        bottom: { y: 1, x: 0 },
-        left: { y: 0, x: -1 },
-        right: { y: 0, x: 1 },
-        topLeft: { y: -1, x: -1 },
-        topRight: { y: -1, x: 1 },
-        bottomLeft: { y: 1, x: -1 },
-        bottomRight: { y: 1, x: 1 },
-      },
     });
 
     // method
     // turnの変更
-    const changeTurn = (): void => {
-      state.turn = state.turn == 1 ? 0 : 1;
-    };
+    // const changeTurn = (): void => {
+    //   state.turn = state.turn == 1 ? 0 : 1;
+    // };
+    // const changeTurn = (): void => {
+    //   store.commit('changeTurn');
+    //   console.log(state.turn);
+    // }
 
     // 隣の石をチェック
     const checkNextStone = (
@@ -139,7 +146,7 @@ export default {
       if (
         checkOutOfRange({ y: row, x: column }) &&
         (state.table[row][column] === null ||
-          state.table[row][column] === state.turn || state.table[row][column] === 3)
+          state.table[row][column] === turn.value || state.table[row][column] === 3)
       )
         return true;
       return false;
@@ -161,7 +168,7 @@ export default {
         position.x <= 8 &&
         position.x >= 1
       )
-        return true;
+      return true;
       return false;
     };
 
@@ -174,7 +181,7 @@ export default {
           checkOutOfRange({ y: row, x: column }) &&
           state.table[row][column] !== null && state.table[row][column] !== 3
         ) {
-          if (state.table[row][column] === state.turn) {
+          if (state.table[row][column] === turn.value) {
             return true;
           }
           row += direction.y;
@@ -193,8 +200,7 @@ export default {
     onMounted(() => {
       console.log("mounted!");
       store.commit("showPlaceStoneCanBePut", {
-        turn: state.turn,
-        allDirections: Object.values(state.directions),
+        allDirections: Object.values(directions),
       });
     });
     // computed
@@ -210,36 +216,32 @@ export default {
 
     return {
       settingData,
+      turn,
       state,
-      changeTurn,
-      // storeからの受け渡し確認用
-      showTable: () => {
-        console.log(store.state.table);
+      changeTurn: () => {
+        store.commit('changeTurn');
       },
       // 石を置く
-      putStone: (turn: number, position: Position) => {
-        store.commit('putStone', { turn: turn, position: position });
-        store.commit('reduceStone', { turn: turn });
+      putStone: (position: Position) => {
+        store.commit('putStone', { position: position });
+        store.commit('reduceStone');
         store.commit("checkAroundStone", {
-          turn: turn,
           position: position,
-          allDirections: Object.values(state.directions),
+          allDirections: Object.values(directions),
         });
       },
       showPlaceStoneCanBePut: () => {
         store.commit("showPlaceStoneCanBePut", {
-          turn: state.turn,
-          allDirections: Object.values(state.directions),
+          allDirections: Object.values(directions),
         });
       },
       // ひっくり返す
       returnStone: (position: Position) => {
-        for (let key in state.directions)
+        for (let key in directions)
           store.commit('returnStone', {
-            turn: state.turn,
             position: position,
-            isReturn: isReturn(position, state.directions[key]),
-            direction: state.directions[key],
+            isReturn: isReturn(position, directions[key]),
+            direction: directions[key],
           });
       },
       winLoseJudgment: () => {

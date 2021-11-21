@@ -1,13 +1,12 @@
-export interface Table {
+export interface State {
   table: { [key: number]: { [key: number]: number | null } };
   stone1: number[];
   stone2: number[];
   aroundStone: { y: number; x: number }[];
 }
 
-export interface State extends Table {
+export interface Table extends State {
   turn: number;
-  directions: { [key: string]: { y: number; x: number } };
 }
 
 export type Position = {
