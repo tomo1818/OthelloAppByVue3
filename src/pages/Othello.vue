@@ -238,7 +238,9 @@ export default {
           });
       },
       winLoseJudgment: () => {
-        store.commit('winLoseJudgment');
+        if(store.state.aroundStone.length == 0){
+          store.commit('winLoseJudgment');
+        }
       },
       /*石をひっくり返すモーションをつける関数
         flip: function() => {
