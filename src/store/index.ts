@@ -265,10 +265,21 @@ export const store = createStore<Table>({
       state.tableData.push(beforeTable);
     },
     moveBack(state: Table): void {
-      const beforeTable = JSON.parse(JSON.stringify(state.tableData[state.tableData.length - 1]));
-      state.table = beforeTable;
-      state.tableData.pop();
+      if (state.tableData.length != 0) {
+        const beforeTable = JSON.parse(JSON.stringify(state.tableData[state.tableData.length - 1]));
+        state.table = beforeTable;
+        state.tableData.pop();
+        store.commit('changeTurn');
+      }
     },
+    resetGame(state: Table): void {
+      if (state.tableData.length != 0) {
+        const startTable = JSON.parse(JSON.stringify(state.tableData[0]));
+        state.table = startTable;
+        state.tableData = [];
+        state.turn = 1;
+      }
+    }
   },
   getters: {
     getTable(state) {

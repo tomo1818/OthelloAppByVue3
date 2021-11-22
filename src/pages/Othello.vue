@@ -20,12 +20,11 @@
       <div>
         <p>{{ state.table }}</p>
       </div>
-      <div>
-        <p v-for="(value, index) in state.tableData" v-bind:key="index">{{ value }}</p>
-        <!-- <p>{{ state.tableData }}</p> -->
+      <div class="mb-3">
+        <button class="btn btn-primary" @click="moveBack(), showPlaceStoneCanBePut()">一手戻す</button>
       </div>
-      <div>
-        <button class="btn btn-primary" @click="moveBack(), changeTurn(), showPlaceStoneCanBePut()">一手戻す</button>
+      <div class="mb-3">
+        <button class="btn btn-primary" @click="resetGame(), showPlaceStoneCanBePut()">リセットする</button>
       </div>
       <div class="othelloContainer">
         <div class="stoneBox user1">
@@ -131,7 +130,10 @@ export default {
 
     const moveBack = (): void => {
       store.commit('moveBack');
-      console.log(state.table[3][4]);
+    }
+
+    const resetGame = (): void => {
+      store.commit('resetGame');
     }
 
     // 隣の石をチェック
@@ -224,21 +226,18 @@ export default {
       state,
       addTableData,
       moveBack,
+      resetGame,
       changeTurn: () => {
         store.commit('changeTurn');
       },
       // 石を置く
       putStone: (position: Coordinate) => {
-        // console.log(state.table[3][4]);
         store.commit('putStone', { position: position });
-        // console.log(state.table[3][4]);
         store.commit('reduceStone');
-        // console.log(state.table[3][4]);
         store.commit("checkAroundStone", {
           position: position,
           allDirections: Object.values(directions),
         });
-        // console.log(state.table[3][4]);
       },
       showPlaceStoneCanBePut: () => {
         store.commit("showPlaceStoneCanBePut", {
