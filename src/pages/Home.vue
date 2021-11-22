@@ -1,14 +1,18 @@
 <template>
-  <div class="home back pt-10">
-  <div class="othelloTitle">
-    <h1 class="othello">Othello</h1>
+  <div class="backImg pt-10">
+  <div class="othelloTitleDiv">
+    <h1 class="othelloTitle">Othello</h1>
   </div>
   <div class="startBtn">
     <router-link
       class="p-3 btn hover:bg-gray-900 text-white rounded-full border-gray-100 hover:border-gray-900 shadow-xl"
-      to='Othello'
+      :to="{name:'Othello',
+      params: { mode: opponent, strength: difficulty },
+      params: { mode: opponent, name1: playerName1, name2: playerName2 }
+      }"
       >スタート</router-link>
      </div>
+
      <div class="settingBtn">
         <router-link class="p-3 hover:bg-gray-900 btn border-gray-100 hover:border-gray-900 text-white rounded-full shadow-xl" to="/setting"
       >ゲーム設定画面へ</router-link
@@ -19,19 +23,19 @@
 
 <style scoped>
 @import url('https://fonts.googleapis.com/css2?family=Libre+Baskerville:ital@1&family=M+PLUS+2:wght@700&display=swap');
-    .back {
+    .backImg {
       background-image:url("../assets/othello.png");
       width:100%;
       height:825px;
       padding-top:200px;
     }
 
-    .othelloTitle {
-        font-size:70px;
+    .othelloTitleDiv {
+        font-size:80px;
         margin-top:-100px;
     }
 
-    .othello {
+    .othelloTitle {
       color:rgb(0, 0, 0);
       font-family: 'Libre Baskerville', serif;
     }

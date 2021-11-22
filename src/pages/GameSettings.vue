@@ -90,15 +90,14 @@
         <label for="player2">CPU</label>
         <p>first move: {{ setting.firstMove }}</p>
       </div>
-      <!-- 良い書き方募集中です -->
       <router-link
       v-if="opponent == 'vsCpu'"
       class="p-3 btn hover:text-white text-red-500 hover:bg-red-500 rounded-full border-red-500 shadow-xl"
       :to="{
-        name:'Othello',
+        name:'Home',
         params: { mode: opponent, strength: difficulty },
       }"
-      >スタート</router-link
+      >戻る</router-link
     >
     <router-link
       disabled
@@ -108,7 +107,7 @@
         name:'Home',
         params: { mode: opponent, name1: playerName1, name2: playerName2 },
       }"
-      >スタート</router-link
+      >戻る</router-link
     >
     </div>
   </div>
