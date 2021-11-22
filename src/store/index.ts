@@ -111,6 +111,7 @@ export const store = createStore<Table>({
       { y: 6, x: 5 },
       { y: 6, x: 6 },
     ],
+    playerChoices: []
   },
   mutations: {
     putStone(
@@ -195,14 +196,14 @@ export const store = createStore<Table>({
       state: Table,
       payload: { allDirections: Coordinate[] }
     ): void {
+      state.playerChoices = [];
       const opponent: number = state.turn == 1 ? 0 : 1;
       for (const value of state.aroundStone) {
-        if (state.table[value.y][value.x] == 3)
-          state.table[value.y][value.x] = null;
+        if (state.table[value.y][value.x] == 3) state.table[value.y][value.x] = null;
         for (const direction of payload.allDirections) {
           const yCheck: number = value.y + direction.y;
           const xCheck: number = value.x + direction.x;
-          if (yCheck < 1 || xCheck < 1 || yCheck > 8 || xCheck > 8) continue;
+          if (yCheck < 1 || xCheck < 1 || yCheck > 8 || xCheck > 8 || state.table[value.y][value.x] == 3) continue;
           else if (state.table[yCheck][xCheck] == opponent) {
             store.commit('isPlaceable', {
               turn: state.turn,
@@ -232,13 +233,15 @@ export const store = createStore<Table>({
         payload.xCheck > 0 &&
         payload.yCheck > 0
       ) {
-        if (state.table[payload.yCheck][payload.xCheck] == state.turn) {
+        if (state.table[payload.yCheck][payload.xCheck] == state.turn ) {
           state.table[payload.value.y][payload.value.x] = 3;
+          state.playerChoices.push({y: payload.value.y, x: payload.value.x });
           break;
         } else if (
           state.table[payload.yCheck][payload.xCheck] != payload.opponent
-        )
+        ){
           break;
+        }
         payload.yCheck = payload.yCheck + payload.direction.y;
         payload.xCheck = payload.xCheck + payload.direction.x;
       }
