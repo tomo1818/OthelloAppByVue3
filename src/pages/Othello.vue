@@ -80,7 +80,7 @@
 </template>
 
 <script lang="ts">
-import { computed, ref, onMounted, reactive, ComputedRef, onUpdated, onBeforeUnmount, onBeforeMount } from 'vue';
+import { computed, ref, onMounted, reactive, ComputedRef, onUpdated} from 'vue';
 import { useStore } from 'vuex';
 import { key } from '../store';
 import { useRoute } from 'vue-router';
@@ -244,7 +244,7 @@ export default {
       winLoseJudgment: () => {
         store.commit('winLoseJudgment');
       },
-      /* 石をひっくり返すモーションをつける関数
+      /*石をひっくり返すモーションをつける関数
         flip: function() => {
         console.log(this.$refs.card);
         console.log(this.$refs.card.classList);
