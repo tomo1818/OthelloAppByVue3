@@ -1,7 +1,4 @@
 <template>
-  <div id="nav">
-    <router-link class="h1" to="/" exact>オセロゲーム</router-link>
-  </div>
   <router-view />
 </template>
 

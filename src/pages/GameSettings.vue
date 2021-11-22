@@ -1,7 +1,8 @@
 <template>
-  <div class="gemeSettings">
+  <div class="gemeSettings mt-10">
     <div class="container">
       <h2>ゲームセッティングページです</h2>
+
       <div class="choseOpponent mb-3">
         <h3 class="h3">対戦形式を選択してください</h3>
         <input
@@ -34,6 +35,9 @@
           <span>Player Name 2: {{ playerName2 }}</span>
         </div>
       </div>
+       <div>
+        <router-link class="btn btn-danger" to="/" exact>ホーム画面に戻る</router-link>
+      </div>
       <div class="choseCpuStrength mb-3" :class="{ displayNone: choseCpu }">
         <h3 class="h3">コンピュータの強さを選択してください</h3>
         <input
@@ -50,25 +54,7 @@
         <label for="hard">Hard</label>
       </div>
       <!-- 良い書き方募集中です -->
-      <router-link
-        v-if="opponent == 'vsCpu'"
-        class="btn btn-primary"
-        :to="{
-          name: 'Othello',
-          params: { mode: opponent, strength: difficulty },
-        }"
-        >スタート</router-link
-      >
-      <router-link
-        disabled
-        v-else
-        class="btn btn-primary"
-        :to="{
-          name: 'Othello',
-          params: { mode: opponent, name1: playerName1, name2: playerName2 },
-        }"
-        >スタート</router-link
-      >
+
     </div>
   </div>
 </template>

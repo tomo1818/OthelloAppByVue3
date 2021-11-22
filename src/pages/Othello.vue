@@ -1,7 +1,10 @@
 <template>
   <div class="othello">
     <div>
-      <h2>オセロページです</h2>
+      <h2>オセロページ</h2>
+      <div>
+        <router-link class="h1" to="/" exact>オセロゲーム</router-link>
+      </div>
       <!-- データの受け渡し -->
       <div>
         <p>ターン: {{ turn }}</p>
@@ -28,9 +31,6 @@
               : 'プレイヤー2(デフォルト)'
           }}
         </p>
-      </div>
-      <div>
-        <p>{{ state.table }}</p>
       </div>
       <div class="othelloContainer">
         <div class="stoneBox user1">
@@ -98,6 +98,7 @@ import { useRoute } from 'vue-router';
 import { State, Position, Direction } from '@/types/type'; // 型定義を読み取る
 
 export default {
+  name,
   // eslint-disable-next-line @typescript-eslint/explicit-module-boundary-types
   setup() {
     const store = useStore(key);
