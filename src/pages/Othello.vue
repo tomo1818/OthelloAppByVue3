@@ -20,7 +20,6 @@
       <div>
         <p>{{ state.table }}</p>
       </div>
-
       <div class="othelloContainer">
         <div class="stoneBox user1">
           <div class="box">
@@ -184,7 +183,7 @@ export default {
       allDirections: Object.values(directions)
       });
     };
-   
+    //おける石がない時スキップ
     const skipTurn = (): void =>{
       console.log("nothing");
       alert("You can not put stone, change turn");
