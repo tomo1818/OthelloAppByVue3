@@ -111,7 +111,10 @@ export const store = createStore<Table>({
       { y: 6, x: 5 },
       { y: 6, x: 6 },
     ],
-    playerChoices: []
+    playerChoices: [],
+    tableData: [
+
+    ],
   },
   mutations: {
     putStone(
@@ -197,23 +200,26 @@ export const store = createStore<Table>({
       payload: { allDirections: Coordinate[] }
     ): void {
       state.playerChoices = [];
-      const opponent: number = state.turn == 1 ? 0 : 1;
       for (const value of state.aroundStone) {
         if (state.table[value.y][value.x] == 3) state.table[value.y][value.x] = null;
-        for (const direction of payload.allDirections) {
-          const yCheck: number = value.y + direction.y;
-          const xCheck: number = value.x + direction.x;
-          if (yCheck < 1 || xCheck < 1 || yCheck > 8 || xCheck > 8 || state.table[value.y][value.x] == 3) continue;
-          else if (state.table[yCheck][xCheck] == opponent) {
-            store.commit('isPlaceable', {
-              turn: state.turn,
-              opponent: opponent,
-              yCheck: yCheck,
-              xCheck: xCheck,
-              value: value,
-              direction: direction,
-            });
-          }
+        store.commit("findOpponent", {allDirections: payload.allDirections, value: value})
+      }
+    },
+    findOpponent(state: Table, payload: {allDirections: Coordinate[], value: Coordinate } ): void{
+      const opponent: number = state.turn == 1 ? 0 : 1;
+      for (const direction of payload.allDirections) {
+        const yCheck: number = payload.value.y + direction.y;
+        const xCheck: number = payload.value.x + direction.x;
+        if (yCheck < 1 || xCheck < 1 || yCheck > 8 || xCheck > 8 || state.table[payload.value.y][payload.value.x] == 3) continue;
+        else if (state.table[yCheck][xCheck] == opponent) {
+          store.commit('isPlaceable', {
+            turn: state.turn,
+            opponent: opponent,
+            yCheck: yCheck,
+            xCheck: xCheck,
+            value: payload.value,
+            direction: direction,
+          });
         }
       }
     },
@@ -260,7 +266,32 @@ export const store = createStore<Table>({
         store.commit('determineStoneColor', { firstMove: payload.firstMove, name1: 'player1', name2: 'CPU' })
       }
     },
+    addTableData(state: Table): void {
+      const beforeTable = JSON.parse(JSON.stringify(state.table));
+      state.tableData.push(beforeTable);
+    },
+    moveBack(state: Table): void {
+      if (state.tableData.length != 0) {
+        const beforeTable = JSON.parse(JSON.stringify(state.tableData[state.tableData.length - 1]));
+        state.table = beforeTable;
+        state.tableData.pop();
+        store.commit('changeTurn');
+      }
+    },
+    resetGame(state: Table): void {
+      if (state.tableData.length != 0) {
+        const startTable = JSON.parse(JSON.stringify(state.tableData[0]));
+        state.table = startTable;
+        state.tableData = [];
+        state.turn = 1;
+      }
+    }
   },
+  getters: {
+    getTable(state) {
+      return state.table;
+    }
+  }
 });
 
 export default createStore({

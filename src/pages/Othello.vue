@@ -20,6 +20,12 @@
       <div>
         <p>{{ state.table }}</p>
       </div>
+      <div class="mb-3">
+        <button class="btn btn-primary" @click="moveBack(), showPlaceStoneCanBePut()">一手戻す</button>
+      </div>
+      <div class="mb-3">
+        <button class="btn btn-primary" @click="resetGame(), showPlaceStoneCanBePut()">リセットする</button>
+      </div>
       <div class="othelloContainer">
         <div class="stoneBox user1">
           <div class="box">
@@ -52,6 +58,7 @@
                   <button
                     class="full massBtn"
                     @click="
+                      addTableData(),
                       putStone({ y: rowNum, x: columnNum }),
                       returnStone({ y: rowNum, x: columnNum }),
                       changeTurn(),
@@ -108,7 +115,7 @@ export default {
     // optionAPIのdataと同様の扱い
     const state = reactive<State>({
       player: store.state.player,
-      table: store.state.table,
+      table: store.getters.getTable,
       stone1: store.state.stone1,
       stone2: store.state.stone2,
       aroundStone: store.state.aroundStone,
@@ -116,6 +123,18 @@ export default {
     });
 
     // method
+
+    const addTableData = (): void => {
+      store.commit('addTableData')
+    }
+
+    const moveBack = (): void => {
+      store.commit('moveBack');
+    }
+
+    const resetGame = (): void => {
+      store.commit('resetGame');
+    }
 
     // 隣の石をチェック
     const checkNextStone = (
@@ -192,6 +211,12 @@ export default {
 
     onMounted(() => {
       showPlaceStoneCanBePut();
+      store.watch(
+        (state, getters) => getters.getTable,
+        (newValue) => {
+          state.table = newValue
+        }
+      )
     });
 
     onUpdated(() => {
@@ -215,6 +240,9 @@ export default {
       settingData,
       turn,
       state,
+      addTableData,
+      moveBack,
+      resetGame,
       changeTurn: () => {
         store.commit('changeTurn');
       },

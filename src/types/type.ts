@@ -10,7 +10,8 @@ export interface State {
 export interface Table extends State {
   turn: number;
   player: {black: string, white: string};
-  mode: string
+  mode: string;
+  tableData: { [key: number]: { [key: number]: number | null } }[];
 }
 
 export interface SettingData {
