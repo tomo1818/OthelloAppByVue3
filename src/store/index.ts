@@ -261,18 +261,20 @@ export const store = createStore<Table>({
       }
     },
     addTableData(state: Table): void {
-      // console.log(state.table[3][4]);
-      const beforeTable = Object.assign({}, state.table);
-      // console.log(beforeTable[3][4]);
+      const beforeTable = JSON.parse(JSON.stringify(state.table));
       state.tableData.push(beforeTable);
-      // console.log(state.tableData[0][3][4])
     },
     moveBack(state: Table): void {
-      const beforeTable = Object.assign({}, state.tableData[state.tableData.length - 1]);
+      const beforeTable = JSON.parse(JSON.stringify(state.tableData[state.tableData.length - 1]));
       state.table = beforeTable;
-      // state.tableData.pop();
+      state.tableData.pop();
     },
   },
+  getters: {
+    getTable(state) {
+      return state.table;
+    }
+  }
 });
 
 export default createStore({

@@ -116,7 +116,7 @@ export default {
     // optionAPIのdataと同様の扱い
     const state = reactive<State>({
       player: store.state.player,
-      table: store.state.table,
+      table: store.getters.getTable,
       stone1: store.state.stone1,
       stone2: store.state.stone2,
       aroundStone: store.state.aroundStone,
@@ -131,6 +131,7 @@ export default {
 
     const moveBack = (): void => {
       store.commit('moveBack');
+      console.log(state.table[3][4]);
     }
 
     // 隣の石をチェック
@@ -199,6 +200,12 @@ export default {
       store.commit("showPlaceStoneCanBePut", {
         allDirections: Object.values(directions),
       });
+      store.watch(
+        (state, getters) => getters.getTable,
+        (newValue) => {
+          state.table = newValue
+        }
+      )
     });
     // computed
     // const stone1Num = computed((): number => state.stone1.length)
@@ -223,17 +230,15 @@ export default {
       // 石を置く
       putStone: (position: Coordinate) => {
         // console.log(state.table[3][4]);
-        // store.commit('addTableData')
-        console.log(state.tableData[0][3][4])
         store.commit('putStone', { position: position });
-        console.log(state.tableData[0][3][4])
+        // console.log(state.table[3][4]);
         store.commit('reduceStone');
-        console.log(state.tableData[0][3][4])
+        // console.log(state.table[3][4]);
         store.commit("checkAroundStone", {
           position: position,
           allDirections: Object.values(directions),
         });
-        console.log(state.tableData[0][3][4])
+        // console.log(state.table[3][4]);
       },
       showPlaceStoneCanBePut: () => {
         store.commit("showPlaceStoneCanBePut", {
