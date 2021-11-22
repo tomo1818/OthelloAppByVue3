@@ -183,22 +183,19 @@ export default {
       allDirections: Object.values(directions)
       });
     };
-    //おける石がない時スキップ
+    //おける石がなくなっったらスキップ
     const skipTurn = (): void =>{
-      console.log("nothing");
-      alert("You can not put stone, change turn");
+      alert("You can't put stone, skip your turn");
       store.commit("changeTurn");
       showPlaceStoneCanBePut();
     };
 
     onMounted(() => {
-      console.log("mounted!");
       showPlaceStoneCanBePut();
     });
 
     onUpdated(() => {
-      console.log("updated");
-      console.log(store.state.playerChoices)
+      //console.log(store.state.playerChoices)
       if(store.state.playerChoices.length == 0 && store.state.aroundStone.length != 0){
         skipTurn()
       }
