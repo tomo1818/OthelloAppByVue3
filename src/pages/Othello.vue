@@ -118,8 +118,7 @@ export default {
       table: store.getters.getTable,
       stone1: store.state.stone1,
       stone2: store.state.stone2,
-      aroundStone: store.state.aroundStone,
-      tableData: store.state.tableData
+      aroundStone: store.state.aroundStone
     });
 
     // method
