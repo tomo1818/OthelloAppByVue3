@@ -36,7 +36,6 @@
         </div>
       </div>
        <div>
-        <router-link class="btn btn-danger" to="/" exact>ホーム画面に戻る</router-link>
       </div>
       <div class="choseCpuStrength mb-3" :class="{ displayNone: choseCpu }">
         <h3 class="h3">コンピュータの強さを選択してください</h3>
@@ -53,8 +52,27 @@
         <input type="radio" value="hard" id="hard" v-model="difficulty" />
         <label for="hard">Hard</label>
       </div>
-      <!-- 良い書き方募集中です -->
-
+        <!-- <router-link class="btn btn-danger" to="/">ホーム画面に戻る</router-link> -->
+        <!-- <router-link class="btn btn-danger"  to='/'>ホーム画面に戻る</router-link> -->
+      <router-link
+      v-if="opponent == 'vsCpu'"
+      class="p-3 btn hover:text-white text-red-500 hover:bg-red-500 rounded-full border-red-500 shadow-xl"
+      :to="{
+        name:'Othello',
+        params: { mode: opponent, strength: difficulty },
+      }"
+      >スタート</router-link
+    >
+    <router-link
+      disabled
+      v-else
+      class="p-3 btn hover:text-white text-red-500 hover:bg-red-500 rounded-full border-red-500 shadow-xl"
+      :to="{
+        name:'Home',
+        params: { mode: opponent, name1: playerName1, name2: playerName2 },
+      }"
+      >スタート</router-link
+    >
     </div>
   </div>
 </template>
