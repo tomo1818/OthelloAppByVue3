@@ -1,23 +1,19 @@
 <template>
   <div class="home back pt-10">
-
   <div class="othelloTitle">
     <h1 class="othello">Othello</h1>
   </div>
-
   <div class="startBtn">
     <router-link
       class="p-3 btn hover:bg-gray-900 text-white rounded-full border-gray-100 hover:border-gray-900 shadow-xl"
       to='Othello'
       >スタート</router-link>
      </div>
-
      <div class="settingBtn">
         <router-link class="p-3 hover:bg-gray-900 btn border-gray-100 hover:border-gray-900 text-white rounded-full shadow-xl" to="/setting"
       >ゲーム設定画面へ</router-link
     >
   </div>
-
   </div>
 </template>
 
