@@ -86,7 +86,7 @@
 </template>
 
 <script lang="ts">
-import { computed, ref, onMounted, reactive, ComputedRef } from 'vue';
+import { computed, ref, onMounted, reactive, ComputedRef, onUpdated} from 'vue';
 import { useStore } from 'vuex';
 import { key } from '../store';
 import { useRoute } from 'vue-router';
@@ -118,7 +118,8 @@ export default {
       table: store.getters.getTable,
       stone1: store.state.stone1,
       stone2: store.state.stone2,
-      aroundStone: store.state.aroundStone
+      aroundStone: store.state.aroundStone,
+      playerChoices: store.state.playerChoices
     });
 
     // method
@@ -195,12 +196,21 @@ export default {
       if (checkNextStone(position, direction)) return false;
       return checkLine(position, direction);
     };
+    //石を置ける場所を探す
+    const showPlaceStoneCanBePut = (): void =>{
+      store.commit("showPlaceStoneCanBePut", {
+      allDirections: Object.values(directions)
+      });
+    };
+    //おける石がなくなっったらスキップ
+    const skipTurn = (): void =>{
+      alert("You can't put stone, skip your turn");
+      store.commit("changeTurn");
+      showPlaceStoneCanBePut();
+    };
 
     onMounted(() => {
-      console.log("mounted!");
-      store.commit("showPlaceStoneCanBePut", {
-        allDirections: Object.values(directions),
-      });
+      showPlaceStoneCanBePut();
       store.watch(
         (state, getters) => getters.getTable,
         (newValue) => {
@@ -208,6 +218,13 @@ export default {
         }
       )
     });
+
+    onUpdated(() => {
+      //console.log(store.state.playerChoices)
+      if(store.state.playerChoices.length == 0 && store.state.aroundStone.length != 0){
+        skipTurn()
+      }
+    })
     // computed
     // const stone1Num = computed((): number => state.stone1.length)
     // const stone2Num = computed((): number => state.stone2.length)
@@ -238,11 +255,7 @@ export default {
           allDirections: Object.values(directions),
         });
       },
-      showPlaceStoneCanBePut: () => {
-        store.commit("showPlaceStoneCanBePut", {
-          allDirections: Object.values(directions),
-        });
-      },
+      showPlaceStoneCanBePut,
       // ひっくり返す
       returnStone: (position: Coordinate) => {
         for (let key in directions)
@@ -253,7 +266,9 @@ export default {
           });
       },
       winLoseJudgment: () => {
-        store.commit('winLoseJudgment');
+        if(store.state.aroundStone.length == 0){
+          store.commit('winLoseJudgment');
+        }
       },
       /*石をひっくり返すモーションをつける関数
         flip: function() => {
