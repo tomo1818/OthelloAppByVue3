@@ -21,6 +21,12 @@ export interface SettingData {
   chosePlayer: boolean,
   choseCpu: boolean,
   firstMove: string,
+  colorTheme: string,
+}
+
+export type ColorOption = {
+  text: string;
+  value: string;
 }
 
 export type Coordinate = {
