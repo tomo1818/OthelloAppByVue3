@@ -3,7 +3,8 @@ export interface State {
   table: { [key: number]: { [key: number]: number | null } };
   stone1: number[];
   stone2: number[];
-  aroundStone: Coordinate[];
+  aroundStone: { y: number, x: number }[];
+  playerChoices: { y: number, x: number }[];
   placeableStones: { position: Coordinate, returnNum: number}[]
 }
 

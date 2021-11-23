@@ -120,6 +120,7 @@ export const store = createStore<Table>({
     aroundStoneData: [
 
     ],
+    playerChoices: [],
     tableData: [
 
     ],
@@ -223,24 +224,27 @@ export const store = createStore<Table>({
       state: Table,
       payload: { allDirections: Coordinate[] }
     ): void {
-      const opponent: number = state.turn == 1 ? 0 : 1;
+      state.playerChoices = [];
       for (const value of state.aroundStone) {
-        if (state.table[value.y][value.x] == 3)
-          state.table[value.y][value.x] = null;
-        for (const direction of payload.allDirections) {
-          const yCheck: number = value.y + direction.y;
-          const xCheck: number = value.x + direction.x;
-          if (yCheck < 1 || xCheck < 1 || yCheck > 8 || xCheck > 8) continue;
-          else if (state.table[yCheck][xCheck] == opponent) {
-            store.commit('isPlaceable', {
-              turn: state.turn,
-              opponent: opponent,
-              yCheck: yCheck,
-              xCheck: xCheck,
-              value: value,
-              direction: direction,
-            });
-          }
+        if (state.table[value.y][value.x] == 3) state.table[value.y][value.x] = null;
+        store.commit("findOpponent", {allDirections: payload.allDirections, value: value})
+      }
+    },
+    findOpponent(state: Table, payload: {allDirections: Coordinate[], value: Coordinate } ): void{
+      const opponent: number = state.turn == 1 ? 0 : 1;
+      for (const direction of payload.allDirections) {
+        const yCheck: number = payload.value.y + direction.y;
+        const xCheck: number = payload.value.x + direction.x;
+        if (yCheck < 1 || xCheck < 1 || yCheck > 8 || xCheck > 8 || state.table[payload.value.y][payload.value.x] == 3) continue;
+        else if (state.table[yCheck][xCheck] == opponent) {
+          store.commit('isPlaceable', {
+            turn: state.turn,
+            opponent: opponent,
+            yCheck: yCheck,
+            xCheck: xCheck,
+            value: payload.value,
+            direction: direction,
+          });
         }
       }
       state.placeableStones = state.placeableStones.filter((element, index, self) => {
@@ -268,8 +272,13 @@ export const store = createStore<Table>({
         payload.yCheck > 0
       ) {
         if (state.table[payload.yCheck][payload.xCheck] == state.turn) {
-          state.placeableStones.push({ position: payload.value, returnNum: countNum })
           state.table[payload.value.y][payload.value.x] = 3;
+          state.placeableStones.push({ position: payload.value, returnNum: countNum })
+          state.playerChoices.push({y: payload.value.y, x: payload.value.x });
+          break;
+        } else if (
+          state.table[payload.yCheck][payload.xCheck] != payload.opponent
+        ) {
           break;
         }
         countNum += 1;
