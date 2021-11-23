@@ -4,8 +4,7 @@ export interface State {
   stone1: number[];
   stone2: number[];
   aroundStone: { y: number, x: number }[];
-  playerChoices: { y: number, x: number }[];
-  placeableStones: { position: Coordinate, returnNum: number}[]
+  playerChoices: { position: Coordinate, returnNum: number }[];
 }
 
 export interface Table extends State {

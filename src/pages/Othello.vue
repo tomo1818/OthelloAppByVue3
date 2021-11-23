@@ -21,7 +21,7 @@
         <p>{{ state.table }}</p>
       </div>
       <div>
-        <p>{{ state.placeableStones }}</p>
+        <p>{{ state.playerChoices }}</p>
       </div>
       <div class="mb-3">
         <button class="btn btn-primary" @click="moveBack(), showPlaceStoneCanBePut()">一手戻す</button>
@@ -122,7 +122,6 @@ export default {
       stone1: store.state.stone1,
       stone2: store.state.stone2,
       aroundStone: store.state.aroundStone,
-      placeableStones: store.state.placeableStones,
       playerChoices: store.state.playerChoices
     });
 
@@ -216,10 +215,10 @@ export default {
     onMounted(() => {
       showPlaceStoneCanBePut();
       store.watch(
-        (state, getters) => [getters.getTable, getters.getPlaceableStones],
+        (state, getters) => [getters.getTable, getters.getPlayerChoices],
         (newValue) => {
           state.table = newValue[0];
-          state.placeableStones = newValue[1];
+          state.playerChoices = newValue[1];
         }
       )
     });

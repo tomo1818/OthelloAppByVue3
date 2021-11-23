@@ -124,9 +124,6 @@ export const store = createStore<Table>({
     tableData: [
 
     ],
-    placeableStones: [
-
-    ]
   },
   mutations: {
     putStone(
@@ -224,11 +221,17 @@ export const store = createStore<Table>({
       state: Table,
       payload: { allDirections: Coordinate[] }
     ): void {
-      state.playerChoices = [];
+      // state.playerChoices = [];
       for (const value of state.aroundStone) {
         if (state.table[value.y][value.x] == 3) state.table[value.y][value.x] = null;
         store.commit("findOpponent", {allDirections: payload.allDirections, value: value})
       }
+      state.playerChoices = state.playerChoices.filter((element, index, self) => {
+        const positionList = self.map(element => element.position);
+        if (positionList.indexOf(element.position) === index) {
+          return element;
+        }
+      });
     },
     findOpponent(state: Table, payload: {allDirections: Coordinate[], value: Coordinate } ): void{
       const opponent: number = state.turn == 1 ? 0 : 1;
@@ -247,12 +250,6 @@ export const store = createStore<Table>({
           });
         }
       }
-      state.placeableStones = state.placeableStones.filter((element, index, self) => {
-        const positionList = self.map(element => element.position);
-        if (positionList.indexOf(element.position) === index) {
-          return element;
-        }
-      })
     },
     isPlaceable(
       state: Table,
@@ -273,8 +270,7 @@ export const store = createStore<Table>({
       ) {
         if (state.table[payload.yCheck][payload.xCheck] == state.turn) {
           state.table[payload.value.y][payload.value.x] = 3;
-          state.placeableStones.push({ position: payload.value, returnNum: countNum })
-          state.playerChoices.push({y: payload.value.y, x: payload.value.x });
+          state.playerChoices.push({ position: payload.value, returnNum: countNum });
           break;
         } else if (
           state.table[payload.yCheck][payload.xCheck] != payload.opponent
@@ -288,7 +284,7 @@ export const store = createStore<Table>({
     },
     changeTurn(state: Table) {
       state.turn = state.turn == 1 ? 0 : 1;
-      state.placeableStones = [];
+      state.playerChoices = [];
     },
     determineStoneColor(state: Table, payload: { firstMove: string, name1: string, name2: string }): void {
       state.player.black.name = payload.firstMove == 'player1' ? payload.name1 : payload.name2;
@@ -333,15 +329,15 @@ export const store = createStore<Table>({
         state.tableData = [];
         state.turn = 1;
       }
-      state.placeableStones = [];
+      state.playerChoices = [];
     }
   },
   getters: {
     getTable(state) {
       return state.table;
     },
-    getPlaceableStones(state) {
-      return state.placeableStones;
+    getPlayerChoices(state) {
+      return state.playerChoices;
     }
   }
 });
