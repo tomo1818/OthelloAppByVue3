@@ -5,7 +5,7 @@
   </div>
   <div class="startBtn">
     <router-link
-      class="p-3 btn hover:bg-gray-900 text-white rounded-full border-gray-100 hover:border-gray-900 shadow-xl"
+      class="p-3 btn hover:bg-gray-100 hover:bg-opacity-25 text-white rounded-full border-gray-100 hover:border-gray-100 shadow-3xl"
       :to="{name:'Othello',
       params: { mode: opponent, strength: difficulty },
       params: { mode: opponent, name1: playerName1, name2: playerName2 }
@@ -13,9 +13,9 @@
       >スタート</router-link>
      </div>
 
-     <div class="settingBtn">
-        <router-link class="p-3 hover:bg-gray-900 btn border-gray-100 hover:border-gray-900 text-white rounded-full shadow-xl" to="/setting"
-      >ゲーム設定画面へ</router-link
+     <div class="settingBtn mt-5">
+        <router-link class="p-3 hover:bg-gray-100 hover:bg-opacity-25 btn border-gray-100 hover:border-gray-100 text-white rounded-full shadow-3xl" to="/setting"
+      >ゲーム設定</router-link
     >
   </div>
   </div>
@@ -31,8 +31,8 @@
     }
 
     .othelloTitleDiv {
-        font-size:80px;
-        margin-top:-100px;
+      font-size:80px;
+      margin-top:-100px;
     }
 
     .othelloTitle {
@@ -41,13 +41,11 @@
     }
 
     .settingBtn {
-      margin-left: 370px;
-      margin-top:-70px;
+      margin-top: 50px;
     }
 
     .startBtn {
-      margin-right: 340px;
-      margin-top: 100px;
+      margin-top: 150px;
     }
 </style>
 
