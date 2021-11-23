@@ -9,8 +9,14 @@ export const store = createStore<Table>({
   state: {
     turn: 1,
     player: {
-      black: 'player1',
-      white: 'player2'
+      black: {
+        name: 'player1',
+        stoneNum: 2,
+      },
+      white: {
+        name: 'player2',
+        stoneNum: 2,
+      }
     },
     mode: 'vsPlayer',
     table: {
@@ -121,6 +127,8 @@ export const store = createStore<Table>({
       payload: { position: Coordinate }
     ): void {
       state.table[payload.position.y][payload.position.x] = state.turn;
+      if (state.turn === 1) state.player.black.stoneNum += 1;
+      else state.player.white.stoneNum += 1;
     },
     reduceStone(state: Table): void {
       if (state.turn == 1) state.stone1.pop();
@@ -161,9 +169,19 @@ export const store = createStore<Table>({
         let column = Number(payload.position.x) + Number(payload.direction.x);
         while (state.table[row][column] != state.turn) {
           state.table[row][column] = state.turn;
+          store.commit("addStoneNum");
           row += payload.direction.y;
           column += payload.direction.x;
         }
+      }
+    },
+    addStoneNum(state: Table): void {
+      if (state.turn === 1) {
+        state.player.black.stoneNum += 1;
+        state.player.white.stoneNum -= 1;
+      } else {
+        state.player.black.stoneNum -= 1;
+        state.player.white.stoneNum += 1;
       }
     },
     winLoseJudgment(state: Table): void {
@@ -250,8 +268,8 @@ export const store = createStore<Table>({
       state.turn = state.turn == 1 ? 0 : 1;
     },
     determineStoneColor(state: Table, payload: { firstMove: string, name1: string, name2: string }): void {
-      state.player.black = payload.firstMove == 'player1' ? payload.name1 : payload.name2;
-      state.player.white = payload.firstMove != 'player1' ? payload.name1 : payload.name2;
+      state.player.black.name = payload.firstMove == 'player1' ? payload.name1 : payload.name2;
+      state.player.white.name = payload.firstMove != 'player1' ? payload.name1 : payload.name2;
     },
     determineFirstMove(state: Table, payload: {firstMove: string, name1: string, name2: string}): void {
       if (state.mode == "vsPlayer") {
@@ -262,20 +280,26 @@ export const store = createStore<Table>({
     },
     addTableData(state: Table): void {
       const beforeTable = JSON.parse(JSON.stringify(state.table));
-      state.tableData.push(beforeTable);
+      const beforeStoneNum = JSON.parse(JSON.stringify({ black: state.player.black.stoneNum, white: state.player.white.stoneNum}));
+      state.tableData.push({table: beforeTable, stoneNum: beforeStoneNum});
     },
     moveBack(state: Table): void {
       if (state.tableData.length != 0) {
-        const beforeTable = JSON.parse(JSON.stringify(state.tableData[state.tableData.length - 1]));
+        const beforeTable = JSON.parse(JSON.stringify(state.tableData[state.tableData.length - 1].table));
+        const beforeStoneNum = JSON.parse(JSON.stringify(state.tableData[state.tableData.length - 1].stoneNum));
         state.table = beforeTable;
+        state.player.black.stoneNum = beforeStoneNum.black;
+        state.player.white.stoneNum = beforeStoneNum.white;
         state.tableData.pop();
         store.commit('changeTurn');
       }
     },
     resetGame(state: Table): void {
       if (state.tableData.length != 0) {
-        const startTable = JSON.parse(JSON.stringify(state.tableData[0]));
+        const startTable = JSON.parse(JSON.stringify(state.tableData[0].table));
         state.table = startTable;
+        state.player.black.stoneNum = 2;
+        state.player.white.stoneNum = 2;
         state.tableData = [];
         state.turn = 1;
       }

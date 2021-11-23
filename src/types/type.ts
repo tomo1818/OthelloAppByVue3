@@ -1,5 +1,5 @@
 export interface State {
-  player: { black: string, white: string };
+  player: {[key: string]: { name: string, stoneNum: number }}
   table: { [key: number]: { [key: number]: number | null } };
   stone1: number[];
   stone2: number[];
@@ -8,9 +8,12 @@ export interface State {
 
 export interface Table extends State {
   turn: number;
-  player: {black: string, white: string};
   mode: string;
-  tableData: { [key: number]: { [key: number]: number | null } }[];
+  tableData: { table: { [key: number]: { [key: number]: number | null } }, stoneNum: { [key: string]: number } } [];
+}
+
+export interface TableData {
+  tableData: { table: { [key: number]: { [key: number]: number | null } },stoneNum: {[key: string]: number}}[]
 }
 
 export interface SettingData {

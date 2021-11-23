@@ -4,11 +4,11 @@
       <h2>オセロページです</h2>
       <!-- データの受け渡し -->
       <div>
-        <p>手番: {{ turn == 1 ? state.player.black : state.player.white }}</p>
+        <p>手番: {{ turn == 1 ? state.player.black.name : state.player.white.name }}</p>
       </div>
       <div>
-        <p>黒石: {{ state.player.black}}</p>
-        <p>白石: {{ state.player.white}}</p>
+        <p>黒石: {{ state.player.black.name}}, 石の数: {{ state.player.black.stoneNum}}</p>
+        <p>白石: {{ state.player.white.name}}, 石の数: {{ state.player.white.stoneNum}}</p>
       </div>
       <div v-if="settingData.mode == 'vsCpu'">
         <p>モード: {{ settingData.mode }}</p>
