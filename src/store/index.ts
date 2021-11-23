@@ -117,6 +117,9 @@ export const store = createStore<Table>({
       { y: 6, x: 5 },
       { y: 6, x: 6 },
     ],
+    aroundStoneData: [
+
+    ],
     tableData: [
 
     ],
@@ -141,6 +144,7 @@ export const store = createStore<Table>({
       state: Table,
       payload: { position: Coordinate; allDirections: Coordinate[] }
     ): void {
+      if (state.aroundStoneData.length === 0) state.aroundStoneData.push(JSON.parse((JSON.stringify(state.aroundStone))));
       state.aroundStone = state.aroundStone.filter(function (e) {
         return !(e.y == payload.position.y && e.x == payload.position.x);
       });
@@ -239,6 +243,12 @@ export const store = createStore<Table>({
           }
         }
       }
+      state.placeableStones = state.placeableStones.filter((element, index, self) => {
+        const positionList = self.map(element => element.position);
+        if (positionList.indexOf(element.position) === index) {
+          return element;
+        }
+      })
     },
     isPlaceable(
       state: Table,
@@ -258,12 +268,8 @@ export const store = createStore<Table>({
         payload.yCheck > 0
       ) {
         if (state.table[payload.yCheck][payload.xCheck] == state.turn) {
+          state.placeableStones.push({ position: payload.value, returnNum: countNum })
           state.table[payload.value.y][payload.value.x] = 3;
-          state.placeableStones.push({position: payload.value, returnNum: countNum })
-          break;
-        } else if (
-          state.table[payload.yCheck][payload.xCheck] != payload.opponent
-        ) {
           break;
         }
         countNum += 1;
@@ -289,28 +295,36 @@ export const store = createStore<Table>({
     addTableData(state: Table): void {
       const beforeTable = JSON.parse(JSON.stringify(state.table));
       const beforeStoneNum = JSON.parse(JSON.stringify({ black: state.player.black.stoneNum, white: state.player.white.stoneNum}));
+      const beforeAroundStone = JSON.parse(JSON.stringify(state.aroundStone));
       state.tableData.push({table: beforeTable, stoneNum: beforeStoneNum});
+      state.aroundStoneData.push(beforeAroundStone);
     },
     moveBack(state: Table): void {
       if (state.tableData.length != 0) {
         const beforeTable = JSON.parse(JSON.stringify(state.tableData[state.tableData.length - 1].table));
         const beforeStoneNum = JSON.parse(JSON.stringify(state.tableData[state.tableData.length - 1].stoneNum));
+        const beforeAroundStone = JSON.parse(JSON.stringify(state.aroundStoneData[state.aroundStoneData.length - 1]));
         state.table = beforeTable;
         state.player.black.stoneNum = beforeStoneNum.black;
         state.player.white.stoneNum = beforeStoneNum.white;
+        state.aroundStone = beforeAroundStone;
         state.tableData.pop();
+        state.aroundStoneData.pop();
         store.commit('changeTurn');
       }
     },
     resetGame(state: Table): void {
       if (state.tableData.length != 0) {
         const startTable = JSON.parse(JSON.stringify(state.tableData[0].table));
+        const startAroundStone = JSON.parse(JSON.stringify(state.aroundStoneData[0]));
         state.table = startTable;
+        state.aroundStone = startAroundStone;
         state.player.black.stoneNum = 2;
         state.player.white.stoneNum = 2;
         state.tableData = [];
         state.turn = 1;
       }
+      state.placeableStones = [];
     }
   },
   getters: {

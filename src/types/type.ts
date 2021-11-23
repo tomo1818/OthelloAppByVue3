@@ -11,6 +11,7 @@ export interface Table extends State {
   turn: number;
   mode: string;
   tableData: { table: { [key: number]: { [key: number]: number | null } }, stoneNum: { [key: string]: number } } [];
+  aroundStoneData: Coordinate[][];
 }
 
 export interface SettingData {
