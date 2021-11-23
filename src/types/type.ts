@@ -12,10 +12,6 @@ export interface Table extends State {
   tableData: { table: { [key: number]: { [key: number]: number | null } }, stoneNum: { [key: string]: number } } [];
 }
 
-export interface TableData {
-  tableData: { table: { [key: number]: { [key: number]: number | null } },stoneNum: {[key: string]: number}}[]
-}
-
 export interface SettingData {
   opponent: string,
   playerName1: string,
