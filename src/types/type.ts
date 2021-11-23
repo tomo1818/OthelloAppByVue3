@@ -3,7 +3,8 @@ export interface State {
   table: { [key: number]: { [key: number]: number | null } };
   stone1: number[];
   stone2: number[];
-  aroundStone: { y: number; x: number }[];
+  aroundStone: Coordinate[];
+  placeableStones: { position: Coordinate, returnNum: number}[]
 }
 
 export interface Table extends State {
@@ -27,4 +28,4 @@ export type Coordinate = {
   x: number;
 }
 
-export type Directions = {[key: string]: {x: number, y: number}}
+export type Directions = {[key: string]: Coordinate}

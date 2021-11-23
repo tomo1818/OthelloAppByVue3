@@ -20,6 +20,9 @@
       <div>
         <p>{{ state.table }}</p>
       </div>
+      <div>
+        <p>{{ state.placeableStones }}</p>
+      </div>
       <div class="mb-3">
         <button class="btn btn-primary" @click="moveBack(), showPlaceStoneCanBePut()">一手戻す</button>
       </div>
@@ -118,7 +121,8 @@ export default {
       table: store.getters.getTable,
       stone1: store.state.stone1,
       stone2: store.state.stone2,
-      aroundStone: store.state.aroundStone
+      aroundStone: store.state.aroundStone,
+      placeableStones: store.state.placeableStones
     });
 
     // method
@@ -202,9 +206,10 @@ export default {
         allDirections: Object.values(directions),
       });
       store.watch(
-        (state, getters) => getters.getTable,
+        (state, getters) => [getters.getTable, getters.getPlaceableStones],
         (newValue) => {
-          state.table = newValue
+          state.table = newValue[0];
+          state.placeableStones = newValue[1];
         }
       )
     });

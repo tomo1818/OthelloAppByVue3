@@ -120,6 +120,9 @@ export const store = createStore<Table>({
     tableData: [
 
     ],
+    placeableStones: [
+
+    ]
   },
   mutations: {
     putStone(
@@ -247,6 +250,7 @@ export const store = createStore<Table>({
         direction: Coordinate;
       }
     ): void {
+      let countNum = 0;
       while (
         payload.xCheck < 9 &&
         payload.yCheck < 9 &&
@@ -255,17 +259,21 @@ export const store = createStore<Table>({
       ) {
         if (state.table[payload.yCheck][payload.xCheck] == state.turn) {
           state.table[payload.value.y][payload.value.x] = 3;
+          state.placeableStones.push({position: payload.value, returnNum: countNum })
           break;
         } else if (
           state.table[payload.yCheck][payload.xCheck] != payload.opponent
-        )
+        ) {
           break;
+        }
+        countNum += 1;
         payload.yCheck = payload.yCheck + payload.direction.y;
         payload.xCheck = payload.xCheck + payload.direction.x;
       }
     },
     changeTurn(state: Table) {
       state.turn = state.turn == 1 ? 0 : 1;
+      state.placeableStones = [];
     },
     determineStoneColor(state: Table, payload: { firstMove: string, name1: string, name2: string }): void {
       state.player.black.name = payload.firstMove == 'player1' ? payload.name1 : payload.name2;
@@ -308,6 +316,9 @@ export const store = createStore<Table>({
   getters: {
     getTable(state) {
       return state.table;
+    },
+    getPlaceableStones(state) {
+      return state.placeableStones;
     }
   }
 });
