@@ -13,6 +13,14 @@ export const store = createStore<Table>({
       white: 'player2'
     },
     mode: 'vsPlayer',
+    colorCollections: {
+      'Basic': { table: '#090', frontStone: '#000', backStone: '#fff'},
+      'Striking': { table: '#1F2833', frontStone: '#66FCF1', backStone: '#C5C6C7'},
+      'Sophisticated': { table: '#5D5C61', frontStone: '#B1A296', backStone: '#7395AE'},
+      'Lively': { table: '#E7717D', frontStone: '#5D001E', backStone: '#E3E3DF'},
+      'Earthy': { table: '#8D8741', frontStone: '#0b8457', backStone: '#659DBD'},
+      'Modern': { table: '#3AAFA9', frontStone: '#17252A', backStone: '#FEFFFF'},
+    },
     table: {
       1: {
         1: null,
@@ -112,7 +120,7 @@ export const store = createStore<Table>({
       { y: 6, x: 6 },
     ],
     playerChoices: [
-      
+
     ],
     tableData: [
 

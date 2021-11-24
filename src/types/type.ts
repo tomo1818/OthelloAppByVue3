@@ -11,6 +11,7 @@ export interface Table extends State {
   turn: number;
   player: {black: string, white: string};
   mode: string;
+  colorCollections: {[key: string]: { table: string, frontStone: string, backStone: string }};
   tableData: { [key: number]: { [key: number]: number | null } }[];
 }
 
@@ -22,12 +23,7 @@ export interface SettingData {
   chosePlayer: boolean,
   choseCpu: boolean,
   firstMove: string,
-  colorTheme: string,
-}
-
-export type ColorOption = {
-  text: string;
-  value: string;
+  colorTheme: string
 }
 
 export type Coordinate = {
@@ -36,3 +32,9 @@ export type Coordinate = {
 }
 
 export type Directions = {[key: string]: {x: number, y: number}}
+
+export type Color = {
+  table: string;
+  frontStone: string;
+  backStone: string;
+}

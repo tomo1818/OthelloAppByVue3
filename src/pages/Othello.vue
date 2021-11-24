@@ -32,11 +32,12 @@
             <div
               class="stone"
               v-for="(stone, index) in state.stone1"
-              v-bind:key="index"
+              v-bind:key="index" 
+              :style="{ backgroundImage: createStoneString }"
             ></div>
           </div>
         </div>
-        <table class="othelloTable" v-bind:style="{ backgroundColor: settingData.colorTheme}">
+        <table class="othelloTable" v-bind:style="{ backgroundColor: colorObj.table}">
           <tbody>
             <tr
               v-for="(value, rowNum, index) in state.table"
@@ -47,12 +48,12 @@
                 v-bind:key="index2"
               >
                 <div ref="root" class="stoneCon" v-if="value2 == 1">
-                  <i class="fas fa-circle fa-lg black front"></i>
-                  <i class="fas fa-circle fa-lg white back"></i>
+                  <i class="fas fa-circle fa-lg  front" v-bind:style="{ color: colorObj.frontStone}"></i>
+                  <i class="fas fa-circle fa-lg back" v-bind:style="{ color: colorObj.backStone}"></i>
                 </div>
                 <div ref="root" class="stoneCon" v-else-if="value2 == 0">
-                  <i class="fas fa-circle fa-lg white front"></i>
-                  <i class="fas fa-circle fa-lg black back"></i>
+                  <i class="fas fa-circle fa-lg front" v-bind:style="{ color: colorObj.backStone}"></i>
+                  <i class="fas fa-circle fa-lg black back" v-bind:style="{ color: colorObj.frontStone}"></i>
                 </div>
                 <div class="full" v-else-if="value2 == 3">
                   <button
@@ -77,6 +78,7 @@
               class="stone"
               v-for="(stone, index) in state.stone2"
               v-bind:key="index"
+              :style="{ backgroundImage: createStoneString }"
             ></div>
           </div>
         </div>
@@ -86,11 +88,11 @@
 </template>
 
 <script lang="ts">
-import { computed, ref, onMounted, reactive, ComputedRef, onUpdated} from 'vue';
+import { computed, ref, onMounted, reactive, ComputedRef, onUpdated } from 'vue';
 import { useStore } from 'vuex';
 import { key } from '../store';
 import { useRoute } from 'vue-router';
-import { State, Coordinate, Directions } from '@/types/type'; // 型定義を読み取る
+import { State, Coordinate, Directions, Color } from '@/types/type'; // 型定義を読み取る
 
 export default {
   // eslint-disable-next-line @typescript-eslint/explicit-module-boundary-types
@@ -111,7 +113,7 @@ export default {
       topRight: { y: -1, x: 1 },
       bottomLeft: { y: 1, x: -1 },
       bottomRight: { y: 1, x: 1 },
-    }
+    };
     // optionAPIのdataと同様の扱い
     const state = reactive<State>({
       player: store.state.player,
@@ -119,9 +121,8 @@ export default {
       stone1: store.state.stone1,
       stone2: store.state.stone2,
       aroundStone: store.state.aroundStone,
-      playerChoices: store.state.playerChoices
-    });
-    
+      playerChoices: store.state.playerChoices,
+    }); 
     // method
 
     const addTableData = (): void => {
@@ -220,12 +221,25 @@ export default {
     });
 
     onUpdated(() => {
-      //console.log(store.state.playerChoices)
       if(store.state.playerChoices.length == 0 && store.state.aroundStone.length != 0){
         skipTurn()
       }
     })
     // computed
+    const colorObj = computed((): Color =>{
+      let obj: Color = (store.state.colorCollections['Basic']);
+      Object.keys(store.state.colorCollections).forEach(key => {
+      if (key == settingData.colorTheme) {
+          obj = store.state.colorCollections[key];
+        }
+      });
+      return obj;
+    })
+    
+    const createStoneString = computed((): string =>{
+      return `linear-gradient(90deg, ${colorObj.value.frontStone} 0%, ${colorObj.value.frontStone} 50%, ${colorObj.value.backStone} 50%, ${colorObj.value.backStone} 100% )`;
+    });
+
     // const stone1Num = computed((): number => state.stone1.length)
     // const stone2Num = computed((): number => state.stone2.length)
 
@@ -243,6 +257,8 @@ export default {
       addTableData,
       moveBack,
       resetGame,
+      colorObj,
+      createStoneString,
       changeTurn: () => {
         store.commit('changeTurn');
       },
