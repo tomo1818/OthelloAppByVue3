@@ -24,6 +24,18 @@
   @import url('https://fonts.googleapis.com/css2?family=Libre+Baskerville:ital@1&family=M+PLUS+2:wght@700&display=swap');
   .backImg {
     background-image:url("../assets/othello.png");
+    background-repeat: no-repeat;
+    background-size: cover;
+    background-position: center center;
+    width:100%;
+    height:100%;
+    padding-top:200px;
+  }
+
+  .backImg {
+    background-image:url("../assets/othello.png");
+    background-repeat: no-repeat;
+    background-size: cover;
     background-position: center center;
     width:100%;
     height:100%;
