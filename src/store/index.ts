@@ -132,22 +132,36 @@ export const store = createStore<Table>({
       if (state.turn === 1) state.player.black.stoneNum += 1;
       else state.player.white.stoneNum += 1;
     },
+    determinePutPositionOfCpu(state:Table) {
+      const choicesNum: number = state.playerChoices.length;
+      if (state.cpuStrength === 'easy') {
+        const randomNum: number = Math.floor(Math.random() * choicesNum);
+        state.cpuPosition = state.playerChoices[randomNum].position;
+      } else {
+        let max: number = state.playerChoices[0].returnNum;
+        let maxIndex = 0;
+        for (let i = 1; i < choicesNum; i++) {
+          if (state.playerChoices[i].returnNum > max) {
+            max = state.playerChoices[i].returnNum;
+            maxIndex = i;
+          }
+        }
+        state.cpuPosition = state.playerChoices[maxIndex].position;
+      }
+    },
     putStoneByCpu(
       state: Table,
       payload: { allDirections: Coordinate[] }
     ): void {
-      const choicesNum: number = state.playerChoices.length;
-      const randomNum: number = Math.floor(Math.random() * choicesNum);
-      const putPosition: Coordinate = state.playerChoices[randomNum].position;
-      state.table[putPosition.y][putPosition.x] = state.turn;
+      store.commit('determinePutPositionOfCpu');
+      state.table[state.cpuPosition.y][state.cpuPosition.x] = state.turn;
       if (state.turn === 1) state.player.black.stoneNum += 1;
       else state.player.white.stoneNum += 1;
       store.commit('reduceStone');
       store.commit('checkAroundStone', {
-        position: putPosition,
+        position: state.cpuPosition,
         allDirections: payload.allDirections,
       });
-      state.cpuPosition = putPosition;
     },
     reduceStone(state: Table): void {
       if (state.turn == 1) state.stone1.pop();
@@ -381,8 +395,14 @@ export const store = createStore<Table>({
         state.aroundStone = beforeAroundStone;
         state.tableData.pop();
         state.aroundStoneData.pop();
-        store.commit('changeTurn');
-        state.turn === 1 ? state.stone1.push(0) : state.stone2.push(0);
+        if (state.mode === 'vsPlayer') {
+          store.commit('changeTurn');
+          state.turn === 1 ? state.stone1.push(0) : state.stone2.push(0);
+        } else {
+          state.stone1.push(0);
+          state.stone2.push(0);
+        }
+        state.playerChoices = [];
       }
     },
     resetGame(state: Table): void {
