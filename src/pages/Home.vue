@@ -7,8 +7,8 @@
       <router-link
         class="p-3 btn hover:bg-gray-100 hover:bg-opacity-25 text-white rounded-full border-gray-100 hover:border-gray-100 shadow-3xl"
         :to="{name:'Othello',
-        params: { mode: opponent, strength: difficulty },
-        params: { mode: opponent, name1: playerName1, name2: playerName2 }
+        params: { mode: opponent, strength: difficulty, colorTheme: colorTheme  },
+        params: { mode: opponent, name1: playerName1, name2: playerName2, colorTheme: colorTheme  }
         }"
         >スタート</router-link>
     </div>
