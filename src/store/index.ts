@@ -117,10 +117,12 @@ export const store = createStore<Table>({
       { y: 6, x: 5 },
       { y: 6, x: 6 },
     ],
+    playerChoices: [
+
+    ],
     aroundStoneData: [
 
     ],
-    playerChoices: [],
     tableData: [
 
     ],

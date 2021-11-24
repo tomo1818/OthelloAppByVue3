@@ -39,7 +39,7 @@
             ></div>
           </div>
         </div>
-        <table class="othelloTable">
+        <table class="othelloTable" v-bind:style="{ backgroundColor: settingData.colorTheme}">
           <tbody>
             <tr
               v-for="(value, rowNum, index) in state.table"
@@ -124,7 +124,7 @@ export default {
       aroundStone: store.state.aroundStone,
       playerChoices: store.state.playerChoices
     });
-
+    
     // method
 
     const addTableData = (): void => {
@@ -288,7 +288,7 @@ export default {
 
 <style scoped>
 table.othelloTable {
-  background: #090;
+  
   border: solid 2px #000;
   border-collapse: collapse;
   border-spacing: 0px;
