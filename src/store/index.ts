@@ -16,9 +16,10 @@ export const store = createStore<Table>({
       white: {
         name: 'player2',
         stoneNum: 2,
-      }
+      },
     },
     mode: 'vsPlayer',
+    cpuStrength: 'easy',
     table: {
       1: {
         1: null,
@@ -117,24 +118,36 @@ export const store = createStore<Table>({
       { y: 6, x: 5 },
       { y: 6, x: 6 },
     ],
-    playerChoices: [
-
-    ],
-    aroundStoneData: [
-
-    ],
-    tableData: [
-
-    ],
+    playerChoices: [],
+    aroundStoneData: [],
+    tableData: [],
+    cpuPosition: {
+      y: 0,
+      x: 0,
+    },
   },
   mutations: {
-    putStone(
-      state: Table,
-      payload: { position: Coordinate }
-    ): void {
+    putStone(state: Table, payload: { position: Coordinate }): void {
       state.table[payload.position.y][payload.position.x] = state.turn;
       if (state.turn === 1) state.player.black.stoneNum += 1;
       else state.player.white.stoneNum += 1;
+    },
+    putStoneByCpu(
+      state: Table,
+      payload: { allDirections: Coordinate[] }
+    ): void {
+      const choicesNum: number = state.playerChoices.length;
+      const randomNum: number = Math.floor(Math.random() * choicesNum);
+      const putPosition: Coordinate = state.playerChoices[randomNum].position;
+      state.table[putPosition.y][putPosition.x] = state.turn;
+      if (state.turn === 1) state.player.black.stoneNum += 1;
+      else state.player.white.stoneNum += 1;
+      store.commit('reduceStone');
+      store.commit('checkAroundStone', {
+        position: putPosition,
+        allDirections: payload.allDirections,
+      });
+      state.cpuPosition = putPosition;
     },
     reduceStone(state: Table): void {
       if (state.turn == 1) state.stone1.pop();
@@ -144,7 +157,10 @@ export const store = createStore<Table>({
       state: Table,
       payload: { position: Coordinate; allDirections: Coordinate[] }
     ): void {
-      if (state.aroundStoneData.length === 0) state.aroundStoneData.push(JSON.parse((JSON.stringify(state.aroundStone))));
+      if (state.aroundStoneData.length === 0)
+        state.aroundStoneData.push(
+          JSON.parse(JSON.stringify(state.aroundStone))
+        );
       state.aroundStone = state.aroundStone.filter(function (e) {
         return !(e.y == payload.position.y && e.x == payload.position.x);
       });
@@ -176,7 +192,7 @@ export const store = createStore<Table>({
         let column = Number(payload.position.x) + Number(payload.direction.x);
         while (state.table[row][column] != state.turn) {
           state.table[row][column] = state.turn;
-          store.commit("addStoneNum");
+          store.commit('addStoneNum');
           row += payload.direction.y;
           column += payload.direction.x;
         }
@@ -225,22 +241,38 @@ export const store = createStore<Table>({
     ): void {
       // state.playerChoices = [];
       for (const value of state.aroundStone) {
-        if (state.table[value.y][value.x] == 3) state.table[value.y][value.x] = null;
-        store.commit("findOpponent", {allDirections: payload.allDirections, value: value})
+        if (state.table[value.y][value.x] == 3)
+          state.table[value.y][value.x] = null;
+        store.commit('findOpponent', {
+          allDirections: payload.allDirections,
+          value: value,
+        });
       }
-      state.playerChoices = state.playerChoices.filter((element, index, self) => {
-        const positionList = self.map(element => element.position);
-        if (positionList.indexOf(element.position) === index) {
-          return element;
+      state.playerChoices = state.playerChoices.filter(
+        (element, index, self) => {
+          const positionList = self.map((element) => element.position);
+          if (positionList.indexOf(element.position) === index) {
+            return element;
+          }
         }
-      });
+      );
     },
-    findOpponent(state: Table, payload: {allDirections: Coordinate[], value: Coordinate } ): void{
+    findOpponent(
+      state: Table,
+      payload: { allDirections: Coordinate[]; value: Coordinate }
+    ): void {
       const opponent: number = state.turn == 1 ? 0 : 1;
       for (const direction of payload.allDirections) {
         const yCheck: number = payload.value.y + direction.y;
         const xCheck: number = payload.value.x + direction.x;
-        if (yCheck < 1 || xCheck < 1 || yCheck > 8 || xCheck > 8 || state.table[payload.value.y][payload.value.x] == 3) continue;
+        if (
+          yCheck < 1 ||
+          xCheck < 1 ||
+          yCheck > 8 ||
+          xCheck > 8 ||
+          state.table[payload.value.y][payload.value.x] == 3
+        )
+          continue;
         else if (state.table[yCheck][xCheck] == opponent) {
           store.commit('isPlaceable', {
             turn: state.turn,
@@ -272,7 +304,10 @@ export const store = createStore<Table>({
       ) {
         if (state.table[payload.yCheck][payload.xCheck] == state.turn) {
           state.table[payload.value.y][payload.value.x] = 3;
-          state.playerChoices.push({ position: payload.value, returnNum: countNum });
+          state.playerChoices.push({
+            position: payload.value,
+            returnNum: countNum,
+          });
           break;
         } else if (
           state.table[payload.yCheck][payload.xCheck] != payload.opponent
@@ -288,29 +323,58 @@ export const store = createStore<Table>({
       state.turn = state.turn == 1 ? 0 : 1;
       state.playerChoices = [];
     },
-    determineStoneColor(state: Table, payload: { firstMove: string, name1: string, name2: string }): void {
-      state.player.black.name = payload.firstMove == 'player1' ? payload.name1 : payload.name2;
-      state.player.white.name = payload.firstMove != 'player1' ? payload.name1 : payload.name2;
+    determineStoneColor(
+      state: Table,
+      payload: { firstMove: string; name1: string; name2: string }
+    ): void {
+      state.player.black.name =
+        payload.firstMove == 'player1' ? payload.name1 : payload.name2;
+      state.player.white.name =
+        payload.firstMove != 'player1' ? payload.name1 : payload.name2;
     },
-    determineFirstMove(state: Table, payload: {firstMove: string, name1: string, name2: string}): void {
-      if (state.mode == "vsPlayer") {
-        store.commit('determineStoneColor', {firstMove: payload.firstMove, name1: payload.name1, name2: payload.name2})
+    determineFirstMove(
+      state: Table,
+      payload: { firstMove: string; name1: string; name2: string }
+    ): void {
+      if (state.mode == 'vsPlayer') {
+        store.commit('determineStoneColor', {
+          firstMove: payload.firstMove,
+          name1: payload.name1,
+          name2: payload.name2,
+        });
       } else {
-        store.commit('determineStoneColor', { firstMove: payload.firstMove, name1: 'player1', name2: 'CPU' })
+        store.commit('determineStoneColor', {
+          firstMove: payload.firstMove,
+          name1: 'player1',
+          name2: 'CPU',
+        });
       }
     },
     addTableData(state: Table): void {
       const beforeTable = JSON.parse(JSON.stringify(state.table));
-      const beforeStoneNum = JSON.parse(JSON.stringify({ black: state.player.black.stoneNum, white: state.player.white.stoneNum}));
+      const beforeStoneNum = JSON.parse(
+        JSON.stringify({
+          black: state.player.black.stoneNum,
+          white: state.player.white.stoneNum,
+        })
+      );
       const beforeAroundStone = JSON.parse(JSON.stringify(state.aroundStone));
-      state.tableData.push({table: beforeTable, stoneNum: beforeStoneNum});
+      state.tableData.push({ table: beforeTable, stoneNum: beforeStoneNum });
       state.aroundStoneData.push(beforeAroundStone);
     },
     moveBack(state: Table): void {
       if (state.tableData.length != 0) {
-        const beforeTable = JSON.parse(JSON.stringify(state.tableData[state.tableData.length - 1].table));
-        const beforeStoneNum = JSON.parse(JSON.stringify(state.tableData[state.tableData.length - 1].stoneNum));
-        const beforeAroundStone = JSON.parse(JSON.stringify(state.aroundStoneData[state.aroundStoneData.length - 1]));
+        const beforeTable = JSON.parse(
+          JSON.stringify(state.tableData[state.tableData.length - 1].table)
+        );
+        const beforeStoneNum = JSON.parse(
+          JSON.stringify(state.tableData[state.tableData.length - 1].stoneNum)
+        );
+        const beforeAroundStone = JSON.parse(
+          JSON.stringify(
+            state.aroundStoneData[state.aroundStoneData.length - 1]
+          )
+        );
         state.table = beforeTable;
         state.player.black.stoneNum = beforeStoneNum.black;
         state.player.white.stoneNum = beforeStoneNum.white;
@@ -318,21 +382,34 @@ export const store = createStore<Table>({
         state.tableData.pop();
         state.aroundStoneData.pop();
         store.commit('changeTurn');
+        state.turn === 1 ? state.stone1.push(0) : state.stone2.push(0);
       }
     },
     resetGame(state: Table): void {
       if (state.tableData.length != 0) {
         const startTable = JSON.parse(JSON.stringify(state.tableData[0].table));
-        const startAroundStone = JSON.parse(JSON.stringify(state.aroundStoneData[0]));
+        const startAroundStone = JSON.parse(
+          JSON.stringify(state.aroundStoneData[0])
+        );
         state.table = startTable;
         state.aroundStone = startAroundStone;
         state.player.black.stoneNum = 2;
         state.player.white.stoneNum = 2;
         state.tableData = [];
         state.turn = 1;
+        while (state.stone1.length < 30 || state.stone2.length < 30) {
+          if (state.stone1.length < 30) state.stone1.push(0);
+          if (state.stone2.length < 30) state.stone2.push(0);
+        }
       }
       state.playerChoices = [];
-    }
+    },
+    changeMode(state: Table, mode: 'string') {
+      state.mode = mode;
+    },
+    changeCpuStrength(state: Table, strength: 'string') {
+      state.cpuStrength = strength;
+    },
   },
   getters: {
     getTable(state) {
@@ -340,8 +417,11 @@ export const store = createStore<Table>({
     },
     getPlayerChoices(state) {
       return state.playerChoices;
-    }
-  }
+    },
+    getCpuPosition(state) {
+      return state.cpuPosition;
+    },
+  },
 });
 
 export default createStore({
