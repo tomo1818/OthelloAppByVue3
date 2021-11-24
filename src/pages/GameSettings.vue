@@ -90,13 +90,21 @@
         <label for="player2">CPU</label>
         <p>first move: {{ setting.firstMove }}</p>
       </div>
+      <div class="selectColorTheme mb-3" >
+        <h3 class="h3">オセロ版の色オプションを選んでください</h3>
+        <select v-model="setting.colorTheme">
+          <option v-for="(option,index) in colorThemeOptions" :value="option.value" v-bind:key="index">
+            {{ option.text }}
+          </option>
+        </select>
+      </div>
       <!-- 良い書き方募集中です -->
       <router-link
         v-if="setting.opponent == 'vsCpu'"
         class="btn btn-primary"
         :to="{
           name: 'Othello',
-          params: { mode: setting.opponent, strength: setting.difficulty },
+          params: { mode: setting.opponent, strength: setting.difficulty, colorTheme: setting.colorTheme },
         }"
         >スタート</router-link
       >
@@ -106,7 +114,7 @@
         class="btn btn-primary"
         :to="{
           name: 'Othello',
-          params: { mode: setting.opponent, name1: setting.playerName1, name2: setting.playerName2, firstMove: setting.firstMove },
+          params: { mode: setting.opponent, name1: setting.playerName1, name2: setting.playerName2, firstMove: setting.firstMove, colorTheme: setting.colorTheme },
         }"
         >スタート</router-link
       >
@@ -116,7 +124,7 @@
 
 <script lang="ts">
 import { reactive } from 'vue';
-import { SettingData } from '@/types/type';
+import { SettingData, ColorOption } from '@/types/type';
 import { useStore } from 'vuex';
 import { key } from '../store';
 
@@ -132,7 +140,16 @@ export default {
       chosePlayer: false,
       choseCpu: true,
       firstMove: 'player1',
-    })
+      colorTheme: '#090',
+    });
+    const colorThemeOptions: ColorOption[]  = [
+      {text: 'Basic', value: '#090'},
+      {text: 'Sky', value: '#659DBD'},
+      {text: 'Sophisticated', value: '#5D5C61'},
+      {text: 'Lively', value: '#E7717D'},
+      {text: 'Earthy', value: '#8D8741'},
+      {text: 'Fresh', value: '#5CDB95'}
+    ]
 
     const changeOpponent = (): void => {
       if (setting.chosePlayer == true) {
@@ -154,7 +171,8 @@ export default {
     return {
       setting,
       changeOpponent,
-      determineFirstMove
+      determineFirstMove,
+      colorThemeOptions
     };
   },
 };
