@@ -4,11 +4,11 @@
       <h2>オセロページです</h2>
       <!-- データの受け渡し -->
       <div>
-        <p>手番: {{ turn == 1 ? state.player.black : state.player.white }}</p>
+        <p>手番: {{ turn == 1 ? state.player.black.name : state.player.white.name }}</p>
       </div>
       <div>
-        <p>黒石: {{ state.player.black}}</p>
-        <p>白石: {{ state.player.white}}</p>
+        <p>黒石: {{ state.player.black.name}}, 石の数: {{ state.player.black.stoneNum}}</p>
+        <p>白石: {{ state.player.white.name}}, 石の数: {{ state.player.white.stoneNum}}</p>
       </div>
       <div v-if="settingData.mode == 'vsCpu'">
         <p>モード: {{ settingData.mode }}</p>
@@ -19,6 +19,9 @@
       </div>
       <div>
         <p>{{ state.table }}</p>
+      </div>
+      <div>
+        <p>{{ state.playerChoices }}</p>
       </div>
       <div class="mb-3">
         <button class="btn btn-primary" @click="moveBack(), showPlaceStoneCanBePut()">一手戻す</button>
@@ -33,7 +36,7 @@
               class="stone"
               v-for="(stone, index) in state.stone1"
               v-bind:key="index" 
-              :style="{ backgroundImage: createStoneString }"
+              :style="{ backgroundImage: createStoneGradientString }"
             ></div>
           </div>
         </div>
@@ -78,7 +81,7 @@
               class="stone"
               v-for="(stone, index) in state.stone2"
               v-bind:key="index"
-              :style="{ backgroundImage: createStoneString }"
+              :style="{ backgroundImage: createStoneGradientString }"
             ></div>
           </div>
         </div>
@@ -213,9 +216,10 @@ export default {
     onMounted(() => {
       showPlaceStoneCanBePut();
       store.watch(
-        (state, getters) => getters.getTable,
+        (state, getters) => [getters.getTable, getters.getPlayerChoices],
         (newValue) => {
-          state.table = newValue
+          state.table = newValue[0];
+          state.playerChoices = newValue[1];
         }
       )
     });
@@ -236,7 +240,7 @@ export default {
       return obj;
     })
     
-    const createStoneString = computed((): string =>{
+    const createStoneGradientString = computed((): string =>{
       return `linear-gradient(90deg, ${colorObj.value.frontStone} 0%, ${colorObj.value.frontStone} 50%, ${colorObj.value.backStone} 50%, ${colorObj.value.backStone} 100% )`;
     });
 
@@ -258,7 +262,7 @@ export default {
       moveBack,
       resetGame,
       colorObj,
-      createStoneString,
+      createStoneGradientString,
       changeTurn: () => {
         store.commit('changeTurn');
       },

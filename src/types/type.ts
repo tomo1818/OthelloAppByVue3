@@ -1,18 +1,18 @@
 export interface State {
-  player: { black: string, white: string };
+  player: {[key: string]: { name: string, stoneNum: number }}
   table: { [key: number]: { [key: number]: number | null } };
   stone1: number[];
   stone2: number[];
   aroundStone: { y: number, x: number }[];
-  playerChoices: {y: number, x: number }[];
+  playerChoices: { position: Coordinate, returnNum: number }[];
 }
 
 export interface Table extends State {
   turn: number;
-  player: {black: string, white: string};
   mode: string;
-  colorCollections: {[key: string]: { table: string, frontStone: string, backStone: string }};
-  tableData: { [key: number]: { [key: number]: number | null } }[];
+  colorCollections: {[key: string]: Color};
+  tableData: { table: { [key: number]: { [key: number]: number | null } }, stoneNum: { [key: string]: number } } [];
+  aroundStoneData: Coordinate[][];
 }
 
 export interface SettingData {
@@ -30,8 +30,7 @@ export type Coordinate = {
   y: number;
   x: number;
 }
-
-export type Directions = {[key: string]: {x: number, y: number}}
+export type Directions = {[key: string]: Coordinate}
 
 export type Color = {
   table: string;
