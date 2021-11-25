@@ -230,6 +230,7 @@ export default {
       }
     })
     // computed
+    //選択肢から色のオブジェクト取得
     const colorObj = computed((): Color =>{
       let obj: Color = (store.state.colorCollections['Basic']);
       Object.keys(store.state.colorCollections).forEach(key => {
@@ -239,7 +240,7 @@ export default {
       });
       return obj;
     })
-    
+    //持ち石の側面CSS
     const createStoneGradientString = computed((): string =>{
       return `linear-gradient(90deg, ${colorObj.value.frontStone} 0%, ${colorObj.value.frontStone} 50%, ${colorObj.value.backStone} 50%, ${colorObj.value.backStone} 100% )`;
     });
