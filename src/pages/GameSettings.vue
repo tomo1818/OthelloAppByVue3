@@ -24,18 +24,32 @@
         />
         <label for="vsCpu">vs CPU</label>
       </div>
-      <div class="inputPlayerName mb-3" :class="{ displayNone: setting.chosePlayer }">
+      <div
+        class="inputPlayerName mb-3"
+        :class="{ displayNone: setting.chosePlayer }"
+      >
         <h3 class="h3">プレイヤー名を入力してください</h3>
         <div class="mb-2">
-          <input class="bg-gray-200 border-2 rounded" v-model="setting.playerName1" placeholder="Palyer name 1" />
+          <input
+            class="bg-gray-200 border-2 rounded"
+            v-model="setting.playerName1"
+            placeholder="Palyer name 1"
+          />
           <span>Player Name 1: {{ setting.playerName1 }}</span>
         </div>
         <div class="mb-2">
-          <input class="bg-gray-200" v-model="setting.playerName2" placeholder="Palyer name 2" />
+          <input
+            class="bg-gray-200"
+            v-model="setting.playerName2"
+            placeholder="Palyer name 2"
+          />
           <span>Player Name 2: {{ setting.playerName2 }}</span>
         </div>
       </div>
-      <div class="choseCpuStrength mb-3" :class="{ displayNone: setting.choseCpu }">
+      <div
+        class="choseCpuStrength mb-3"
+        :class="{ displayNone: setting.choseCpu }"
+      >
         <h3 class="h3">コンピュータの強さを選択してください</h3>
         <input
           type="radio"
@@ -45,12 +59,25 @@
           checked
         />
         <label for="easy">Easy</label>
-        <input type="radio" value="normal" id="normal" v-model="setting.difficulty" />
+        <input
+          type="radio"
+          value="normal"
+          id="normal"
+          v-model="setting.difficulty"
+        />
         <label for="normal">Normal</label>
-        <input type="radio" value="hard" id="hard" v-model="setting.difficulty" />
+        <input
+          type="radio"
+          value="hard"
+          id="hard"
+          v-model="setting.difficulty"
+        />
         <label for="hard">Hard</label>
       </div>
-      <div class="determinFirstMove mb-3" :class="{ displayNone: setting.chosePlayer }">
+      <div
+        class="determinFirstMove mb-3"
+        :class="{ displayNone: setting.chosePlayer }"
+      >
         <h3 class="h3">先攻(黒石)のプレイヤーを決定します</h3>
         <input
           type="radio"
@@ -71,7 +98,10 @@
         <label for="player2">Player2</label>
         <p>first move: {{ setting.firstMove }}</p>
       </div>
-      <div class="determinFirstMove mb-3" :class="{ displayNone: setting.choseCpu }">
+      <div
+        class="determinFirstMove mb-3"
+        :class="{ displayNone: setting.choseCpu }"
+      >
         <h3 class="h3">先攻(黒石)のプレイヤーを決定します</h3>
         <input
           type="radio"
@@ -92,33 +122,65 @@
         <label for="player2">CPU</label>
         <p>first move: {{ setting.firstMove }}</p>
       </div>
-      <div class="selectColorTheme mb-3" >
+      <div class="selectColorTheme mb-3">
         <h3 class="h3">オセロ版の色オプションを選んでください</h3>
         <select v-model="setting.colorTheme">
-          <option v-for="(option,index) in colorThemeOptions" :value="option.value" v-bind:key="index">
+          <option
+            v-for="(option, index) in colorThemeOptions"
+            :value="option.value"
+            v-bind:key="index"
+          >
             {{ option.text }}
           </option>
         </select>
       </div>
-       <router-link
-      v-if="opponent == 'vsCpu'"
-      class="p-3 btn hover:text-white text-red-500 hover:bg-red-500 rounded-full border-red-500 shadow-xl"
-      :to="{
-        name:'Home',
-         params: { mode: setting.opponent, strength: setting.difficulty, colorTheme: setting.colorTheme },
-      }"
-      >戻る</router-link
-    >
-    <router-link
-      disabled
-      v-else
-      class="p-3 btn hover:text-white text-red-500 hover:bg-red-500 rounded-full border-red-500 shadow-xl"
-      :to="{
-        name:'Home',
-        params: { mode: setting.opponent, name1: setting.playerName1, name2: setting.playerName2, firstMove: setting.firstMove, colorTheme: setting.colorTheme },
-      }"
-      >戻る</router-link
-    >
+      <router-link
+        v-if="opponent == 'vsCpu'"
+        class="
+          p-3
+          btn
+          hover:text-white
+          text-red-500
+          hover:bg-red-500
+          rounded-full
+          border-red-500
+          shadow-xl
+        "
+        :to="{
+          name: 'Home',
+          params: {
+            mode: setting.opponent,
+            strength: setting.difficulty,
+            colorTheme: setting.colorTheme,
+          },
+        }"
+        >戻る</router-link
+      >
+      <router-link
+        disabled
+        v-else
+        class="
+          p-3
+          btn
+          hover:text-white
+          text-red-500
+          hover:bg-red-500
+          rounded-full
+          border-red-500
+          shadow-xl
+        "
+        :to="{
+          name: 'Home',
+          params: {
+            mode: setting.opponent,
+            name1: setting.playerName1,
+            name2: setting.playerName2,
+            firstMove: setting.firstMove,
+            colorTheme: setting.colorTheme,
+          },
+        }"
+        >戻る</router-link
+      >
     </div>
   </div>
 </template>
@@ -143,14 +205,14 @@ export default {
       firstMove: 'player1',
       colorTheme: '#090',
     });
-    const colorThemeOptions: ColorOption[]  = [
-      {text: 'Basic', value: '#090'},
-      {text: 'Sky', value: '#659DBD'},
-      {text: 'Sophisticated', value: '#5D5C61'},
-      {text: 'Lively', value: '#E7717D'},
-      {text: 'Earthy', value: '#8D8741'},
-      {text: 'Fresh', value: '#5CDB95'}
-    ]
+    const colorThemeOptions: ColorOption[] = [
+      { text: 'Basic', value: '#090' },
+      { text: 'Sky', value: '#659DBD' },
+      { text: 'Sophisticated', value: '#5D5C61' },
+      { text: 'Lively', value: '#E7717D' },
+      { text: 'Earthy', value: '#8D8741' },
+      { text: 'Fresh', value: '#5CDB95' },
+    ];
 
     const changeOpponent = (): void => {
       if (setting.chosePlayer == true) {
@@ -160,20 +222,28 @@ export default {
         setting.chosePlayer = true;
         setting.choseCpu = false;
       }
-    }
+    };
 
     const determineFirstMove = (): void => {
       if (setting.opponent == 'vsPlayer') {
-        store.commit('determineFirstMove', {firstMove: setting.firstMove, name1: setting.playerName1, name2: setting.playerName2})
+        store.commit('determineFirstMove', {
+          firstMove: setting.firstMove,
+          name1: setting.playerName1,
+          name2: setting.playerName2,
+        });
       } else {
-        store.commit('determineFirstMove', {firstMove: setting.firstMove, name1: 'player1', name2: 'CPU'})
+        store.commit('determineFirstMove', {
+          firstMove: setting.firstMove,
+          name1: 'player1',
+          name2: 'CPU',
+        });
       }
-    }
+    };
     return {
       setting,
       changeOpponent,
       determineFirstMove,
-      colorThemeOptions
+      colorThemeOptions,
     };
   },
 };

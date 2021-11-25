@@ -10,8 +10,8 @@
         <p>手番: {{ turn == 1 ? state.player.black : state.player.white }}</p>
       </div>
       <div>
-        <p>黒石: {{ state.player.black}}</p>
-        <p>白石: {{ state.player.white}}</p>
+        <p>黒石: {{ state.player.black }}</p>
+        <p>白石: {{ state.player.white }}</p>
       </div>
       <div v-if="settingData.mode == 'vsCpu'">
         <p>モード: {{ settingData.mode }}</p>
@@ -21,10 +21,20 @@
         <p>モード: {{ settingData.mode }}</p>
       </div>
       <div class="mb-3">
-        <button class="btn btn-primary" @click="moveBack(), showPlaceStoneCanBePut()">一手戻す</button>
+        <button
+          class="btn btn-primary"
+          @click="moveBack(), showPlaceStoneCanBePut()"
+        >
+          一手戻す
+        </button>
       </div>
       <div class="mb-3">
-        <button class="btn btn-primary" @click="resetGame(), showPlaceStoneCanBePut()">リセットする</button>
+        <button
+          class="btn btn-primary"
+          @click="resetGame(), showPlaceStoneCanBePut()"
+        >
+          リセットする
+        </button>
       </div>
       <div class="othelloContainer">
         <div class="stoneBox user1">
@@ -36,7 +46,10 @@
             ></div>
           </div>
         </div>
-        <table class="othelloTable" v-bind:style="{ backgroundColor: settingData.colorTheme}">
+        <table
+          class="othelloTable"
+          v-bind:style="{ backgroundColor: settingData.colorTheme }"
+        >
           <tbody>
             <tr
               v-for="(value, rowNum, index) in state.table"
@@ -59,13 +72,15 @@
                     class="full massBtn"
                     @click="
                       addTableData(),
-                      putStone({ y: rowNum, x: columnNum }),
-                      returnStone({ y: rowNum, x: columnNum }),
-                      changeTurn(),
-                      showPlaceStoneCanBePut(),
-                      winLoseJudgment()
+                        putStone({ y: rowNum, x: columnNum }),
+                        returnStone({ y: rowNum, x: columnNum }),
+                        changeTurn(),
+                        showPlaceStoneCanBePut(),
+                        winLoseJudgment()
                     "
-                  ><i v-if="value2 == 3" class="far fa-circle fa-xs"></i></button>
+                  >
+                    <i v-if="value2 == 3" class="far fa-circle fa-xs"></i>
+                  </button>
                 </div>
               </td>
             </tr>
@@ -86,7 +101,14 @@
 </template>
 
 <script lang="ts">
-import { computed, ref, onMounted, reactive, ComputedRef, onUpdated} from 'vue';
+import {
+  computed,
+  ref,
+  onMounted,
+  reactive,
+  ComputedRef,
+  onUpdated,
+} from 'vue';
 import { useStore } from 'vuex';
 import { key } from '../store';
 import { useRoute } from 'vue-router';
@@ -111,7 +133,7 @@ export default {
       topRight: { y: -1, x: 1 },
       bottomLeft: { y: 1, x: -1 },
       bottomRight: { y: 1, x: 1 },
-    }
+    };
     // optionAPIのdataと同様の扱い
     const state = reactive<State>({
       player: store.state.player,
@@ -119,22 +141,22 @@ export default {
       stone1: store.state.stone1,
       stone2: store.state.stone2,
       aroundStone: store.state.aroundStone,
-      playerChoices: store.state.playerChoices
+      playerChoices: store.state.playerChoices,
     });
 
     // method
 
     const addTableData = (): void => {
-      store.commit('addTableData')
-    }
+      store.commit('addTableData');
+    };
 
     const moveBack = (): void => {
       store.commit('moveBack');
-    }
+    };
 
     const resetGame = (): void => {
       store.commit('resetGame');
-    }
+    };
 
     // 隣の石をチェック
     const checkNextStone = (
@@ -146,7 +168,8 @@ export default {
       if (
         checkOutOfRange({ y: row, x: column }) &&
         (state.table[row][column] === null ||
-          state.table[row][column] === turn.value || state.table[row][column] === 3)
+          state.table[row][column] === turn.value ||
+          state.table[row][column] === 3)
       )
         return true;
       return false;
@@ -168,18 +191,22 @@ export default {
         position.x <= 8 &&
         position.x >= 1
       )
-      return true;
+        return true;
       return false;
     };
 
     // 各方向でループ
-    const checkLine = (position: Coordinate, direction: Coordinate): boolean => {
+    const checkLine = (
+      position: Coordinate,
+      direction: Coordinate
+    ): boolean => {
       let row = determinCheckStartPosition(Number(position.y), direction.y);
       let column = determinCheckStartPosition(Number(position.x), direction.x);
       if (checkOutOfRange({ y: row, x: column })) {
         while (
           checkOutOfRange({ y: row, x: column }) &&
-          state.table[row][column] !== null && state.table[row][column] !== 3
+          state.table[row][column] !== null &&
+          state.table[row][column] !== 3
         ) {
           if (state.table[row][column] === turn.value) {
             return true;
@@ -197,15 +224,15 @@ export default {
       return checkLine(position, direction);
     };
     //石を置ける場所を探す
-    const showPlaceStoneCanBePut = (): void =>{
-      store.commit("showPlaceStoneCanBePut", {
-      allDirections: Object.values(directions)
+    const showPlaceStoneCanBePut = (): void => {
+      store.commit('showPlaceStoneCanBePut', {
+        allDirections: Object.values(directions),
       });
     };
     //おける石がなくなっったらスキップ
-    const skipTurn = (): void =>{
+    const skipTurn = (): void => {
       alert("You can't put stone, skip your turn");
-      store.commit("changeTurn");
+      store.commit('changeTurn');
       showPlaceStoneCanBePut();
     };
 
@@ -214,17 +241,20 @@ export default {
       store.watch(
         (state, getters) => getters.getTable,
         (newValue) => {
-          state.table = newValue
+          state.table = newValue;
         }
-      )
+      );
     });
 
     onUpdated(() => {
       //console.log(store.state.playerChoices)
-      if(store.state.playerChoices.length == 0 && store.state.aroundStone.length != 0){
-        skipTurn()
+      if (
+        store.state.playerChoices.length == 0 &&
+        store.state.aroundStone.length != 0
+      ) {
+        skipTurn();
       }
-    })
+    });
     // computed
     // const stone1Num = computed((): number => state.stone1.length)
     // const stone2Num = computed((): number => state.stone2.length)
@@ -250,7 +280,7 @@ export default {
       putStone: (position: Coordinate) => {
         store.commit('putStone', { position: position });
         store.commit('reduceStone');
-        store.commit("checkAroundStone", {
+        store.commit('checkAroundStone', {
           position: position,
           allDirections: Object.values(directions),
         });
@@ -266,7 +296,7 @@ export default {
           });
       },
       winLoseJudgment: () => {
-        if(store.state.aroundStone.length == 0){
+        if (store.state.aroundStone.length == 0) {
           store.commit('winLoseJudgment');
         }
       },
@@ -284,7 +314,6 @@ export default {
 
 <style scoped>
 table.othelloTable {
-
   border: solid 2px #000;
   border-collapse: collapse;
   border-spacing: 0px;
