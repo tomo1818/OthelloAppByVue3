@@ -30,6 +30,7 @@ export type Coordinate = {
   y: number;
   x: number;
 }
+
 export type Directions = {[key: string]: Coordinate}
 
 export type Color = {
