@@ -173,7 +173,7 @@ export default {
 
     const changeTurn = (): void => {
       store.commit('changeTurn');
-    }
+    };
 
     const putStone = (position: Coordinate): void => {
       store.commit('putStone', {
@@ -185,7 +185,7 @@ export default {
         position: position,
         allDirections: Object.values(directions),
       });
-    }
+    };
 
     //石を置ける場所を探す
     const showPlaceStoneCanBePut = (): void => {
@@ -201,13 +201,13 @@ export default {
           isReturn: isReturn(position, directions[key]),
           direction: directions[key],
         });
-    }
+    };
 
     const winLoseJudgment = (): void => {
       if (store.state.aroundStone.length == 0) {
         store.commit('winLoseJudgment');
       }
-    }
+    };
 
     const cpuAction = (): void => {
       if (settingData.mode === 'vsCpu') {
@@ -229,7 +229,7 @@ export default {
           store.commit('winLoseJudgment');
         }
       }
-    }
+    };
 
     // 隣の石をチェック
     const checkNextStone = (
@@ -348,7 +348,7 @@ export default {
       showPlaceStoneCanBePut,
       returnStone,
       winLoseJudgment,
-      cpuAction
+      cpuAction,
       /*石をひっくり返すモーションをつける関数
         flip: function() => {
         console.log(this.$refs.card);

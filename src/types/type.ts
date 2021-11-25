@@ -4,7 +4,11 @@ export interface State {
   stone1: number[];
   stone2: number[];
   aroundStone: { y: number; x: number }[];
-  playerChoices: { position: Coordinate; returnNum: number }[];
+  playerChoices: {
+    position: Coordinate;
+    returnNum: number;
+    evaluationValue: number;
+  }[];
 }
 
 export interface Table extends State {
@@ -17,6 +21,8 @@ export interface Table extends State {
   }[];
   aroundStoneData: Coordinate[][];
   cpuPosition: Coordinate;
+  gameStatus: string;
+  gameProgress: number;
 }
 
 export interface SettingData {
@@ -38,6 +44,12 @@ export type ColorOption = {
 export type Coordinate = {
   y: number;
   x: number;
+};
+
+export type Weight = {
+  [key: number]: {
+    [key: number]: number;
+  };
 };
 
 export type Directions = { [key: string]: Coordinate };

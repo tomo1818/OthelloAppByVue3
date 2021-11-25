@@ -1,6 +1,7 @@
 import { InjectionKey } from 'vue';
 import { createStore, Store } from 'vuex';
 import { Table, Coordinate } from '@/types/type';
+import { weight } from '@/consts/weight';
 
 // インジェクションキーを定義します
 export const key: InjectionKey<Store<Table>> = Symbol();
@@ -125,6 +126,8 @@ export const store = createStore<Table>({
       y: 0,
       x: 0,
     },
+    gameStatus: 'opening',
+    gameProgress: 0,
   },
   mutations: {
     putStone(state: Table, payload: { position: Coordinate }): void {
@@ -132,12 +135,15 @@ export const store = createStore<Table>({
       if (state.turn === 1) state.player.black.stoneNum += 1;
       else state.player.white.stoneNum += 1;
     },
-    determinePutPositionOfCpu(state:Table) {
+    determinePutPositionOfCpu(state: Table) {
       const choicesNum: number = state.playerChoices.length;
       if (state.cpuStrength === 'easy') {
         const randomNum: number = Math.floor(Math.random() * choicesNum);
         state.cpuPosition = state.playerChoices[randomNum].position;
-      } else {
+      } else if (
+        state.cpuStrength === 'normal' ||
+        state.gameStatus === 'endGame'
+      ) {
         let max: number = state.playerChoices[0].returnNum;
         let maxIndex = 0;
         for (let i = 1; i < choicesNum; i++) {
@@ -147,6 +153,20 @@ export const store = createStore<Table>({
           }
         }
         state.cpuPosition = state.playerChoices[maxIndex].position;
+      } else {
+        let max = state.playerChoices[0];
+        for (let i = 0; i < choicesNum; i++) {
+          const curr = state.playerChoices[i];
+          if (curr.evaluationValue > max.evaluationValue) {
+            max = curr;
+          } else if (
+            curr.evaluationValue === max.evaluationValue &&
+            curr.returnNum > max.returnNum
+          ) {
+            max = curr;
+          }
+        }
+        state.cpuPosition = max.position;
       }
     },
     putStoneByCpu(
@@ -310,6 +330,7 @@ export const store = createStore<Table>({
       }
     ): void {
       let countNum = 0;
+      let evaluationValue = weight[payload.value.y][payload.value.x];
       while (
         payload.xCheck < 9 &&
         payload.yCheck < 9 &&
@@ -321,6 +342,7 @@ export const store = createStore<Table>({
           state.playerChoices.push({
             position: payload.value,
             returnNum: countNum,
+            evaluationValue: evaluationValue,
           });
           break;
         } else if (
@@ -329,6 +351,7 @@ export const store = createStore<Table>({
           break;
         }
         countNum += 1;
+        evaluationValue += weight[payload.yCheck][payload.xCheck];
         payload.yCheck = payload.yCheck + payload.direction.y;
         payload.xCheck = payload.xCheck + payload.direction.x;
       }
@@ -336,6 +359,9 @@ export const store = createStore<Table>({
     changeTurn(state: Table) {
       state.turn = state.turn == 1 ? 0 : 1;
       state.playerChoices = [];
+      if (state.gameProgress === 44) {
+        store.commit('changeGameStatus');
+      }
     },
     determineStoneColor(
       state: Table,
@@ -403,6 +429,7 @@ export const store = createStore<Table>({
           state.stone2.push(0);
         }
         state.playerChoices = [];
+        state.gameProgress -= 1;
       }
     },
     resetGame(state: Table): void {
@@ -417,6 +444,8 @@ export const store = createStore<Table>({
         state.player.white.stoneNum = 2;
         state.tableData = [];
         state.turn = 1;
+        state.gameProgress = 0;
+        state.gameStatus = 'opening';
         while (state.stone1.length < 30 || state.stone2.length < 30) {
           if (state.stone1.length < 30) state.stone1.push(0);
           if (state.stone2.length < 30) state.stone2.push(0);
@@ -429,6 +458,12 @@ export const store = createStore<Table>({
     },
     changeCpuStrength(state: Table, strength: 'string') {
       state.cpuStrength = strength;
+    },
+    changeGameStatus(state: Table) {
+      state.gameStatus = 'endGame';
+    },
+    addGameProgress(state: Table) {
+      state.gameProgress += 1;
     },
   },
   getters: {
