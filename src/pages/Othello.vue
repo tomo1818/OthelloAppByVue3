@@ -4,11 +4,20 @@
       <h2>オセロページです</h2>
       <!-- データの受け渡し -->
       <div>
-        <p>手番: {{ turn == 1 ? state.player.black.name : state.player.white.name }}</p>
+        <p>
+          手番:
+          {{ turn == 1 ? state.player.black.name : state.player.white.name }}
+        </p>
       </div>
       <div>
-        <p>黒石: {{ state.player.black.name}}, 石の数: {{ state.player.black.stoneNum}}</p>
-        <p>白石: {{ state.player.white.name}}, 石の数: {{ state.player.white.stoneNum}}</p>
+        <p>
+          黒石: {{ state.player.black.name }}, 石の数:
+          {{ state.player.black.stoneNum }}
+        </p>
+        <p>
+          白石: {{ state.player.white.name }}, 石の数:
+          {{ state.player.white.stoneNum }}
+        </p>
       </div>
       <div v-if="settingData.mode == 'vsCpu'">
         <p>モード: {{ settingData.mode }}</p>
@@ -24,10 +33,20 @@
         <p>{{ state.playerChoices }}</p>
       </div>
       <div class="mb-3">
-        <button class="btn btn-primary" @click="moveBack(), showPlaceStoneCanBePut()">一手戻す</button>
+        <button
+          class="btn btn-primary"
+          @click="moveBack(), showPlaceStoneCanBePut()"
+        >
+          一手戻す
+        </button>
       </div>
       <div class="mb-3">
-        <button class="btn btn-primary" @click="resetGame(), showPlaceStoneCanBePut()">リセットする</button>
+        <button
+          class="btn btn-primary"
+          @click="resetGame(), showPlaceStoneCanBePut()"
+        >
+          リセットする
+        </button>
       </div>
       <div class="othelloContainer">
         <div class="stoneBox user1">
@@ -35,12 +54,15 @@
             <div
               class="stone"
               v-for="(stone, index) in state.stone1"
-              v-bind:key="index" 
+              v-bind:key="index"
               :style="{ backgroundImage: createStoneGradientString }"
             ></div>
           </div>
         </div>
-        <table class="othelloTable" v-bind:style="{ backgroundColor: colorObj.table}">
+        <table
+          class="othelloTable"
+          v-bind:style="{ backgroundColor: colorObj.table }"
+        >
           <tbody>
             <tr
               v-for="(value, rowNum, index) in state.table"
@@ -51,25 +73,39 @@
                 v-bind:key="index2"
               >
                 <div ref="root" class="stoneCon" v-if="value2 == 1">
-                  <i class="fas fa-circle fa-lg  front" v-bind:style="{ color: colorObj.frontStone}"></i>
-                  <i class="fas fa-circle fa-lg back" v-bind:style="{ color: colorObj.backStone}"></i>
+                  <i
+                    class="fas fa-circle fa-lg front"
+                    v-bind:style="{ color: colorObj.frontStone }"
+                  ></i>
+                  <i
+                    class="fas fa-circle fa-lg back"
+                    v-bind:style="{ color: colorObj.backStone }"
+                  ></i>
                 </div>
                 <div ref="root" class="stoneCon" v-else-if="value2 == 0">
-                  <i class="fas fa-circle fa-lg front" v-bind:style="{ color: colorObj.backStone}"></i>
-                  <i class="fas fa-circle fa-lg black back" v-bind:style="{ color: colorObj.frontStone}"></i>
+                  <i
+                    class="fas fa-circle fa-lg front"
+                    v-bind:style="{ color: colorObj.backStone }"
+                  ></i>
+                  <i
+                    class="fas fa-circle fa-lg black back"
+                    v-bind:style="{ color: colorObj.frontStone }"
+                  ></i>
                 </div>
                 <div class="full" v-else-if="value2 == 3">
                   <button
                     class="full massBtn"
                     @click="
                       addTableData(),
-                      putStone({ y: rowNum, x: columnNum }),
-                      returnStone({ y: rowNum, x: columnNum }),
-                      changeTurn(),
-                      showPlaceStoneCanBePut(),
-                      winLoseJudgment()
+                        putStone({ y: rowNum, x: columnNum }),
+                        returnStone({ y: rowNum, x: columnNum }),
+                        changeTurn(),
+                        showPlaceStoneCanBePut(),
+                        winLoseJudgment()
                     "
-                  ><i v-if="value2 == 3" class="far fa-circle fa-xs"></i></button>
+                  >
+                    <i v-if="value2 == 3" class="far fa-circle fa-xs"></i>
+                  </button>
                 </div>
               </td>
             </tr>
@@ -91,7 +127,14 @@
 </template>
 
 <script lang="ts">
-import { computed, ref, onMounted, reactive, ComputedRef, onUpdated } from 'vue';
+import {
+  computed,
+  ref,
+  onMounted,
+  reactive,
+  ComputedRef,
+  onUpdated,
+} from 'vue';
 import { useStore } from 'vuex';
 import { key } from '../store';
 import { useRoute } from 'vue-router';
@@ -125,20 +168,20 @@ export default {
       stone2: store.state.stone2,
       aroundStone: store.state.aroundStone,
       playerChoices: store.state.playerChoices,
-    }); 
+    });
     // method
 
     const addTableData = (): void => {
-      store.commit('addTableData')
-    }
+      store.commit('addTableData');
+    };
 
     const moveBack = (): void => {
       store.commit('moveBack');
-    }
+    };
 
     const resetGame = (): void => {
       store.commit('resetGame');
-    }
+    };
 
     // 隣の石をチェック
     const checkNextStone = (
@@ -150,7 +193,8 @@ export default {
       if (
         checkOutOfRange({ y: row, x: column }) &&
         (state.table[row][column] === null ||
-          state.table[row][column] === turn.value || state.table[row][column] === 3)
+          state.table[row][column] === turn.value ||
+          state.table[row][column] === 3)
       )
         return true;
       return false;
@@ -172,18 +216,22 @@ export default {
         position.x <= 8 &&
         position.x >= 1
       )
-      return true;
+        return true;
       return false;
     };
 
     // 各方向でループ
-    const checkLine = (position: Coordinate, direction: Coordinate): boolean => {
+    const checkLine = (
+      position: Coordinate,
+      direction: Coordinate
+    ): boolean => {
       let row = determinCheckStartPosition(Number(position.y), direction.y);
       let column = determinCheckStartPosition(Number(position.x), direction.x);
       if (checkOutOfRange({ y: row, x: column })) {
         while (
           checkOutOfRange({ y: row, x: column }) &&
-          state.table[row][column] !== null && state.table[row][column] !== 3
+          state.table[row][column] !== null &&
+          state.table[row][column] !== 3
         ) {
           if (state.table[row][column] === turn.value) {
             return true;
@@ -201,15 +249,15 @@ export default {
       return checkLine(position, direction);
     };
     //石を置ける場所を探す
-    const showPlaceStoneCanBePut = (): void =>{
-      store.commit("showPlaceStoneCanBePut", {
-      allDirections: Object.values(directions)
+    const showPlaceStoneCanBePut = (): void => {
+      store.commit('showPlaceStoneCanBePut', {
+        allDirections: Object.values(directions),
       });
     };
     //おける石がなくなっったらスキップ
-    const skipTurn = (): void =>{
+    const skipTurn = (): void => {
       alert("You can't put stone, skip your turn");
-      store.commit("changeTurn");
+      store.commit('changeTurn');
       showPlaceStoneCanBePut();
     };
 
@@ -221,27 +269,30 @@ export default {
           state.table = newValue[0];
           state.playerChoices = newValue[1];
         }
-      )
+      );
     });
 
     onUpdated(() => {
-      if(store.state.playerChoices.length == 0 && store.state.aroundStone.length != 0){
-        skipTurn()
+      if (
+        store.state.playerChoices.length == 0 &&
+        store.state.aroundStone.length != 0
+      ) {
+        skipTurn();
       }
-    })
+    });
     // computed
     //選択肢から色のオブジェクト取得
-    const colorObj = computed((): Color =>{
-      let obj: Color = (store.state.colorCollections['Basic']);
-      Object.keys(store.state.colorCollections).forEach(key => {
-      if (key == settingData.colorTheme) {
+    const colorObj = computed((): Color => {
+      let obj: Color = store.state.colorCollections['Basic'];
+      Object.keys(store.state.colorCollections).forEach((key) => {
+        if (key == settingData.colorTheme) {
           obj = store.state.colorCollections[key];
         }
       });
       return obj;
-    })
+    });
     //持ち石の側面CSS
-    const createStoneGradientString = computed((): string =>{
+    const createStoneGradientString = computed((): string => {
       return `linear-gradient(90deg, ${colorObj.value.frontStone} 0%, ${colorObj.value.frontStone} 50%, ${colorObj.value.backStone} 50%, ${colorObj.value.backStone} 100% )`;
     });
 
@@ -271,7 +322,7 @@ export default {
       putStone: (position: Coordinate) => {
         store.commit('putStone', { position: position });
         store.commit('reduceStone');
-        store.commit("checkAroundStone", {
+        store.commit('checkAroundStone', {
           position: position,
           allDirections: Object.values(directions),
         });
@@ -287,7 +338,7 @@ export default {
           });
       },
       winLoseJudgment: () => {
-        if(store.state.aroundStone.length == 0){
+        if (store.state.aroundStone.length == 0) {
           store.commit('winLoseJudgment');
         }
       },
@@ -305,7 +356,6 @@ export default {
 
 <style scoped>
 table.othelloTable {
-  
   border: solid 2px #000;
   border-collapse: collapse;
   border-spacing: 0px;

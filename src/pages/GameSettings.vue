@@ -22,7 +22,10 @@
         />
         <label for="vsCpu">vs CPU</label>
       </div>
-      <div class="inputPlayerName mb-3" :class="{ displayNone: setting.chosePlayer }">
+      <div
+        class="inputPlayerName mb-3"
+        :class="{ displayNone: setting.chosePlayer }"
+      >
         <h3 class="h3">プレイヤー名を入力してください</h3>
         <div class="mb-2">
           <input v-model="setting.playerName1" placeholder="Palyer name 1" />
@@ -33,7 +36,10 @@
           <span>Player Name 2: {{ setting.playerName2 }}</span>
         </div>
       </div>
-      <div class="choseCpuStrength mb-3" :class="{ displayNone: setting.choseCpu }">
+      <div
+        class="choseCpuStrength mb-3"
+        :class="{ displayNone: setting.choseCpu }"
+      >
         <h3 class="h3">コンピュータの強さを選択してください</h3>
         <input
           type="radio"
@@ -43,12 +49,25 @@
           checked
         />
         <label for="easy">Easy</label>
-        <input type="radio" value="normal" id="normal" v-model="setting.difficulty" />
+        <input
+          type="radio"
+          value="normal"
+          id="normal"
+          v-model="setting.difficulty"
+        />
         <label for="normal">Normal</label>
-        <input type="radio" value="hard" id="hard" v-model="setting.difficulty" />
+        <input
+          type="radio"
+          value="hard"
+          id="hard"
+          v-model="setting.difficulty"
+        />
         <label for="hard">Hard</label>
       </div>
-      <div class="determinFirstMove mb-3" :class="{ displayNone: setting.chosePlayer }">
+      <div
+        class="determinFirstMove mb-3"
+        :class="{ displayNone: setting.chosePlayer }"
+      >
         <h3 class="h3">先攻(黒石)のプレイヤーを決定します</h3>
         <input
           type="radio"
@@ -69,7 +88,10 @@
         <label for="player2">Player2</label>
         <p>first move: {{ setting.firstMove }}</p>
       </div>
-      <div class="determinFirstMove mb-3" :class="{ displayNone: setting.choseCpu }">
+      <div
+        class="determinFirstMove mb-3"
+        :class="{ displayNone: setting.choseCpu }"
+      >
         <h3 class="h3">先攻(黒石)のプレイヤーを決定します</h3>
         <input
           type="radio"
@@ -90,10 +112,14 @@
         <label for="player2">CPU</label>
         <p>first move: {{ setting.firstMove }}</p>
       </div>
-      <div class="selectColorTheme mb-3" >
+      <div class="selectColorTheme mb-3">
         <h3 class="h3">オセロ版の色オプションを選んでください</h3>
         <select v-model="setting.colorTheme">
-          <option v-for="(option, key ) in $store.state.colorCollections" :value="key"  v-bind:key="key">
+          <option
+            v-for="(option, key) in $store.state.colorCollections"
+            :value="key"
+            v-bind:key="key"
+          >
             {{ key }}
           </option>
         </select>
@@ -104,7 +130,11 @@
         class="btn btn-primary"
         :to="{
           name: 'Othello',
-          params: { mode: setting.opponent, strength: setting.difficulty, colorTheme: setting.colorTheme },
+          params: {
+            mode: setting.opponent,
+            strength: setting.difficulty,
+            colorTheme: setting.colorTheme,
+          },
         }"
         >スタート</router-link
       >
@@ -114,8 +144,14 @@
         class="btn btn-primary"
         :to="{
           name: 'Othello',
-          params: { mode: setting.opponent, name1: setting.playerName1, name2: setting.playerName2, firstMove: setting.firstMove, colorTheme: setting.colorTheme },
-          props: setting.colorTheme
+          params: {
+            mode: setting.opponent,
+            name1: setting.playerName1,
+            name2: setting.playerName2,
+            firstMove: setting.firstMove,
+            colorTheme: setting.colorTheme,
+          },
+          props: setting.colorTheme,
         }"
         >スタート</router-link
       >
@@ -152,16 +188,24 @@ export default {
         setting.chosePlayer = true;
         setting.choseCpu = false;
       }
-    }
+    };
 
     const determineFirstMove = (): void => {
       if (setting.opponent == 'vsPlayer') {
-        store.commit('determineFirstMove', {firstMove: setting.firstMove, name1: setting.playerName1, name2: setting.playerName2})
+        store.commit('determineFirstMove', {
+          firstMove: setting.firstMove,
+          name1: setting.playerName1,
+          name2: setting.playerName2,
+        });
       } else {
-        store.commit('determineFirstMove', {firstMove: setting.firstMove, name1: 'player1', name2: 'CPU'})
+        store.commit('determineFirstMove', {
+          firstMove: setting.firstMove,
+          name1: 'player1',
+          name2: 'CPU',
+        });
       }
-    }
-    
+    };
+
     return {
       setting,
       changeOpponent,
