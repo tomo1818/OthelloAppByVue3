@@ -118,13 +118,13 @@
       <div class="selectColorTheme mb-3">
         <h3 class="h3">オセロ版の色オプションを選んでください</h3>
         <select v-model="setting.colorTheme">
-          <colorThemeOptions
+          <option
             v-for="(option, key) in $store.state.colorCollections"
             :value="key"
             v-bind:key="key"
           >
             {{ key }}
-          </colorThemeOptions>
+          </option>
         </select>
       </div>
       <!-- 良い書き方募集中です -->
