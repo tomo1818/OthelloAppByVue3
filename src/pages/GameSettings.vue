@@ -108,11 +108,11 @@
         <input
           type="radio"
           value="CPU"
-          id="player2"
+          id="cpu"
           v-model="setting.firstMove"
           @change="determineFirstMove"
         />
-        <label for="player2">CPU</label>
+        <label for="cpu">CPU</label>
         <p>first move: {{ setting.firstMove }}</p>
       </div>
       <div class="selectColorTheme mb-3">
