@@ -135,7 +135,7 @@
         </select>
       </div>
       <router-link
-        v-if="opponent == 'vsCpu'"
+        v-if="setting.opponent == 'vsCpu'"
         class="
           p-3
           btn
