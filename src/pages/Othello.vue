@@ -7,11 +7,20 @@
       </div>
       <!-- データの受け渡し -->
       <div>
-        <p>手番: {{ turn == 1 ? state.player.black : state.player.white }}</p>
+        <p>
+          手番:
+          {{ turn == 1 ? state.player.black.name : state.player.white.name }}
+        </p>
       </div>
       <div>
-        <p>黒石: {{ state.player.black }}</p>
-        <p>白石: {{ state.player.white }}</p>
+        <p>
+          黒石: {{ state.player.black.name }}, 石の数:
+          {{ state.player.black.stoneNum }}
+        </p>
+        <p>
+          白石: {{ state.player.white.name }}, 石の数:
+          {{ state.player.white.stoneNum }}
+        </p>
       </div>
       <div v-if="settingData.mode == 'vsCpu'">
         <p>モード: {{ settingData.mode }}</p>
@@ -19,6 +28,12 @@
       </div>
       <div v-else>
         <p>モード: {{ settingData.mode }}</p>
+      </div>
+      <div>
+        <p>{{ state.table }}</p>
+      </div>
+      <div>
+        <p>{{ state.playerChoices }}</p>
       </div>
       <div class="mb-3">
         <button
@@ -43,12 +58,13 @@
               class="stone"
               v-for="(stone, index) in state.stone1"
               v-bind:key="index"
+              :style="{ backgroundImage: createStoneGradientString }"
             ></div>
           </div>
         </div>
         <table
           class="othelloTable"
-          v-bind:style="{ backgroundColor: settingData.colorTheme }"
+          v-bind:style="{ backgroundColor: colorObj.table }"
         >
           <tbody>
             <tr
@@ -60,12 +76,24 @@
                 v-bind:key="index2"
               >
                 <div ref="root" class="stoneCon" v-if="value2 == 1">
-                  <i class="fas fa-circle fa-lg black front"></i>
-                  <i class="fas fa-circle fa-lg white back"></i>
+                  <i
+                    class="fas fa-circle fa-lg front"
+                    v-bind:style="{ color: colorObj.frontStone }"
+                  ></i>
+                  <i
+                    class="fas fa-circle fa-lg back"
+                    v-bind:style="{ color: colorObj.backStone }"
+                  ></i>
                 </div>
                 <div ref="root" class="stoneCon" v-else-if="value2 == 0">
-                  <i class="fas fa-circle fa-lg white front"></i>
-                  <i class="fas fa-circle fa-lg black back"></i>
+                  <i
+                    class="fas fa-circle fa-lg front"
+                    v-bind:style="{ color: colorObj.backStone }"
+                  ></i>
+                  <i
+                    class="fas fa-circle fa-lg black back"
+                    v-bind:style="{ color: colorObj.frontStone }"
+                  ></i>
                 </div>
                 <div class="full" v-else-if="value2 == 3">
                   <button
@@ -92,6 +120,7 @@
               class="stone"
               v-for="(stone, index) in state.stone2"
               v-bind:key="index"
+              :style="{ backgroundImage: createStoneGradientString }"
             ></div>
           </div>
         </div>
@@ -112,7 +141,7 @@ import {
 import { useStore } from 'vuex';
 import { key } from '../store';
 import { useRoute } from 'vue-router';
-import { State, Coordinate, Directions } from '@/types/type'; // 型定義を読み取る
+import { State, Coordinate, Directions, Color } from '@/types/type'; // 型定義を読み取る
 
 export default {
   // eslint-disable-next-line @typescript-eslint/explicit-module-boundary-types
@@ -143,7 +172,10 @@ export default {
       aroundStone: store.state.aroundStone,
       playerChoices: store.state.playerChoices,
     });
+<<<<<<< HEAD
 
+=======
+>>>>>>> develop
     // method
 
     const addTableData = (): void => {
@@ -239,15 +271,15 @@ export default {
     onMounted(() => {
       showPlaceStoneCanBePut();
       store.watch(
-        (state, getters) => getters.getTable,
+        (state, getters) => [getters.getTable, getters.getPlayerChoices],
         (newValue) => {
-          state.table = newValue;
+          state.table = newValue[0];
+          state.playerChoices = newValue[1];
         }
       );
     });
 
     onUpdated(() => {
-      //console.log(store.state.playerChoices)
       if (
         store.state.playerChoices.length == 0 &&
         store.state.aroundStone.length != 0
@@ -256,6 +288,21 @@ export default {
       }
     });
     // computed
+    //選択肢から色のオブジェクト取得
+    const colorObj = computed((): Color => {
+      let obj: Color = store.state.colorCollections['Basic'];
+      Object.keys(store.state.colorCollections).forEach((key) => {
+        if (key == settingData.colorTheme) {
+          obj = store.state.colorCollections[key];
+        }
+      });
+      return obj;
+    });
+    //持ち石の側面CSS
+    const createStoneGradientString = computed((): string => {
+      return `linear-gradient(90deg, ${colorObj.value.frontStone} 0%, ${colorObj.value.frontStone} 50%, ${colorObj.value.backStone} 50%, ${colorObj.value.backStone} 100% )`;
+    });
+
     // const stone1Num = computed((): number => state.stone1.length)
     // const stone2Num = computed((): number => state.stone2.length)
 
@@ -273,6 +320,8 @@ export default {
       addTableData,
       moveBack,
       resetGame,
+      colorObj,
+      createStoneGradientString,
       changeTurn: () => {
         store.commit('changeTurn');
       },
