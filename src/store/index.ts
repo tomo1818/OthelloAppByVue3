@@ -128,6 +128,9 @@ export const store = createStore<Table>({
     },
     gameStatus: 'opening',
     gameProgress: 0,
+    simulationTable: {},
+    simulationPlayerChoices: [],
+    simulationAroundStone: [],
   },
   mutations: {
     putStone(state: Table, payload: { position: Coordinate }): void {
@@ -182,6 +185,19 @@ export const store = createStore<Table>({
         position: state.cpuPosition,
         allDirections: payload.allDirections,
       });
+    },
+    cpuSimulation(state: Table, position: Coordinate) {
+      state.simulationTable = JSON.parse(JSON.stringify(state.table));
+      store.commit('putStoneSimulation', { position: position })
+      store.commit('returnStoneSimulation');
+      store.commit('changeTurnSimulation');
+      store.commit('showPlaceStoneCanBePutSimulation')
+
+      const max = state.simulationPlayerChoices[0];
+      for (let i = 0; i < state.simulationPlayerChoices.length; i++) {
+        state.aroundStone;
+      }
+      const maxNum = max.evaluationValue;
     },
     reduceStone(state: Table): void {
       if (state.turn == 1) state.stone1.pop();

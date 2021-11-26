@@ -23,6 +23,13 @@ export interface Table extends State {
   cpuPosition: Coordinate;
   gameStatus: string;
   gameProgress: number;
+  simulationTable: { [key: number]: { [key: number]: number | null } };
+  simulationPlayerChoices: {
+    position: Coordinate;
+    returnNum: number;
+    evaluationValue: number;
+  }[];
+  simulationAroundStone: { y: number; x: number }[]
 }
 
 export interface SettingData {
