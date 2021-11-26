@@ -10,7 +10,7 @@
   text-align: center;
   color: #2c3e50;
   box-sizing: content-box;
-  height:100%
+  height: 100%;
 }
 
 #nav {
