@@ -61,11 +61,7 @@
         </div>
         <table
           class="othelloTable"
-<<<<<<< HEAD
-          v-bind:style="{ backgroundColor: settingData.colorTheme }"
-=======
           v-bind:style="{ backgroundColor: colorObj.table }"
->>>>>>> develop
         >
           <tbody>
             <tr
@@ -105,12 +101,8 @@
                         returnStone({ y: rowNum, x: columnNum }),
                         changeTurn(),
                         showPlaceStoneCanBePut(),
-<<<<<<< HEAD
                         winLoseJudgment(),
                         cpuAction()
-=======
-                        winLoseJudgment()
->>>>>>> develop
                     "
                   >
                     <i v-if="value2 == 3" class="far fa-circle fa-xs"></i>
@@ -178,10 +170,6 @@ export default {
       aroundStone: store.state.aroundStone,
       playerChoices: store.state.playerChoices,
     });
-<<<<<<< HEAD
-
-=======
->>>>>>> develop
     // method
 
     const addTableData = (): void => {
@@ -195,8 +183,6 @@ export default {
     const resetGame = (): void => {
       store.commit('resetGame');
     };
-<<<<<<< HEAD
-
     const changeTurn = (): void => {
       store.commit('changeTurn');
     };
@@ -256,8 +242,6 @@ export default {
         }
       }
     };
-=======
->>>>>>> develop
 
     // 隣の石をチェック
     const checkNextStone = (
@@ -301,13 +285,8 @@ export default {
       position: Coordinate,
       direction: Coordinate
     ): boolean => {
-<<<<<<< HEAD
       let row = determineCheckStartPosition(Number(position.y), direction.y);
       let column = determineCheckStartPosition(Number(position.x), direction.x);
-=======
-      let row = determinCheckStartPosition(Number(position.y), direction.y);
-      let column = determinCheckStartPosition(Number(position.x), direction.x);
->>>>>>> develop
       if (checkOutOfRange({ y: row, x: column })) {
         while (
           checkOutOfRange({ y: row, x: column }) &&
@@ -329,16 +308,7 @@ export default {
       if (checkNextStone(position, direction)) return false;
       return checkLine(position, direction);
     };
-<<<<<<< HEAD
 
-=======
-    //石を置ける場所を探す
-    const showPlaceStoneCanBePut = (): void => {
-      store.commit('showPlaceStoneCanBePut', {
-        allDirections: Object.values(directions),
-      });
-    };
->>>>>>> develop
     //おける石がなくなっったらスキップ
     const skipTurn = (): void => {
       alert("You can't put stone, skip your turn");
@@ -359,10 +329,6 @@ export default {
     });
 
     onUpdated(() => {
-<<<<<<< HEAD
-      //console.log(store.state.playerChoices)
-=======
->>>>>>> develop
       if (
         store.state.playerChoices.length == 0 &&
         store.state.aroundStone.length != 0
@@ -403,44 +369,14 @@ export default {
       addTableData,
       moveBack,
       resetGame,
-<<<<<<< HEAD
       changeTurn,
       putStone,
       showPlaceStoneCanBePut,
       returnStone,
       winLoseJudgment,
       cpuAction,
-=======
       colorObj,
       createStoneGradientString,
-      changeTurn: () => {
-        store.commit('changeTurn');
-      },
-      // 石を置く
-      putStone: (position: Coordinate) => {
-        store.commit('putStone', { position: position });
-        store.commit('reduceStone');
-        store.commit('checkAroundStone', {
-          position: position,
-          allDirections: Object.values(directions),
-        });
-      },
-      showPlaceStoneCanBePut,
-      // ひっくり返す
-      returnStone: (position: Coordinate) => {
-        for (let key in directions)
-          store.commit('returnStone', {
-            position: position,
-            isReturn: isReturn(position, directions[key]),
-            direction: directions[key],
-          });
-      },
-      winLoseJudgment: () => {
-        if (store.state.aroundStone.length == 0) {
-          store.commit('winLoseJudgment');
-        }
-      },
->>>>>>> develop
       /*石をひっくり返すモーションをつける関数
         flip: function() => {
         console.log(this.$refs.card);
@@ -455,10 +391,6 @@ export default {
 
 <style scoped>
 table.othelloTable {
-<<<<<<< HEAD
-  background-color: #090;
-=======
->>>>>>> develop
   border: solid 2px #000;
   border-collapse: collapse;
   border-spacing: 0px;
