@@ -172,10 +172,6 @@ export default {
       aroundStone: store.state.aroundStone,
       playerChoices: store.state.playerChoices,
     });
-<<<<<<< HEAD
-
-=======
->>>>>>> develop
     // method
 
     const addTableData = (): void => {
