@@ -15,6 +15,7 @@ export interface Table extends State {
   turn: number;
   mode: string;
   cpuStrength: string;
+  colorCollections: { [key: string]: Color };
   tableData: {
     table: { [key: number]: { [key: number]: number | null } };
     stoneNum: { [key: string]: number };
@@ -43,11 +44,6 @@ export interface SettingData {
   colorTheme: string;
 }
 
-export type ColorOption = {
-  text: string;
-  value: string;
-};
-
 export type Coordinate = {
   y: number;
   x: number;
@@ -60,3 +56,9 @@ export type Weight = {
 };
 
 export type Directions = { [key: string]: Coordinate };
+
+export type Color = {
+  table: string;
+  frontStone: string;
+  backStone: string;
+};

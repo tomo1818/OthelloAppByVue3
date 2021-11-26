@@ -118,13 +118,13 @@
       <div class="selectColorTheme mb-3">
         <h3 class="h3">オセロ版の色オプションを選んでください</h3>
         <select v-model="setting.colorTheme">
-          <option
-            v-for="(option, index) in colorThemeOptions"
-            :value="option.value"
-            v-bind:key="index"
+          <colorThemeOptions
+            v-for="(option, key) in $store.state.colorCollections"
+            :value="key"
+            v-bind:key="key"
           >
-            {{ option.text }}
-          </option>
+            {{ key }}
+          </colorThemeOptions>
         </select>
       </div>
       <!-- 良い書き方募集中です -->
@@ -154,6 +154,7 @@
             firstMove: setting.firstMove,
             colorTheme: setting.colorTheme,
           },
+          props: setting.colorTheme,
         }"
         >スタート</router-link
       >
@@ -162,8 +163,8 @@
 </template>
 
 <script lang="ts">
-import { reactive } from 'vue';
-import { SettingData, ColorOption } from '@/types/type';
+import { reactive, onUpdated } from 'vue';
+import { SettingData } from '@/types/type';
 import { useStore } from 'vuex';
 import { key } from '../store';
 
@@ -179,16 +180,8 @@ export default {
       chosePlayer: false,
       choseCpu: true,
       firstMove: 'player1',
-      colorTheme: '#090',
+      colorTheme: 'Basic',
     });
-    const colorThemeOptions: ColorOption[] = [
-      { text: 'Basic', value: '#090' },
-      { text: 'Sky', value: '#659DBD' },
-      { text: 'Sophisticated', value: '#5D5C61' },
-      { text: 'Lively', value: '#E7717D' },
-      { text: 'Earthy', value: '#8D8741' },
-      { text: 'Fresh', value: '#5CDB95' },
-    ];
 
     const changeOpponent = (): void => {
       if (setting.chosePlayer == true) {
@@ -215,7 +208,6 @@ export default {
         });
       }
     };
-
     const changeMode = (): void => {
       store.commit('changeMode', { mode: setting.opponent });
     };
@@ -223,14 +215,12 @@ export default {
     const changeCpuStrength = (): void => {
       store.commit('changeCpuStrength', { strength: setting.strength });
     };
-
     return {
       setting,
       changeOpponent,
       changeMode,
       changeCpuStrength,
       determineFirstMove,
-      colorThemeOptions,
     };
   },
 };
