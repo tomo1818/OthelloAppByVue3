@@ -1,7 +1,10 @@
 <template>
   <div class="othello">
     <div>
-      <h2>オセロページです</h2>
+      <h2>オセロページ</h2>
+      <div>
+        <router-link class="h1" to="/" exact>オセロゲーム</router-link>
+      </div>
       <!-- データの受け渡し -->
       <div>
         <p>

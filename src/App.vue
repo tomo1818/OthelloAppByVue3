@@ -1,7 +1,4 @@
 <template>
-  <div id="nav">
-    <router-link class="h1" to="/" exact>オセロゲーム</router-link>
-  </div>
   <router-view />
 </template>
 
@@ -13,6 +10,7 @@
   text-align: center;
   color: #2c3e50;
   box-sizing: content-box;
+  height: 100%;
 }
 
 #nav {

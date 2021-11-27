@@ -1,13 +1,14 @@
 <template>
-  <div class="gemeSettings">
+  <div class="gemeSettings backColor pt-7">
     <div class="container">
-      <h2>ゲームセッティングページです</h2>
-      <div class="choseOpponent mb-3">
-        <h3 class="h3">対戦形式を選択してください</h3>
+      <h1 class="title mb-3 text-3xl">設定</h1>
+      <div class="choseOpponent mb-5">
+        <h3 class="h5">対戦形式を選択してください</h3>
         <input
           type="radio"
           value="vsPlayer"
           id="vsPlayer"
+          class="form-radio text-pink-600"
           v-model="setting.opponent"
           checked
           @change="changeOpponent"
@@ -17,6 +18,7 @@
           type="radio"
           value="vsCpu"
           id="vsCpu"
+          class="form-radio text-green-600"
           v-model="setting.opponent"
           @change="changeOpponent"
         />
@@ -28,11 +30,19 @@
       >
         <h3 class="h3">プレイヤー名を入力してください</h3>
         <div class="mb-2">
-          <input v-model="setting.playerName1" placeholder="Palyer name 1" />
+          <input
+            class="bg-gray-200 border-2 rounded"
+            v-model="setting.playerName1"
+            placeholder="Palyer name 1"
+          />
           <span>Player Name 1: {{ setting.playerName1 }}</span>
         </div>
         <div class="mb-2">
-          <input v-model="setting.playerName2" placeholder="Palyer name 2" />
+          <input
+            class="bg-gray-200"
+            v-model="setting.playerName2"
+            placeholder="Palyer name 2"
+          />
           <span>Player Name 2: {{ setting.playerName2 }}</span>
         </div>
       </div>
@@ -124,26 +134,43 @@
           </option>
         </select>
       </div>
-      <!-- 良い書き方募集中です -->
       <router-link
         v-if="setting.opponent == 'vsCpu'"
-        class="btn btn-primary"
+        class="
+          p-3
+          btn
+          hover:text-white
+          text-red-500
+          hover:bg-red-500
+          rounded-full
+          border-red-500
+          shadow-xl
+        "
         :to="{
-          name: 'Othello',
+          name: 'Home',
           params: {
             mode: setting.opponent,
             strength: setting.difficulty,
             colorTheme: setting.colorTheme,
           },
         }"
-        >スタート</router-link
+        >戻る</router-link
       >
       <router-link
         disabled
         v-else
-        class="btn btn-primary"
+        class="
+          p-3
+          btn
+          hover:text-white
+          text-red-500
+          hover:bg-red-500
+          rounded-full
+          border-red-500
+          shadow-xl
+        "
         :to="{
-          name: 'Othello',
+          name: 'Home',
           params: {
             mode: setting.opponent,
             name1: setting.playerName1,
@@ -153,7 +180,7 @@
           },
           props: setting.colorTheme,
         }"
-        >スタート</router-link
+        >戻る</router-link
       >
     </div>
   </div>
@@ -205,7 +232,6 @@ export default {
         });
       }
     };
-
     return {
       setting,
       changeOpponent,
@@ -218,5 +244,12 @@ export default {
 <style scoped>
 .displayNone {
   display: none;
+}
+
+.backColor {
+  /* background-color:black; */
+  /* width: 100%;
+  height: 800px;
+  color:white */
 }
 </style>
