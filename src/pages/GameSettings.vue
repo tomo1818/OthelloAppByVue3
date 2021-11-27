@@ -31,7 +31,8 @@
         <h3 class="h5">プレイヤー名を入力してください</h3>
         <div class="mb-3 mt-3">
           <span class="mr-3">Player Name 1: </span>
-          <input class="
+          <input
+            class="
               pl-4
               leading-tight
               shadow-xl
@@ -41,10 +42,13 @@
               bg-gray-200
               border-2
               rounded
-            " v-model="setting.playerName1" placeholder="Palyer name 1" />
+            "
+            v-model="setting.playerName1"
+            placeholder="Palyer name 1"
+          />
         </div>
         <div>
-          <span class="mr-3 ">Player Name 2: </span>
+          <span class="mr-3">Player Name 2: </span>
           <input
             class="
               shadow-xl
@@ -146,7 +150,10 @@
       </div>
       <div class="selectColorTheme mb-3">
         <h3 class="h5">オセロ版の色オプションを選んでください</h3>
-        <select class="mt-2 text-gray-800 w-32 rounded-lg" v-model="setting.colorTheme">
+        <select
+          class="mt-2 text-gray-800 w-32 rounded-lg"
+          v-model="setting.colorTheme"
+        >
           <option
             v-for="(option, key) in $store.state.colorCollections"
             :value="key"
