@@ -71,6 +71,8 @@
               <td
                 v-for="(value2, columnNum, index2) in value"
                 v-bind:key="index2"
+                class="stoneCon"
+                :class="{flipped: isFlippable(Number(rowNum), Number(columnNum) )  }"
               >
                 <div ref="root" class="stoneCon" v-if="value2 == 1">
                   <i
@@ -169,7 +171,9 @@ export default {
       aroundStone: store.state.aroundStone,
       playerChoices: store.state.playerChoices,
     });
+
     // method
+
 
     const addTableData = (): void => {
       store.commit('addTableData');
@@ -261,6 +265,11 @@ export default {
       showPlaceStoneCanBePut();
     };
 
+    const isFlippable = (yCheck: number, xCheck: number): boolean => {
+      if(store.state.flipList.some((e) => e.y == yCheck && e.x == xCheck)) return true;
+      else return false;
+    } ;
+
     onMounted(() => {
       showPlaceStoneCanBePut();
       store.watch(
@@ -273,6 +282,7 @@ export default {
     });
 
     onUpdated(() => {
+      console.log(store.state.flipList)
       if (
         store.state.playerChoices.length == 0 &&
         store.state.aroundStone.length != 0
@@ -281,6 +291,11 @@ export default {
       }
     });
     // computed
+    /* const isFlippable = computed((yCheck: string, xCheck: string): boolean => {
+      if(store.state.flipList.some((e) => e.y == Number(yCheck) && e.x == Number(xCheck))) return true;
+      return false;
+    }) */
+
     //選択肢から色のオブジェクト取得
     const colorObj = computed((): Color => {
       let obj: Color = store.state.colorCollections['Basic'];
@@ -310,6 +325,7 @@ export default {
       settingData,
       turn,
       state,
+      isFlippable,
       addTableData,
       moveBack,
       resetGame,
@@ -330,6 +346,7 @@ export default {
       showPlaceStoneCanBePut,
       // ひっくり返す
       returnStone: (position: Coordinate) => {
+        store.state.flipList = [];
         for (let key in directions)
           store.commit('returnStone', {
             position: position,
@@ -440,7 +457,7 @@ table.othelloTable tr:first-child td {
 }
 
 .stoneCon {
-  transition: transform 2s;
+  transition: transform 1s;
   transform-style: preserve-3d;
   cursor: pointer;
 }

@@ -134,6 +134,7 @@ export const store = createStore<Table>({
       { y: 6, x: 6 },
     ],
     playerChoices: [],
+    flipList: [],
     aroundStoneData: [],
     tableData: [],
   },
@@ -185,6 +186,7 @@ export const store = createStore<Table>({
         let row = Number(payload.position.y) + Number(payload.direction.y);
         let column = Number(payload.position.x) + Number(payload.direction.x);
         while (state.table[row][column] != state.turn) {
+          state.flipList.push({ y: row, x: column })
           state.table[row][column] = state.turn;
           store.commit('addStoneNum');
           row += payload.direction.y;

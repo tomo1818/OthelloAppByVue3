@@ -16,6 +16,7 @@ export interface Table extends State {
     stoneNum: { [key: string]: number };
   }[];
   aroundStoneData: Coordinate[][];
+  flipList: Coordinate[];
 }
 
 export interface SettingData {
