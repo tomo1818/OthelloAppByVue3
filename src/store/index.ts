@@ -221,14 +221,14 @@ export const store = createStore<Table>({
           state.cpuPosition = max.position;
         } else {
           let max = state.playerChoices[0];
-          store.commit('cpuSimulation', { position: max.position }); // ここでsimulationMaxEvaluationStatusが埋まる。
-          let maxEvaluationValue =
-            max.evaluationValue -
-            Number(state.simulationMaxEvaluationStatus.evaluationValue);
-          let maxReturnNum =
-            max.returnNum -
-            Number(state.simulationMaxEvaluationStatus.returnNum);
           if (choicesNum > 1) {
+            store.commit('cpuSimulation', { position: max.position }); // ここでsimulationMaxEvaluationStatusが埋まる。
+            let maxEvaluationValue =
+              max.evaluationValue -
+              Number(state.simulationMaxEvaluationStatus.evaluationValue);
+            let maxReturnNum =
+              max.returnNum -
+              Number(state.simulationMaxEvaluationStatus.returnNum);
             for (let i = 1; i < choicesNum; i++) {
               const curr = state.playerChoices[i];
               store.commit('cpuSimulation', { position: curr.position });

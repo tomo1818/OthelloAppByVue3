@@ -1,38 +1,9 @@
 <template>
   <div class="backImg pt-10 vh-100">
-    <div class="othelloTitleDiv">
-      <h1 class="othelloTitle">Othello</h1>
+    <div class="othelloTitleDiv mt-10">
+      <h1 class="othelloTitle my-5">Othello</h1>
     </div>
-    <div class="startBtn">
-      <router-link
-        class="
-          p-3
-          btn
-          hover:bg-gray-100 hover:bg-opacity-25
-          text-white
-          rounded-full
-          border-gray-100
-          hover:border-gray-100
-          shadow-3xl
-        "
-        :to="{
-          name: 'Othello',
-          params: {
-            mode: opponent,
-            strength: difficulty,
-            colorTheme: colorTheme,
-          },
-          params: {
-            mode: opponent,
-            name1: playerName1,
-            name2: playerName2,
-            colorTheme: colorTheme,
-          },
-        }"
-        >スタート</router-link
-      >
-    </div>
-    <div class="settingBtn mt-5">
+    <div class="settingBtn">
       <router-link
         class="
           p-3
@@ -45,11 +16,28 @@
           shadow-3xl
         "
         to="/setting"
-        >ゲーム設定</router-link
+        >スタート</router-link
       >
     </div>
   </div>
 </template>
+
+<script lang="ts">
+import { useRoute } from 'vue-router';
+
+export default {
+  // eslint-disable-next-line @typescript-eslint/explicit-module-boundary-types
+  setup() {
+    const route = useRoute();
+    const settingData = route.params;
+
+    return {
+      settingData,
+    }
+  }
+}
+
+</script>
 
 <style scoped>
 @import url('https://fonts.googleapis.com/css2?family=Libre+Baskerville:ital@1&family=M+PLUS+2:wght@700&display=swap');
@@ -60,7 +48,6 @@
   background-position: center center;
   width: 100%;
   height: 100%;
-  padding-top: 200px;
 }
 
 .backImg {
@@ -70,12 +57,10 @@
   background-position: center center;
   width: 100%;
   height: 100%;
-  padding-top: 200px;
 }
 
 .othelloTitleDiv {
   font-size: 80px;
-  margin-top: -100px;
 }
 
 .othelloTitle {
@@ -84,7 +69,11 @@
 }
 
 .settingBtn {
-  margin-right: 10px;
+  position: absolute;
+  top: 50%;
+  left: calc(50% - 10px);
+  transform: translate(-50%, -50%);
+  -webkit-transform: translate(-50%, -50%);
 }
 
 .startBtn {

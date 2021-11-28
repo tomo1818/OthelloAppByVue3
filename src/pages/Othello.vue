@@ -1,7 +1,6 @@
 <template>
   <div class="othello">
-    <div>
-      <h2>オセロページ</h2>
+    <div class="othelloContainer">
       <div>
         <router-link class="h1" to="/" exact>オセロゲーム</router-link>
       </div>
@@ -12,16 +11,6 @@
           {{ turn == 1 ? state.player.black.name : state.player.white.name }}
         </p>
       </div>
-      <div>
-        <p>
-          黒石: {{ state.player.black.name }}, 石の数:
-          {{ state.player.black.stoneNum }}
-        </p>
-        <p>
-          白石: {{ state.player.white.name }}, 石の数:
-          {{ state.player.white.stoneNum }}
-        </p>
-      </div>
       <div v-if="settingData.mode == 'vsCpu'">
         <p>モード: {{ settingData.mode }}</p>
         <p>難易度: {{ settingData.strength }}</p>
@@ -29,103 +18,126 @@
       <div v-else>
         <p>モード: {{ settingData.mode }}</p>
       </div>
-      <div>
-        <p>{{ state.table }}</p>
-      </div>
-      <div>
-        <p>{{ state.playerChoices }}</p>
-      </div>
-      <div>
-        <p>{{ state.simulationPlayerChoices }}</p>
-      </div>
-      <div class="mb-3">
-        <button
-          class="btn btn-primary"
-          @click="moveBack(), showPlaceStoneCanBePut()"
-        >
-          一手戻す
-        </button>
-      </div>
-      <div class="mb-3">
-        <button
-          class="btn btn-primary"
-          @click="resetGame(), showPlaceStoneCanBePut()"
-        >
-          リセットする
-        </button>
-      </div>
-      <div class="othelloContainer">
-        <div class="stoneBox user1">
-          <div class="box">
-            <div
-              class="stone"
-              v-for="(stone, index) in state.stone1"
-              v-bind:key="index"
-              :style="{ backgroundImage: createStoneGradientString }"
-            ></div>
+      <div class="othelloTableContainer">
+        <div class="infoBox">
+          <div class="playerInfo whiteSide">
+            <div class="stoneImage">
+              <div class="stoneCon">
+                <p class="front whiteShadow" style="background-color: rgb(255, 255, 255);"></p>
+              </div>
+            </div>
+            <div class="someInfo">
+              <p class="stoneInfo">{{ state.player.white.stoneNum }}</p>
+              <p class="playerName">{{ state.player.white.name }}</p>
+            </div>
+          </div>
+          <div class="commandContainer">
+            <div class="commandItem display mr10" @click="moveBack(), showPlaceStoneCanBePut()">
+              <img src="@/assets/othelloPage/vsPlayer.png" alt="待ったのアイコン">
+              <p>モード</p>
+            </div>
+            <div class="commandItem display" @click="resetGame(), showPlaceStoneCanBePut()">
+              <img src="@/assets/othelloPage/vsCpu.png" alt="待ったのアイコン">
+              <p>新規対局</p>
+            </div>
           </div>
         </div>
-        <table
-          class="othelloTable"
-          v-bind:style="{ backgroundColor: colorObj.table }"
-        >
-          <tbody>
-            <tr
-              v-for="(value, rowNum, index) in state.table"
-              v-bind:key="index"
-            >
-              <td
-                v-for="(value2, columnNum, index2) in value"
-                v-bind:key="index2"
+        <div class="othelloBoard">
+          <div class="stoneBox user1">
+            <div class="box">
+              <div
+                class="stone"
+                v-for="(stone, index) in state.stone1"
+                v-bind:key="index"
+                :style="{ backgroundImage: createStoneGradientString }"
+              ></div>
+            </div>
+          </div>
+          <table
+            class="othelloTable"
+            v-bind:style="{ backgroundColor: colorObj.table }"
+          >
+            <tbody>
+              <tr
+                v-for="(value, rowNum, index) in state.table"
+                v-bind:key="index"
               >
-                <div ref="root" class="stoneCon" v-if="value2 == 1">
-                  <i
-                    class="fas fa-circle fa-lg front"
-                    v-bind:style="{ color: colorObj.frontStone }"
-                  ></i>
-                  <i
-                    class="fas fa-circle fa-lg back"
-                    v-bind:style="{ color: colorObj.backStone }"
-                  ></i>
-                </div>
-                <div ref="root" class="stoneCon" v-else-if="value2 == 0">
-                  <i
-                    class="fas fa-circle fa-lg front"
-                    v-bind:style="{ color: colorObj.backStone }"
-                  ></i>
-                  <i
-                    class="fas fa-circle fa-lg black back"
-                    v-bind:style="{ color: colorObj.frontStone }"
-                  ></i>
-                </div>
-                <div class="full" v-else-if="value2 == 3">
-                  <button
-                    class="full massBtn"
-                    @click="
-                      addTableData(),
-                        putStone({ y: rowNum, x: columnNum }),
-                        returnStone({ y: rowNum, x: columnNum }),
-                        changeTurn(),
-                        showPlaceStoneCanBePut(),
-                        winLoseJudgment(),
-                        cpuAction()
-                    "
-                  >
-                    <i v-if="value2 == 3" class="far fa-circle fa-xs"></i>
-                  </button>
-                </div>
-              </td>
-            </tr>
-          </tbody>
-        </table>
-        <div class="stoneBox user2">
-          <div class="box">
-            <div
-              class="stone"
-              v-for="(stone, index) in state.stone2"
-              v-bind:key="index"
-              :style="{ backgroundImage: createStoneGradientString }"
-            ></div>
+                <td
+                  v-for="(value2, columnNum, index2) in value"
+                  v-bind:key="index2"
+                >
+                  <div ref="root" class="stoneCon" v-if="value2 == 1">
+                    <p
+                      class="front blackShadow"
+                      v-bind:style="{ backgroundColor: colorObj.frontStone }"
+                    ></p>
+                    <p
+                      class="back whiteShadow"
+                      v-bind:style="{ backgroundColor: colorObj.backStone }"
+                    ></p>
+                  </div>
+                  <div ref="root" class="stoneCon" v-else-if="value2 == 0">
+                    <p
+                      class="front whiteShadow"
+                      v-bind:style="{ backgroundColor: colorObj.backStone }"
+                    ></p>
+                    <p
+                      class="black back blackShadow"
+                      v-bind:style="{ backgroundColor: colorObj.frontStone }"
+                    ></p>
+                  </div>
+                  <div class="full" v-else-if="value2 == 3">
+                    <button
+                      class="full massBtn"
+                      @click="
+                        addTableData(),
+                          putStone({ y: rowNum, x: columnNum }),
+                          returnStone({ y: rowNum, x: columnNum }),
+                          changeTurn(),
+                          showPlaceStoneCanBePut(),
+                          winLoseJudgment(),
+                          cpuAction()
+                      "
+                    >
+                      <i v-if="value2 == 3" class="far fa-circle fa-xs"></i>
+                    </button>
+                  </div>
+                </td>
+              </tr>
+            </tbody>
+          </table>
+          <div class="stoneBox user2">
+            <div class="box">
+              <div
+                class="stone"
+                v-for="(stone, index) in state.stone2"
+                v-bind:key="index"
+                :style="{ backgroundImage: createStoneGradientString }"
+              ></div>
+            </div>
+          </div>
+        </div>
+        <div class="infoBox">
+          <div class="commandContainer">
+            <button class="commandItem mr10" @click="moveBack(), showPlaceStoneCanBePut()">
+              <img src="@/assets/othelloPage/stop.png" alt="待ったのアイコン">
+              <p>待った</p>
+            </button>
+            <button class="commandItem" @click="resetGame(), showPlaceStoneCanBePut()">
+              <img src="@/assets/othelloPage/othelloIcon.png" alt="オセロのアイコン">
+              <p>新規対局</p>
+            </button>
+          </div>
+          <div class="playerInfo blackSide">
+            <div class="stoneImage">
+              <div class="stoneCon">
+                <p class="front" style="background-color: rgb(0, 0, 0); box-shadow: 0 0 5px white;"></p>
+              </div>
+            </div>
+            <div class="someInfo">
+              <p class="stoneInfo">{{ state.player.black.stoneNum }}</p>
+              <p class="playerName">{{ state.player.black.name }}</p>
+            </div>
           </div>
         </div>
       </div>
@@ -410,17 +422,42 @@ export default {
 </script>
 
 <style scoped>
+
+.othello {
+  background-image: url('http://freebies-db.com/wp-content/uploads/2013/09/free-texture-3-infinite-wooden-floors.jpg');
+  background-size: cover;
+  height: 100vh;
+}
+
+.othelloContainer {
+  max-width: 1200px;
+  margin: 0 auto;
+}
+
+.othelloTableContainer {
+  display: flex;
+  flex-wrap: wrap;
+}
+
+.othelloBoard {
+  max-width: 459px;
+  margin: 0 auto;
+}
+
+
+
 table.othelloTable {
   border: solid 2px #000;
   border-collapse: collapse;
   border-spacing: 0px;
   table-layout: fixed;
-  max-width: 960px;
-  margin: 0 auto;
+  width: 100%;
+  max-height: 459px;
+  height: 100%;
 }
 
 table.othelloTable tr td {
-  width: 54px;
+  width: 12.472648%;
   height: 54px;
   border: solid 1px #fff;
   text-align: center;
@@ -458,7 +495,7 @@ table.othelloTable tr:first-child td {
   justify-content: flex-start;
 }
 .stoneBox .box .stone {
-  width: 11.47px;
+  width: 3.12374%;
   height: 100%;
   background: linear-gradient(90deg, #fff 0%, #fff 50%, #000 50%, #000 100%);
 }
@@ -490,14 +527,87 @@ table.othelloTable tr:first-child td {
   justify-content: center;
   align-items: center;
   backface-visibility: hidden;
-  width: 100%;
-  height: 100%;
+  /* width: 100%;
+  height: 100%; */
+
+  width: 80%;
+  height: 80%;
+  border-radius: 50%;
+  top: 50%;
+  left: 50%;
+  transform: translate(-50%, -50%);
+  -webkit-transform: translate(-50%, -50%);
+  -ms-transform: translate(-50%, -50%);
+}
+
+.infoBox {
+  width: calc((100% - 539px) / 2);
+  margin: 80px 20px;
+  display: flex;
+  flex-direction: column;
+  justify-content: space-between;
+}
+
+.whiteSide {
+  background: -moz-linear-gradient(left, #333, #333 30%, #ffffff 100%);
+  background: -webkit-linear-gradient(left, #333 0%, #333 30%, #ffffff 100%);
+  background: -o-linear-gradient(left, #333 0%, #333 30%, #ffffff 100%);
+  background: -ms-linear-gradient(left, #333 0%, #333 30%, #ffffff 100%);
+  background: linear-gradient(to left, rgba(0,0,0,0.5),rgba(0,0,0,1));
+}
+
+.blackSide {
+  background: -moz-linear-gradient(left, #333, #e33039 70%, #e33039 100%);
+  background: -webkit-linear-gradient(left, #333 0%, #e33039 70%, #e33039 100%);
+  background: -o-linear-gradient(left, #333 0%, #e33039 70%, #e33039 100%);
+  background: -ms-linear-gradient(left, #333 0%, #e33039 70%, #e33039 100%);
+  background: linear-gradient(to right, #333 0%, #e33039 70%, #e33039 100%);
+}
+
+.playerInfo {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: 5px 0;
+  padding-left: 10px;
+  padding-right: 20px;
+  border-radius: 10px;
+  box-sizing: content-box;
+  height: 70px;
+}
+.stoneImage {
+  height: 60px;
+  width: 60px;
+}
+
+.whiteShadow {
+  box-shadow: 1px 1px 4px black;
+}
+
+.blackShadow {
+  box-shadow: 1px 1px 0px #cccccc;
+}
+
+.someInfo {
+  color: white;
+  font-weight: bold;
+  line-height: 1;
+}
+
+.stoneInfo {
+  font-size: 30px;
+}
+
+.playerName {
+  font-size: 16px;
 }
 
 .stoneCon {
   transition: transform 2s;
   transform-style: preserve-3d;
   cursor: pointer;
+  width: 100%;
+  height: 100%;
 }
 
 .stoneCon .back {
@@ -506,5 +616,33 @@ table.othelloTable tr:first-child td {
 /* クラスflippedを石の要素にtoggleしたらひっくり返せます */
 .stoneCon.flipped {
   transform: rotateY(180deg);
+}
+
+.commandContainer {
+  display: flex;
+  flex-wrap: wrap;
+}
+
+.commandItem {
+  width: calc((100% - 10px) / 2);
+  /* background-image: url('../assets/othelloPage/commandBg.jpeg'); */
+  border: 2px solid #e8e8e8;
+  border-radius: 10px;
+  background: rgba(0, 0, 0, 0.1);
+}
+
+.display {
+  background-color: white;
+  border: 3px solid black;
+}
+
+.mr10 {
+  margin-right: 10px;
+}
+
+.commandItem img {
+  width: 60%;
+  margin: 0 auto;
+  margin-top: 10px;
 }
 </style>
