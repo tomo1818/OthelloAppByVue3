@@ -9,6 +9,11 @@ export interface State {
     returnNum: number;
     evaluationValue: number;
   }[];
+  simulationPlayerChoices: {
+    position: Coordinate;
+    returnNum: number;
+    evaluationValue: number;
+  }[];
 }
 
 export interface Table extends State {
@@ -24,13 +29,18 @@ export interface Table extends State {
   cpuPosition: Coordinate;
   gameStatus: string;
   gameProgress: number;
+  simulationFlag: boolean;
+  simulationTurn: number;
+  simulationMaxEvaluationStatus: {
+    [key: string]: Coordinate | number;
+  };
   simulationTable: { [key: number]: { [key: number]: number | null } };
-  simulationPlayerChoices: {
-    position: Coordinate;
-    returnNum: number;
-    evaluationValue: number;
-  }[];
-  simulationAroundStone: { y: number; x: number }[]
+  // simulationPlayerChoices: {
+  //   position: Coordinate;
+  //   returnNum: number;
+  //   evaluationValue: number;
+  // }[];
+  simulationAroundStone: { y: number; x: number }[];
 }
 
 export interface SettingData {

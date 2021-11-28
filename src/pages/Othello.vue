@@ -32,6 +32,9 @@
       <div>
         <p>{{ state.playerChoices }}</p>
       </div>
+      <div>
+        <p>{{ state.simulationPlayerChoices }}</p>
+      </div>
       <div class="mb-3">
         <button
           class="btn btn-primary"
@@ -169,6 +172,7 @@ export default {
       stone2: store.state.stone2,
       aroundStone: store.state.aroundStone,
       playerChoices: store.state.playerChoices,
+      simulationPlayerChoices: store.state.simulationPlayerChoices,
     });
     // method
 
@@ -183,6 +187,7 @@ export default {
     const resetGame = (): void => {
       store.commit('resetGame');
     };
+
     const changeTurn = (): void => {
       store.commit('changeTurn');
     };
@@ -222,7 +227,11 @@ export default {
     };
 
     const cpuAction = (): void => {
-      if (settingData.mode === 'vsCpu') {
+      if (
+        settingData.mode === 'vsCpu' &&
+        store.state.playerChoices.length != 0 &&
+        store.state.aroundStone.length > 0
+      ) {
         store.commit('putStoneByCpu', {
           allDirections: Object.values(directions),
         });
@@ -314,16 +323,24 @@ export default {
       alert("You can't put stone, skip your turn");
       store.commit('changeTurn');
       showPlaceStoneCanBePut();
+      if (settingData.mode !== 'vsCpu') {
+        winLoseJudgment(), cpuAction();
+      }
     };
 
     onMounted(() => {
       showPlaceStoneCanBePut();
       if (state.player.black.name === 'CPU') cpuAction();
       store.watch(
-        (state, getters) => [getters.getTable, getters.getPlayerChoices],
+        (state, getters) => [
+          getters.getTable,
+          getters.getPlayerChoices,
+          getters.getSimulationPlayerChoices,
+        ],
         (newValue) => {
           state.table = newValue[0];
           state.playerChoices = newValue[1];
+          state.simulationPlayerChoices = newValue[2];
         }
       );
     });
