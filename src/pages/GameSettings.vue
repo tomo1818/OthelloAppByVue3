@@ -11,7 +11,7 @@
           class="form-radio text-pink-600"
           v-model="setting.opponent"
           checked
-          @change="changeOpponent"
+          @change="changeOpponent(), changeMode()"
         />
         <label for="vsPlayer">vs Player</label>
         <input
@@ -20,7 +20,7 @@
           id="vsCpu"
           class="form-radio text-green-600"
           v-model="setting.opponent"
-          @change="changeOpponent"
+          @change="changeOpponent(), changeMode()"
         />
         <label for="vsCpu">vs CPU</label>
       </div>
@@ -55,22 +55,25 @@
           type="radio"
           value="easy"
           id="easy"
-          v-model="setting.difficulty"
+          v-model="setting.strength"
           checked
+          @change="changeCpuStrength"
         />
         <label for="easy">Easy</label>
         <input
           type="radio"
           value="normal"
           id="normal"
-          v-model="setting.difficulty"
+          v-model="setting.strength"
+          @change="changeCpuStrength"
         />
         <label for="normal">Normal</label>
         <input
           type="radio"
           value="hard"
           id="hard"
-          v-model="setting.difficulty"
+          v-model="setting.strength"
+          @change="changeCpuStrength"
         />
         <label for="hard">Hard</label>
       </div>
@@ -115,11 +118,11 @@
         <input
           type="radio"
           value="CPU"
-          id="player2"
+          id="cpu"
           v-model="setting.firstMove"
           @change="determineFirstMove"
         />
-        <label for="player2">CPU</label>
+        <label for="cpu">CPU</label>
         <p>first move: {{ setting.firstMove }}</p>
       </div>
       <div class="selectColorTheme mb-3">
@@ -150,7 +153,7 @@
           name: 'Home',
           params: {
             mode: setting.opponent,
-            strength: setting.difficulty,
+            strength: setting.strength,
             colorTheme: setting.colorTheme,
           },
         }"
@@ -200,7 +203,7 @@ export default {
       opponent: 'vsPlayer',
       playerName1: 'player1',
       playerName2: 'player2',
-      difficulty: 'easy',
+      strength: 'easy',
       chosePlayer: false,
       choseCpu: true,
       firstMove: 'player1',
@@ -232,9 +235,18 @@ export default {
         });
       }
     };
+    const changeMode = (): void => {
+      store.commit('changeMode', { mode: setting.opponent });
+    };
+
+    const changeCpuStrength = (): void => {
+      store.commit('changeCpuStrength', { strength: setting.strength });
+    };
     return {
       setting,
       changeOpponent,
+      changeMode,
+      changeCpuStrength,
       determineFirstMove,
     };
   },

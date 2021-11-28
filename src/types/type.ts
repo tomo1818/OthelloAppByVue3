@@ -4,25 +4,50 @@ export interface State {
   stone1: number[];
   stone2: number[];
   aroundStone: { y: number; x: number }[];
-  playerChoices: { position: Coordinate; returnNum: number }[];
+  playerChoices: {
+    position: Coordinate;
+    returnNum: number;
+    evaluationValue: number;
+  }[];
+  simulationPlayerChoices: {
+    position: Coordinate;
+    returnNum: number;
+    evaluationValue: number;
+  }[];
 }
 
 export interface Table extends State {
   turn: number;
   mode: string;
+  cpuStrength: string;
   colorCollections: { [key: string]: Color };
   tableData: {
     table: { [key: number]: { [key: number]: number | null } };
     stoneNum: { [key: string]: number };
   }[];
   aroundStoneData: Coordinate[][];
+  cpuPosition: Coordinate;
+  gameStatus: string;
+  gameProgress: number;
+  simulationFlag: boolean;
+  simulationTurn: number;
+  simulationMaxEvaluationStatus: {
+    [key: string]: Coordinate | number;
+  };
+  simulationTable: { [key: number]: { [key: number]: number | null } };
+  // simulationPlayerChoices: {
+  //   position: Coordinate;
+  //   returnNum: number;
+  //   evaluationValue: number;
+  // }[];
+  simulationAroundStone: { y: number; x: number }[];
 }
 
 export interface SettingData {
   opponent: string;
   playerName1: string;
   playerName2: string;
-  difficulty: string;
+  strength: string;
   chosePlayer: boolean;
   choseCpu: boolean;
   firstMove: string;
@@ -32,6 +57,12 @@ export interface SettingData {
 export type Coordinate = {
   y: number;
   x: number;
+};
+
+export type Weight = {
+  [key: number]: {
+    [key: number]: number;
+  };
 };
 
 export type Directions = { [key: string]: Coordinate };
