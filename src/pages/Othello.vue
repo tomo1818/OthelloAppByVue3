@@ -35,6 +35,9 @@
       <div>
         <p>{{ state.playerChoices }}</p>
       </div>
+      <div>
+        <p>{{ state.simulationPlayerChoices }}</p>
+      </div>
       <div class="mb-3">
         <button
           class="btn btn-primary"
@@ -104,7 +107,8 @@
                         returnStone({ y: rowNum, x: columnNum }),
                         changeTurn(),
                         showPlaceStoneCanBePut(),
-                        winLoseJudgment()
+                        winLoseJudgment(),
+                        cpuAction()
                     "
                   >
                     <i v-if="value2 == 3" class="far fa-circle fa-xs"></i>
@@ -171,6 +175,7 @@ export default {
       stone2: store.state.stone2,
       aroundStone: store.state.aroundStone,
       playerChoices: store.state.playerChoices,
+      simulationPlayerChoices: store.state.simulationPlayerChoices,
     });
     // method
 
@@ -184,6 +189,70 @@ export default {
 
     const resetGame = (): void => {
       store.commit('resetGame');
+    };
+
+    const changeTurn = (): void => {
+      store.commit('changeTurn');
+    };
+
+    const putStone = (position: Coordinate): void => {
+      store.commit('putStone', {
+        position: position,
+        allDirections: Object.values(directions),
+      });
+      store.commit('reduceStone');
+      store.commit('checkAroundStone', {
+        position: position,
+        allDirections: Object.values(directions),
+      });
+    };
+
+    //石を置ける場所を探す
+    const showPlaceStoneCanBePut = (): void => {
+      store.commit('showPlaceStoneCanBePut', {
+        allDirections: Object.values(directions),
+      });
+    };
+
+    const returnStone = (position: Coordinate): void => {
+      for (let key in directions)
+        store.commit('returnStone', {
+          position: position,
+          isReturn: isReturn(position, directions[key]),
+          direction: directions[key],
+        });
+    };
+
+    const winLoseJudgment = (): void => {
+      if (store.state.aroundStone.length == 0) {
+        store.commit('winLoseJudgment');
+      }
+    };
+
+    const cpuAction = (): void => {
+      if (
+        settingData.mode === 'vsCpu' &&
+        store.state.playerChoices.length != 0 &&
+        store.state.aroundStone.length > 0
+      ) {
+        store.commit('putStoneByCpu', {
+          allDirections: Object.values(directions),
+        });
+        const putPosition = store.getters.getCpuPosition;
+        for (let key in directions)
+          store.commit('returnStone', {
+            position: putPosition,
+            isReturn: isReturn(putPosition, directions[key]),
+            direction: directions[key],
+          });
+        store.commit('changeTurn');
+        store.commit('showPlaceStoneCanBePut', {
+          allDirections: Object.values(directions),
+        });
+        if (store.state.aroundStone.length == 0) {
+          store.commit('winLoseJudgment');
+        }
+      }
     };
 
     // 隣の石をチェック
@@ -204,7 +273,7 @@ export default {
     };
 
     // ループのスタートポジションを決定
-    const determinCheckStartPosition = (
+    const determineCheckStartPosition = (
       position: number,
       num: number
     ): number => {
@@ -228,8 +297,8 @@ export default {
       position: Coordinate,
       direction: Coordinate
     ): boolean => {
-      let row = determinCheckStartPosition(Number(position.y), direction.y);
-      let column = determinCheckStartPosition(Number(position.x), direction.x);
+      let row = determineCheckStartPosition(Number(position.y), direction.y);
+      let column = determineCheckStartPosition(Number(position.x), direction.x);
       if (checkOutOfRange({ y: row, x: column })) {
         while (
           checkOutOfRange({ y: row, x: column }) &&
@@ -251,26 +320,30 @@ export default {
       if (checkNextStone(position, direction)) return false;
       return checkLine(position, direction);
     };
-    //石を置ける場所を探す
-    const showPlaceStoneCanBePut = (): void => {
-      store.commit('showPlaceStoneCanBePut', {
-        allDirections: Object.values(directions),
-      });
-    };
+
     //おける石がなくなっったらスキップ
     const skipTurn = (): void => {
       alert("You can't put stone, skip your turn");
       store.commit('changeTurn');
       showPlaceStoneCanBePut();
+      if (settingData.mode !== 'vsCpu') {
+        winLoseJudgment(), cpuAction();
+      }
     };
 
     onMounted(() => {
       showPlaceStoneCanBePut();
+      if (state.player.black.name === 'CPU') cpuAction();
       store.watch(
-        (state, getters) => [getters.getTable, getters.getPlayerChoices],
+        (state, getters) => [
+          getters.getTable,
+          getters.getPlayerChoices,
+          getters.getSimulationPlayerChoices,
+        ],
         (newValue) => {
           state.table = newValue[0];
           state.playerChoices = newValue[1];
+          state.simulationPlayerChoices = newValue[2];
         }
       );
     });
@@ -316,35 +389,14 @@ export default {
       addTableData,
       moveBack,
       resetGame,
+      changeTurn,
+      putStone,
+      showPlaceStoneCanBePut,
+      returnStone,
+      winLoseJudgment,
+      cpuAction,
       colorObj,
       createStoneGradientString,
-      changeTurn: () => {
-        store.commit('changeTurn');
-      },
-      // 石を置く
-      putStone: (position: Coordinate) => {
-        store.commit('putStone', { position: position });
-        store.commit('reduceStone');
-        store.commit('checkAroundStone', {
-          position: position,
-          allDirections: Object.values(directions),
-        });
-      },
-      showPlaceStoneCanBePut,
-      // ひっくり返す
-      returnStone: (position: Coordinate) => {
-        for (let key in directions)
-          store.commit('returnStone', {
-            position: position,
-            isReturn: isReturn(position, directions[key]),
-            direction: directions[key],
-          });
-      },
-      winLoseJudgment: () => {
-        if (store.state.aroundStone.length == 0) {
-          store.commit('winLoseJudgment');
-        }
-      },
       /*石をひっくり返すモーションをつける関数
         flip: function() => {
         console.log(this.$refs.card);
