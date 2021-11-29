@@ -144,6 +144,7 @@ import { useRoute } from 'vue-router';
 import { State, Coordinate, Directions, Color } from '@/types/type'; // 型定義を読み取る
 
 export default {
+  name,
   // eslint-disable-next-line @typescript-eslint/explicit-module-boundary-types
   setup() {
     const store = useStore(key);

@@ -1,5 +1,5 @@
 <template>
-  <div class="gemeSettings backColor pt-3 vh-100">
+  <div class="gemeSettings backImg pt-4 vh-100">
     <div class="container">
       <h1 class="font-serif title mb-3 text-3xl">設定</h1>
       <div class="flex justify-center">
@@ -53,7 +53,7 @@
           :class="{ displayNone: setting.chosePlayer }"
         >
           <h3 class="font-serif h5">プレイヤー名を入力してください</h3>
-          <div class="mb-3 mt-3">
+          <div class="mb-2 mt-2">
             <span class="font-serif mr-3">Player Name 1: </span>
             <input
               class="
@@ -217,11 +217,11 @@
             w-96
             shadow-2xl
             pt-2
-            pb-3
+            pb-2
+            mb-2
             rounded-2xl
             border-4 border-purple-500
             selectColorTheme
-            mb-3
             bg-purple-200
           "
         >
@@ -245,14 +245,15 @@
         v-if="setting.opponent == 'vsCpu'"
         class="
           font-serif
+          text-lg
           p-3
+          hover:bg-gray-100 hover:bg-opacity-25
           btn
-          hover:text-white
-          text-red-500
-          hover:bg-red-500
+          border-gray-100
+          hover:border-gray-100
+          text-white
           rounded-full
-          border-red-500
-          shadow-xl
+          shadow-3xl
         "
         :to="{
           name: 'Home',
@@ -269,13 +270,15 @@
         v-else
         class="
           font-serif
-          btn
-          border-red-500
+          text-lg
           p-3
-          text-red-500
-          hover:bg-red-500 hover:text-white
+          hover:bg-gray-100 hover:bg-opacity-25
+          btn
+          border-gray-100
+          hover:border-gray-100
+          text-white
           rounded-full
-          shadow-2xl
+          shadow-3xl
         "
         :to="{
           name: 'Home',
@@ -354,10 +357,12 @@ export default {
   display: none;
 }
 
-.backColor {
-  /* background-color: #E5E7EB; */
+.backImg {
+  background-image: url('../assets/woodenBoard.png');
+  background-size: cover;
+  background-repeat: no-repeat;
+  background-position: center center;
   width: 100%;
   height: 100%;
-  color: black;
 }
 </style>

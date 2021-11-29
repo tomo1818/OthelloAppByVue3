@@ -50,6 +50,11 @@
     </div>
   </div>
 </template>
+<script>
+export default {
+  name,
+};
+</script>
 
 <style scoped>
 @import url('https://fonts.googleapis.com/css2?family=Libre+Baskerville:ital@1&family=M+PLUS+2:wght@700&display=swap');
