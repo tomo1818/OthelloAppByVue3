@@ -1,11 +1,11 @@
 <template>
-  <div class="gemeSettings backImg pt-4 vh-100">
+  <div class="gemeSettings backImg pt-3 vh-100">
     <div class="container">
-      <h1 class="font-serif title mb-3 text-3xl">設定</h1>
+      <h1 class="font-sans title mb-3 text-4xl">設定</h1>
       <div class="flex justify-center">
         <div
           class="
-            w-96
+            frame
             border-4 border-blue-500
             bg-blue-200
             rounded-2xl
@@ -14,7 +14,7 @@
             shadow-2xl
           "
         >
-          <h3 class="font-serif h5 mb-2 pt-2">対戦形式を選択してください</h3>
+          <h2 class="font-sans h4 mb-2 pt-2">対戦形式を選択してください</h2>
           <input
             type="radio"
             value="vsPlayer"
@@ -24,7 +24,7 @@
             checked
             @change="changeOpponent"
           />
-          <label for="vsPlayer" class="font-serif radioPlayer mr-5"
+          <label for="vsPlayer" class="text-lg font-sans radioPlayer mr-5"
             >vs Player</label
           >
           <input
@@ -35,13 +35,13 @@
             v-model="setting.opponent"
             @change="changeOpponent"
           />
-          <label class="font-serif" for="vsCpu">vs CPU</label>
+          <label class="font-sans text-lg" for="vsCpu">vs CPU</label>
         </div>
       </div>
       <div class="flex justify-center">
         <div
           class="
-            w-96
+            frame
             shadow-2xl
             mb-2
             pb-2
@@ -52,9 +52,9 @@
           "
           :class="{ displayNone: setting.chosePlayer }"
         >
-          <h3 class="font-serif h5">プレイヤー名を入力してください</h3>
+          <h3 class="font-sans h4">プレイヤー名を入力してください</h3>
           <div class="mb-2 mt-2">
-            <span class="font-serif mr-3">Player Name 1: </span>
+            <span class="font-sans text-lg mr-3">Player Name 1: </span>
             <input
               class="
                 pl-4
@@ -65,14 +65,14 @@
                 w-40
                 border
                 rounded-lg
-                font-serif
+                font-sans
               "
               v-model="setting.playerName1"
               placeholder="Player name 1"
             />
           </div>
           <div>
-            <span class="font-serif mr-3">Player Name 2: </span>
+            <span class="font-sans text-lg mr-3">Player Name 2: </span>
             <input
               class="
                 shadow-xl
@@ -82,7 +82,7 @@
                 pl-4
                 w-40
                 rounded-lg
-                font-serif
+                font-sans
               "
               v-model="setting.playerName2"
               placeholder="Player name 2"
@@ -94,18 +94,18 @@
       <div class="flex justify-center">
         <div
           class="
-            w-96
+            frame
             pt-2
             shadow-2xl
-            border-4 border-green-500
+            border-4 border-pink-500
             rounded-2xl
             choseCpuStrength
             mb-3
-            bg-green-200
+            bg-pink-200
           "
           :class="{ displayNone: setting.choseCpu }"
         >
-          <h3 class="font-serif h5">コンピュータの強さを選択してください</h3>
+          <h3 class="font-sans h5">コンピュータの強さを選択してください</h3>
           <input
             type="radio"
             value="easy"
@@ -113,7 +113,7 @@
             v-model="setting.difficulty"
             checked
           />
-          <label class="font-serif ml-2" for="easy">Easy</label>
+          <label class="font-sans ml-2" for="easy">Easy</label>
           <input
             class="ml-5 text-green-600"
             type="radio"
@@ -121,7 +121,7 @@
             id="normal"
             v-model="setting.difficulty"
           />
-          <label class="font-serif ml-2" for="normal">Normal</label>
+          <label class="font-sans ml-2" for="normal">Normal</label>
           <input
             class="ml-5 text-red-600"
             type="radio"
@@ -129,14 +129,14 @@
             id="hard"
             v-model="setting.difficulty"
           />
-          <label class="font-serif ml-2" for="hard">Hard</label>
+          <label class="font-sans ml-2" for="hard">Hard</label>
         </div>
       </div>
 
       <div class="flex justify-center">
         <div
           class="
-            w-96
+            frame
             pt-2
             shadow-2xl
             rounded-2xl
@@ -147,7 +147,7 @@
           "
           :class="{ displayNone: setting.chosePlayer }"
         >
-          <h3 class="font-serif h5 pb-1">先攻(黒石)のプレイヤーを決定します</h3>
+          <h3 class="font-sans h4 pb-1">先攻(黒石)のプレイヤーを決定します</h3>
           <input
             type="radio"
             value="player1"
@@ -157,7 +157,7 @@
             @change="determineFirstMove"
             checked
           />
-          <label class="font-serif" for="player1">Player1</label>
+          <label class="font-sans text-lg" for="player1">Player1</label>
           <input
             type="radio"
             value="Player2"
@@ -166,8 +166,8 @@
             v-model="setting.firstMove"
             @change="determineFirstMove"
           />
-          <label class="font-serif" for="player2">Player2</label>
-          <p class="font-serif mb-2 pb-1">
+          <label class="font-sans text-lg" for="player2">Player2</label>
+          <p class="font-sans text-lg mb-2 pb-1">
             first move: {{ setting.firstMove }}
           </p>
         </div>
@@ -176,18 +176,18 @@
       <div class="flex justify-center">
         <div
           class="
-            w-96
+            frame
             pt-2
             shadow-2xl
-            border-4 border-pink-500
+            border-4 border-green-500
+            bg-green-200
             rounded-2xl
             determinFirstMove
             mb-3
-            bg-pink-200
           "
           :class="{ displayNone: setting.choseCpu }"
         >
-          <h3 class="font-serif h5 mb-3">先攻(黒石)のプレイヤーを決定します</h3>
+          <h3 class="font-sans h5 mb-3">先攻(黒石)のプレイヤーを決定します</h3>
           <input
             type="radio"
             value="player1"
@@ -197,7 +197,7 @@
             @change="determineFirstMove"
             checked
           />
-          <label class="font-serif mr-24" for="player1">Player1</label>
+          <label class="font-sans mr-24 text-lg" for="player1">Player1</label>
           <input
             type="radio"
             value="CPU"
@@ -206,15 +206,15 @@
             v-model="setting.firstMove"
             @change="determineFirstMove"
           />
-          <label class="font-serif" for="player2">CPU</label>
-          <p class="font-serif pb-2">first move: {{ setting.firstMove }}</p>
+          <label class="font-sans text-lg" for="player2">CPU</label>
+          <p class="font-sans pb-2">first move: {{ setting.firstMove }}</p>
         </div>
       </div>
 
       <div class="flex justify-center">
         <div
           class="
-            w-96
+            frame
             shadow-2xl
             pt-2
             pb-2
@@ -225,9 +225,9 @@
             bg-purple-200
           "
         >
-          <h3 class="font-serif h5">オセロ盤の色を選んでください</h3>
+          <h3 class="font-sans h4">オセロ盤の色を選んでください</h3>
           <select
-            class="font-serif mt-2 text-gray-800 w-40 rounded-full"
+            class="font-sans text-lg mt-2 text-gray-800 w-40 rounded-full"
             v-model="setting.colorTheme"
           >
             <option
@@ -244,7 +244,7 @@
       <router-link
         v-if="setting.opponent == 'vsCpu'"
         class="
-          font-serif
+          font-sans
           text-lg
           p-3
           hover:bg-gray-100 hover:bg-opacity-25
@@ -269,7 +269,7 @@
         disabled
         v-else
         class="
-          font-serif
+          font-sans
           text-lg
           p-3
           hover:bg-gray-100 hover:bg-opacity-25
@@ -358,11 +358,17 @@ export default {
 }
 
 .backImg {
+  max-width: 5000px;
+  position: relative;
   background-image: url('../assets/woodenBoard.png');
   background-size: cover;
   background-repeat: no-repeat;
   background-position: center center;
-  width: 100%;
   height: 100%;
+  margin: 0 auto;
+}
+
+.frame {
+  width: 27rem;
 }
 </style>
