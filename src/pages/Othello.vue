@@ -473,9 +473,11 @@ table.othelloTable tr:first-child td {
 }
 .stoneBox.user1 {
   padding-top: 2px;
+  background: linear-gradient( #333333 0%, #555555 100%);
 }
 .stoneBox.user2 {
   padding-bottom: 2px;
+  background: linear-gradient( #333333 0%, #555555 100%);
 }
 .stoneBox .box {
   width: 80%;
@@ -483,17 +485,24 @@ table.othelloTable tr:first-child td {
   margin: 0 auto;
   display: flex;
   flex-wrap: wrap;
+  border-radius: 3px;
+  background: #333;
 }
 .stoneBox.user1 .box {
   justify-content: flex-end;
+  padding-right: 2px;
+  box-shadow: 2px 3px 4px 1px #ccc inset;
 }
 .stoneBox.user2 .box {
   justify-content: flex-start;
+  padding-left: 2px;
+  box-shadow: -2px -2px 8px -1px #ccc inset;
 }
 .stoneBox .box .stone {
   width: 3.12374%;
   height: 100%;
   background: linear-gradient(90deg, #fff 0%, #fff 50%, #000 50%, #000 100%);
+  border-radius: 5px;
 }
 
 .black {
