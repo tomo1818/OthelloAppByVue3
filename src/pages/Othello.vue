@@ -417,7 +417,7 @@ export default {
 <style scoped>
 
 .othello {
-  background-image: url('http://freebies-db.com/wp-content/uploads/2013/09/free-texture-3-infinite-wooden-floors.jpg');
+  background-image: url('../assets/othelloPage/bg.jpeg');
   background-size: cover;
   height: 100vh;
   display: flex;
