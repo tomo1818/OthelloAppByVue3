@@ -296,7 +296,7 @@ export default {
           allDirections: Object.values(directions),
         });
         if (store.state.aroundStone.length == 0) {
-          store.commit('winLoseJudgment', {judgeString: "gameEnd"});
+          store.commit('winLoseJudgment', {judgeString: 'gameEnd'});
         }
       }
     };

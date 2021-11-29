@@ -429,7 +429,7 @@ export const store = createStore<Table>({
     winLoseJudgment(state: Table, payload: { judgeString: string }): void {
       let resultString = '引き分け';
       if (payload.judgeString == 'concede') {
-        resultString = state.turn == 0 ? 'Player2の勝ち' : 'Player1の勝ち';
+        resultString = state.turn == 1 ? 'Player2の勝ち' : 'Player1の勝ち';
       } else if (state.player.black.stoneNum > state.player.white.stoneNum) {
         resultString = 'Player1の勝ち';
       } else if (state.player.black.stoneNum < state.player.white.stoneNum) {
