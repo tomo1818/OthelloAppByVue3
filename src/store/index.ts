@@ -426,33 +426,16 @@ export const store = createStore<Table>({
         state.player.white.stoneNum += 1;
       }
     },
-    winLoseJudgment(state: Table): void {
-      let countPlayer1 = 0;
-      let countPlayer2 = 0;
-      const squares = 64;
-
-      for (const i in state.table) {
-        for (const j in state.table[i]) {
-          if (state.table[i][j] == 1) {
-            countPlayer1++;
-          } else if (state.table[i][j] == 0) {
-            countPlayer2++;
-          }
-        }
+    winLoseJudgment(state: Table, payload: { judgeString: string }): void {
+      let resultString = '引き分け';
+      if (payload.judgeString == 'concede') {
+        resultString = state.turn == 0 ? 'Player2の勝ち' : 'Player1の勝ち';
+      } else if (state.player.black.stoneNum > state.player.white.stoneNum) {
+        resultString = 'Player1の勝ち';
+      } else if (state.player.black.stoneNum < state.player.white.stoneNum) {
+        resultString = 'Player2の勝ち';
       }
-      const restSquares = squares - (countPlayer1 + countPlayer2);
-
-      if (
-        countPlayer2 == 0 ||
-        (restSquares == 0 && countPlayer1 > countPlayer2)
-      )
-        alert('Player1の勝ち');
-      if (
-        countPlayer1 == 0 ||
-        (restSquares == 0 && countPlayer1 < countPlayer2)
-      )
-        alert('Player2の勝ち');
-      if (countPlayer1 == 32 && countPlayer2 == 32) alert('引き分け');
+      alert(resultString);
     },
     showPlaceStoneCanBePut(
       state: Table,

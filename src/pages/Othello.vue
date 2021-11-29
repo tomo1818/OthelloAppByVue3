@@ -9,7 +9,10 @@
           <div class="playerInfo whiteSide">
             <div class="stoneImage">
               <div class="stoneCon">
-                <p class="front whiteShadow" style="background-color: rgb(255, 255, 255);"></p>
+                <p
+                  class="front whiteShadow"
+                  style="background-color: rgb(255, 255, 255)"
+                ></p>
               </div>
             </div>
             <div class="someInfo">
@@ -18,17 +21,37 @@
             </div>
           </div>
           <div class="commandContainer">
-            <div v-if="state.mode == 'vsPlayer'" class="commandItem display mr10">
-              <img src="@/assets/othelloPage/vsPlayer.png" style="margin-bottom: 6.12%;" alt="対人戦のアイコン">
+            <div
+              v-if="state.mode == 'vsPlayer'"
+              class="commandItem display mr10"
+            >
+              <img
+                src="@/assets/othelloPage/vsPlayer.png"
+                style="margin-bottom: 6.12%"
+                alt="対人戦のアイコン"
+              />
               <p>対人戦</p>
             </div>
             <div v-else class="commandItem display mr10">
-              <img src="@/assets/othelloPage/vsCpu.png" alt="CPU対戦のアイコン">
+              <img
+                src="@/assets/othelloPage/vsCpu.png"
+                alt="CPU対戦のアイコン"
+              />
               <p>{{ state.cpuStrength }}</p>
             </div>
             <div class="commandItem display">
-              <div v-if="turn == 1"><img src="@/assets/othelloPage/blackStone.png" alt="黒石のアイコン"></div>
-              <div v-else><img src="@/assets/othelloPage/whiteStone.png" alt="白石のアイコン"></div>
+              <div v-if="turn == 1">
+                <img
+                  src="@/assets/othelloPage/blackStone.png"
+                  alt="黒石のアイコン"
+                />
+              </div>
+              <div v-else>
+                <img
+                  src="@/assets/othelloPage/whiteStone.png"
+                  alt="白石のアイコン"
+                />
+              </div>
               <p>手番</p>
             </div>
           </div>
@@ -86,7 +109,6 @@
                           returnStone({ y: rowNum, x: columnNum }),
                           changeTurn(),
                           showPlaceStoneCanBePut(),
-                          winLoseJudgment(),
                           cpuAction()
                       "
                     >
@@ -110,19 +132,40 @@
         </div>
         <div class="infoBox">
           <div class="commandContainer justify-start">
-            <button class="commandItem button mr10" @click="moveBack(), showPlaceStoneCanBePut()">
-              <img src="@/assets/othelloPage/stop.png" alt="待ったのアイコン">
+            <button
+              class="commandItem button mr10"
+              @click="moveBack(), showPlaceStoneCanBePut()"
+            >
+              <img src="@/assets/othelloPage/stop.png" alt="待ったのアイコン" />
               <p>待った</p>
             </button>
-            <button class="commandItem button" @click="resetGame(), showPlaceStoneCanBePut()">
-              <img src="@/assets/othelloPage/othelloIcon.png" alt="オセロのアイコン">
+            <button
+              class="commandItem button mr10"
+              @click="resetGame(), showPlaceStoneCanBePut()"
+            >
+              <img
+                src="@/assets/othelloPage/othelloIcon.png"
+                alt="オセロのアイコン"
+              />
               <p>新規対局</p>
+            </button>
+            <button
+              class="commandItem button"
+              @click="winLoseJudgment('concede')"
+            >
+              <p>降参</p>
             </button>
           </div>
           <div class="playerInfo blackSide">
             <div class="stoneImage">
               <div class="stoneCon">
-                <p class="front" style="background-color: rgb(0, 0, 0); box-shadow: 0 0 5px white;"></p>
+                <p
+                  class="front"
+                  style="
+                    background-color: rgb(0, 0, 0);
+                    box-shadow: 0 0 5px white;
+                  "
+                ></p>
               </div>
             </div>
             <div class="someInfo">
@@ -228,10 +271,8 @@ export default {
         });
     };
 
-    const winLoseJudgment = (): void => {
-      if (store.state.aroundStone.length == 0) {
-        store.commit('winLoseJudgment');
-      }
+    const winLoseJudgment = (judgeString: string): void => {
+      store.commit('winLoseJudgment', { judgeString: judgeString });
     };
 
     const cpuAction = (): void => {
@@ -255,7 +296,7 @@ export default {
           allDirections: Object.values(directions),
         });
         if (store.state.aroundStone.length == 0) {
-          store.commit('winLoseJudgment');
+          store.commit('winLoseJudgment', {judgeString: "gameEnd"});
         }
       }
     };
@@ -332,7 +373,7 @@ export default {
       store.commit('changeTurn');
       showPlaceStoneCanBePut();
       if (settingData.mode !== 'vsCpu') {
-        winLoseJudgment(), cpuAction();
+        cpuAction();
       }
     };
 
@@ -354,13 +395,18 @@ export default {
     });
 
     onUpdated(() => {
-      if (
-        store.state.playerChoices.length == 0 &&
-        store.state.aroundStone.length != 0
-      ) {
-        skipTurn();
-      }
+      setTimeout(function () {
+        if (
+          store.state.playerChoices.length == 0 &&
+          store.state.aroundStone.length != 0
+        ) {
+          skipTurn();
+        } else if (store.state.aroundStone.length == 0) {
+          winLoseJudgment('gameEnd');
+        }
+      }, 5);
     });
+
     // computed
     //選択肢から色のオブジェクト取得
     const colorObj = computed((): Color => {
@@ -372,6 +418,7 @@ export default {
       });
       return obj;
     });
+
     //持ち石の側面CSS
     const createStoneGradientString = computed((): string => {
       return `linear-gradient(90deg, ${colorObj.value.frontStone} 0%, ${colorObj.value.frontStone} 50%, ${colorObj.value.backStone} 50%, ${colorObj.value.backStone} 100% )`;
@@ -415,7 +462,6 @@ export default {
 </script>
 
 <style scoped>
-
 .othello {
   background-image: url('../assets/othelloPage/bg.jpeg');
   background-size: cover;
@@ -439,8 +485,6 @@ export default {
   max-width: 459px;
   margin: 0 auto;
 }
-
-
 
 table.othelloTable {
   border: solid 2px #000;
@@ -549,7 +593,7 @@ table.othelloTable tr:first-child td {
   background: -webkit-linear-gradient(left, #333 0%, #333 30%, #ffffff 100%);
   background: -o-linear-gradient(left, #333 0%, #333 30%, #ffffff 100%);
   background: -ms-linear-gradient(left, #333 0%, #333 30%, #ffffff 100%);
-  background: linear-gradient(to left, rgba(0,0,0,0.5),rgba(0,0,0,1));
+  background: linear-gradient(to left, rgba(0, 0, 0, 0.5), rgba(0, 0, 0, 1));
 }
 
 .blackSide {
