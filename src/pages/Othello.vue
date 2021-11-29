@@ -2,7 +2,7 @@
   <div class="othello">
     <div class="othelloContainer">
       <div class="pageTitle">
-        <router-link @click="resetGame()" class="h1 mb-5" to="/" exact>オセロゲーム</router-link>
+        <router-link @click="changeActionState(), resetGame()" class="h1 mb-5" to="/" exact>オセロゲーム</router-link>
       </div>
       <div class="othelloTableContainer">
         <div class="infoBox">
@@ -151,7 +151,7 @@
             </button>
             <button
               class="commandItem button"
-              @click="winLoseJudgment('concede'), resetGame(), showPlaceStoneCanBePut()"
+              @click="changeActionState(), winLoseJudgment('concede')"
             >
               <img
                 src="@/assets/othelloPage/concede.png"
@@ -207,6 +207,7 @@ export default {
     const settingData = route.params;
 
     const turn: ComputedRef<number> = computed(() => store.state.turn);
+    const actionState = ref<string>('');
     const directions: Directions = {
       top: { y: -1, x: 0 },
       bottom: { y: 1, x: 0 },
@@ -217,6 +218,11 @@ export default {
       bottomLeft: { y: 1, x: -1 },
       bottomRight: { y: 1, x: 1 },
     };
+
+    const changeActionState = (): void => {
+      if (actionState.value == '') actionState.value = 'reset';
+      else actionState.value = '';
+    }
     // optionAPIのdataと同様の扱い
     const state = reactive<State>({
       player: store.state.player,
@@ -407,12 +413,14 @@ export default {
       setTimeout(function () {
         if (
           store.state.playerChoices.length == 0 &&
-          store.state.aroundStone.length != 0
+          store.state.aroundStone.length != 0 &&
+          actionState.value == ''
         ) {
           skipTurn();
         } else if (store.state.aroundStone.length == 0) {
           winLoseJudgment('gameEnd');
         }
+        changeActionState()
       }, 5);
     });
 
@@ -458,6 +466,7 @@ export default {
       cpuAction,
       colorObj,
       createStoneGradientString,
+      changeActionState,
       // bgColor,
       /*石をひっくり返すモーションをつける関数
         flip: function() => {
