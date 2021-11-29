@@ -2,7 +2,7 @@
   <div class="othello">
     <div class="othelloContainer">
       <div class="pageTitle">
-        <router-link class="h1 mb-5" to="/" exact>オセロゲーム</router-link>
+        <router-link @click="resetGame()" class="h1 mb-5" to="/" exact>オセロゲーム</router-link>
       </div>
       <div class="othelloTableContainer">
         <div class="infoBox">
@@ -547,6 +547,7 @@ table.othelloTable tr:first-child td {
   -ms-flex-wrap: wrap;
   border-radius: 3px;
   background: #333;
+  background: linear-gradient(#333,#777);
 }
 .stoneBox.user1 .box {
   justify-content: flex-end;
@@ -561,7 +562,9 @@ table.othelloTable tr:first-child td {
   box-shadow: -2px -2px 8px -1px #ccc inset;
 }
 .stoneBox .box .stone {
-  width: 3.12374%;
+  /* width: 3.12374%; */
+  width: 2.5%;
+  margin-right: 0.62374%;
   height: 100%;
   background: linear-gradient(90deg, #fff 0%, #fff 50%, #000 50%, #000 100%);
   border-radius: 5px;
