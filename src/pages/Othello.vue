@@ -140,7 +140,7 @@
               <p>待った</p>
             </button>
             <button
-              class="commandItem button mr10"
+              class="commandItem button"
               @click="resetGame(), showPlaceStoneCanBePut()"
             >
               <img
@@ -151,8 +151,12 @@
             </button>
             <button
               class="commandItem button"
-              @click="winLoseJudgment('concede')"
+              @click="winLoseJudgment('concede'), resetGame(), showPlaceStoneCanBePut()"
             >
+              <img
+                src="@/assets/othelloPage/concede.png"
+                alt="降参のアイコン"
+              />
               <p>降参</p>
             </button>
           </div>
@@ -681,9 +685,9 @@ table.othelloTable tr:first-child td {
   border: 3px solid black;
 }
 
-.mr10 {
+/* .mr10 {
   margin-right: 10px;
-}
+} */
 
 .commandItem img {
   width: 60%;
@@ -691,7 +695,27 @@ table.othelloTable tr:first-child td {
   margin-top: 10px;
 }
 
+.commandItem:nth-child(2n + 1) {
+  margin-right: 10px;
+}
+
+.commandItem:nth-child(n + 3) {
+  margin-top: 10px;
+}
+
 @media screen and (max-width: 880px) {
+
+  .commandItem:nth-child(n + 3) {
+    margin-top: 0px;
+  }
+
+  .commandItem:nth-child(2n + 1) {
+    margin-right: 0px;
+  }
+
+  .commandItem:nth-child(-n + 2) {
+    margin-right: 5px;
+  }
   .othello {
     height: 100%;
     min-height: 100vh;
@@ -731,6 +755,11 @@ table.othelloTable tr:first-child td {
   .commandItem img {
     margin-top: 5px;
   }
+
+  .button {
+    background-color: white;
+    border: 3px solid black;
+  }
 }
 
 @media screen and (max-width: 500px) {
@@ -752,9 +781,7 @@ table.othelloTable tr:first-child td {
   }
 
   .button {
-    width: calc((100% - 10px) / 3);
-    background-color: white;
-    border: 3px solid black;
+    width: calc((100% - 10px) / 3.1);
   }
 }
 </style>
