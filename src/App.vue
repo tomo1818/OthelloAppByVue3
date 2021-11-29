@@ -25,4 +25,10 @@
 #nav a.router-link-exact-active {
   color: #42b983;
 }
+
+@media screen and (max-width: 880px) {
+  #app {
+    min-height:100vh
+  }
+}
 </style>

@@ -2,7 +2,7 @@
   <div class="othello">
     <div class="othelloContainer">
       <div>
-        <router-link class="h1" to="/" exact>オセロゲーム</router-link>
+        <router-link class="h1 mb-5" to="/" exact>オセロゲーム</router-link>
       </div>
       <div class="othelloTableContainer">
         <div class="infoBox">
@@ -109,12 +109,12 @@
           </div>
         </div>
         <div class="infoBox">
-          <div class="commandContainer">
-            <button class="commandItem mr10" @click="moveBack(), showPlaceStoneCanBePut()">
+          <div class="commandContainer justify-start">
+            <button class="commandItem button mr10" @click="moveBack(), showPlaceStoneCanBePut()">
               <img src="@/assets/othelloPage/stop.png" alt="待ったのアイコン">
               <p>待った</p>
             </button>
-            <button class="commandItem" @click="resetGame(), showPlaceStoneCanBePut()">
+            <button class="commandItem button" @click="resetGame(), showPlaceStoneCanBePut()">
               <img src="@/assets/othelloPage/othelloIcon.png" alt="オセロのアイコン">
               <p>新規対局</p>
             </button>
@@ -420,6 +420,9 @@ export default {
   background-image: url('http://freebies-db.com/wp-content/uploads/2013/09/free-texture-3-infinite-wooden-floors.jpg');
   background-size: cover;
   height: 100vh;
+  display: flex;
+  justify-content: center;
+  align-items: center;
 }
 
 .othelloContainer {
@@ -618,10 +621,15 @@ table.othelloTable tr:first-child td {
 
 .commandItem {
   width: calc((100% - 10px) / 2);
-  /* background-image: url('../assets/othelloPage/commandBg.jpeg'); */
   border: 2px solid #e8e8e8;
   border-radius: 10px;
   background: rgba(0, 0, 0, 0.1);
+  transition: all 0.3s;
+}
+
+.button :hover {
+  opacity: 0.7;
+  transition: all 0.3s;
 }
 
 .display {
@@ -637,5 +645,72 @@ table.othelloTable tr:first-child td {
   width: 60%;
   margin: 0 auto;
   margin-top: 10px;
+}
+
+@media screen and (max-width: 880px) {
+  .othello {
+    height: 100%;
+    min-height: 100vh;
+  }
+  .infoBox {
+    flex-direction: initial;
+    justify-content: center;
+    align-items: center;
+    width: 100%;
+    max-width: 459px;
+    margin: 20px auto 5px;
+  }
+
+  .playerInfo {
+    height: 60px;
+    padding: 0 10px;
+  }
+
+  .stoneImage[data-v-114e02ce] {
+    height: 40px;
+    width: 40px;
+    margin-right: 10px;
+  }
+
+  .commandContainer {
+    justify-content: end;
+  }
+
+  .justify-start {
+    justify-content: start;
+  }
+
+  .commandItem {
+    width: calc((100% - 10px) / 4);
+  }
+
+  .commandItem img {
+    margin-top: 5px;
+  }
+}
+
+@media screen and (max-width: 500px) {
+  .stoneBox {
+    display: none;
+  }
+
+  table.othelloTable tr td {
+    width: 43px;
+    height: 43px;
+  }
+
+  .full {
+    max-height: 43px;
+  }
+
+  .othelloContainer {
+    max-width: 375px;
+  }
+
+  .button {
+    width: calc((100% - 10px) / 3);
+    background-color: white;
+    border: 3px solid black;
+  }
 }
 </style>
