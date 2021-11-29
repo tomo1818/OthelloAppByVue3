@@ -1,0 +1,6 @@
+{
+  "redirects": [
+    { "source": "/setting", "destination": "/" },
+    { "source": "/othello", "destination": "/" },
+  ]
+}

@@ -32,13 +32,18 @@
             </div>
           </div>
           <div class="commandContainer">
-            <div class="commandItem display mr10" @click="moveBack(), showPlaceStoneCanBePut()">
-              <img src="@/assets/othelloPage/vsPlayer.png" alt="待ったのアイコン">
-              <p>モード</p>
+            <div v-if="mode == 'vsPlayer'" class="commandItem display mr10">
+              <img src="@/assets/othelloPage/vsPlayer.png" alt="対人戦のアイコン">
+              <p>対人戦</p>
             </div>
-            <div class="commandItem display" @click="resetGame(), showPlaceStoneCanBePut()">
-              <img src="@/assets/othelloPage/vsCpu.png" alt="待ったのアイコン">
-              <p>新規対局</p>
+            <div v-else class="commandItem display mr10">
+              <img src="@/assets/othelloPage/vsCpu.png" alt="CPU対戦のアイコン">
+              <p>{{ settingData.strength }}</p>
+            </div>
+            <div class="commandItem display">
+              <div v-if="turn == 1"><img src="@/assets/othelloPage/blackStone.png" alt="黒石のアイコン"></div>
+              <div v-else><img src="@/assets/othelloPage/whiteStone.png" alt="白石のアイコン"></div>
+              <p>手番</p>
             </div>
           </div>
         </div>
@@ -182,6 +187,7 @@ export default {
     // optionAPIのdataと同様の扱い
     const state = reactive<State>({
       player: store.state.player,
+      mode: store.state.mode,
       table: store.getters.getTable,
       stone1: store.state.stone1,
       stone2: store.state.stone2,
