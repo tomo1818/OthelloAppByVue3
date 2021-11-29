@@ -1,7 +1,7 @@
 <template>
   <div class="othello">
     <div class="othelloContainer">
-      <div>
+      <div class="pageTitle">
         <router-link class="h1 mb-5" to="/" exact>オセロゲーム</router-link>
       </div>
       <div class="othelloTableContainer">
@@ -183,6 +183,11 @@ export default {
       simulationPlayerChoices: store.state.simulationPlayerChoices,
     });
     // method
+
+    // const bgColor = (row: number, column: number): string => {
+    //   if (row % 2 == 0) return column % 2 == 0 ? "#008833" : "#009900";
+    //   else return column % 2 == 0 ? "#009900" : "#008833";
+    // }
 
     const addTableData = (): void => {
       store.commit('addTableData');
@@ -402,6 +407,7 @@ export default {
       cpuAction,
       colorObj,
       createStoneGradientString,
+      // bgColor,
       /*石をひっくり返すモーションをつける関数
         flip: function() => {
         console.log(this.$refs.card);
@@ -422,17 +428,22 @@ export default {
   height: 100vh;
   display: flex;
   justify-content: center;
+  -webkit-box-pack: center;
   align-items: center;
 }
 
+.pageTitle {
+  margin-bottom: 50px;
+}
 .othelloContainer {
-  max-width: 1200px;
+  max-width: 1000px;
   margin: 0 auto;
 }
 
 .othelloTableContainer {
   display: flex;
   flex-wrap: wrap;
+  -ms-flex-wrap: wrap;
 }
 
 .othelloBoard {
@@ -485,16 +496,19 @@ table.othelloTable tr:first-child td {
   margin: 0 auto;
   display: flex;
   flex-wrap: wrap;
+  -ms-flex-wrap: wrap;
   border-radius: 3px;
   background: #333;
 }
 .stoneBox.user1 .box {
   justify-content: flex-end;
+  -webkit-box-pack: end;
   padding-right: 2px;
   box-shadow: 2px 3px 4px 1px #ccc inset;
 }
 .stoneBox.user2 .box {
   justify-content: flex-start;
+  -webkit-box-pack: start;
   padding-left: 2px;
   box-shadow: -2px -2px 8px -1px #ccc inset;
 }
@@ -530,6 +544,7 @@ table.othelloTable tr:first-child td {
   display: flex;
   flex-direction: column;
   justify-content: center;
+  -webkit-box-pack: center;
   align-items: center;
   backface-visibility: hidden;
   /* width: 100%;
@@ -626,6 +641,7 @@ table.othelloTable tr:first-child td {
 .commandContainer {
   display: flex;
   flex-wrap: wrap;
+  -ms-flex-wrap: wrap;
 }
 
 .commandItem {
@@ -656,13 +672,37 @@ table.othelloTable tr:first-child td {
   margin-top: 10px;
 }
 
+@media screen and (min-width: 1281px) {
+
+  .othelloContainer[data-v-114e02ce] {
+    max-width: 1200px;
+  }
+  .stoneBox {
+    max-width: 587px;
+    height: 62px;
+  }
+
+  .othelloBoard {
+    max-width: 587px;
+  }
+
+  .infoBox {
+    width: calc((100% - 667px) / 2);
+  }
+}
+
 @media screen and (max-width: 880px) {
   .othello {
     height: 100%;
     min-height: 100vh;
   }
+
+  .pageTitle {
+    margin-bottom: 0px;
+  }
   .infoBox {
     flex-direction: initial;
+    -webkit-box-pack: center;
     justify-content: center;
     align-items: center;
     width: 100%;
@@ -683,10 +723,13 @@ table.othelloTable tr:first-child td {
 
   .commandContainer {
     justify-content: end;
+    -webkit-box-pack: end;
+    -webkit-justify-content: flex-end;
   }
 
   .justify-start {
     justify-content: start;
+    -webkit-box-pack: start;
   }
 
   .commandItem {
@@ -695,6 +738,11 @@ table.othelloTable tr:first-child td {
 
   .commandItem img {
     margin-top: 5px;
+  }
+
+  .button {
+    background-color: white;
+    border: 3px solid black;
   }
 }
 
@@ -718,8 +766,6 @@ table.othelloTable tr:first-child td {
 
   .button {
     width: calc((100% - 10px) / 3);
-    background-color: white;
-    border: 3px solid black;
   }
 }
 </style>
