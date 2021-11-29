@@ -33,7 +33,7 @@
           <input
             class="bg-gray-200 border-2 rounded"
             v-model="setting.playerName1"
-            placeholder="Palyer name 1"
+            placeholder="Player name 1"
           />
           <span>Player Name 1: {{ setting.playerName1 }}</span>
         </div>
@@ -41,7 +41,7 @@
           <input
             class="bg-gray-200"
             v-model="setting.playerName2"
-            placeholder="Palyer name 2"
+            placeholder="Player name 2"
           />
           <span>Player Name 2: {{ setting.playerName2 }}</span>
         </div>
@@ -150,17 +150,16 @@
           shadow-xl
         "
         :to="{
-          name: 'Home',
+          name: 'Othello',
           params: {
             mode: setting.opponent,
             strength: setting.strength,
             colorTheme: setting.colorTheme,
           },
         }"
-        >戻る</router-link
+        >ゲームスタート</router-link
       >
       <router-link
-        disabled
         v-else
         class="
           p-3
@@ -173,7 +172,7 @@
           shadow-xl
         "
         :to="{
-          name: 'Home',
+          name: 'Othello',
           params: {
             mode: setting.opponent,
             name1: setting.playerName1,
@@ -183,7 +182,7 @@
           },
           props: setting.colorTheme,
         }"
-        >戻る</router-link
+        >ゲームスタート</router-link
       >
     </div>
   </div>
