@@ -4,20 +4,6 @@
       <div>
         <router-link class="h1" to="/" exact>オセロゲーム</router-link>
       </div>
-      <!-- データの受け渡し -->
-      <div>
-        <p>
-          手番:
-          {{ turn == 1 ? state.player.black.name : state.player.white.name }}
-        </p>
-      </div>
-      <div v-if="settingData.mode == 'vsCpu'">
-        <p>モード: {{ settingData.mode }}</p>
-        <p>難易度: {{ settingData.strength }}</p>
-      </div>
-      <div v-else>
-        <p>モード: {{ settingData.mode }}</p>
-      </div>
       <div class="othelloTableContainer">
         <div class="infoBox">
           <div class="playerInfo whiteSide">
@@ -32,13 +18,13 @@
             </div>
           </div>
           <div class="commandContainer">
-            <div v-if="mode == 'vsPlayer'" class="commandItem display mr10">
-              <img src="@/assets/othelloPage/vsPlayer.png" alt="対人戦のアイコン">
+            <div v-if="state.mode == 'vsPlayer'" class="commandItem display mr10">
+              <img src="@/assets/othelloPage/vsPlayer.png" style="margin-bottom: 6.12%;" alt="対人戦のアイコン">
               <p>対人戦</p>
             </div>
             <div v-else class="commandItem display mr10">
               <img src="@/assets/othelloPage/vsCpu.png" alt="CPU対戦のアイコン">
-              <p>{{ settingData.strength }}</p>
+              <p>{{ state.cpuStrength }}</p>
             </div>
             <div class="commandItem display">
               <div v-if="turn == 1"><img src="@/assets/othelloPage/blackStone.png" alt="黒石のアイコン"></div>
@@ -188,6 +174,7 @@ export default {
     const state = reactive<State>({
       player: store.state.player,
       mode: store.state.mode,
+      cpuStrength: store.state.cpuStrength,
       table: store.getters.getTable,
       stone1: store.state.stone1,
       stone2: store.state.stone2,

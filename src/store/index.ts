@@ -730,9 +730,11 @@ export const store = createStore<Table>({
     },
     changeMode(state: Table, payload: { mode: string }) {
       state.mode = payload.mode;
+      console.log(state.mode);
     },
     changeCpuStrength(state: Table, payload: { strength: string }) {
       state.cpuStrength = payload.strength;
+      console.log(state.cpuStrength);
     },
     changeGameStatus(state: Table) {
       state.gameStatus = 'endGame';
