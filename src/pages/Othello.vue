@@ -75,10 +75,12 @@
               <tr
                 v-for="(value, rowNum, index) in state.table"
                 v-bind:key="index"
+                :ref=" el => testRef[index] = el.childNodes "
               >
                 <td
                   v-for="(value2, columnNum, index2) in value"
                   v-bind:key="index2"
+                  class="stoneCon"
                 >
                   <div ref="root" class="stoneCon" v-if="value2 == 1">
                     <p
@@ -234,6 +236,8 @@ export default {
       playerChoices: store.state.playerChoices,
       simulationPlayerChoices: store.state.simulationPlayerChoices,
     });
+
+    const testRef = ref<{[key: number]: HTMLElement[]}>({}) 
     // method
 
     // const bgColor = (row: number, column: number): string => {
@@ -282,6 +286,7 @@ export default {
           position: position,
           isReturn: isReturn(position, directions[key]),
           direction: directions[key],
+          domList: testRef.value
         });
     };
 
@@ -454,6 +459,7 @@ export default {
       settingData,
       turn,
       state,
+      testRef,
       addTableData,
       moveBack,
       resetGame,

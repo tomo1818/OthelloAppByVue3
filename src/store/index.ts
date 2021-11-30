@@ -386,6 +386,7 @@ export const store = createStore<Table>({
         position: Coordinate;
         isReturn: boolean;
         direction: Coordinate;
+        domList: any;
       }
     ): void {
       if (payload.isReturn) {
@@ -393,6 +394,8 @@ export const store = createStore<Table>({
         let column = Number(payload.position.x) + Number(payload.direction.x);
         while (state.table[row][column] != state.turn) {
           state.table[row][column] = state.turn;
+          console.log(payload.domList[row][column]);
+          payload.domList[row -1][column].classList.toggle("flipped")
           store.commit('addStoneNum');
           row += payload.direction.y;
           column += payload.direction.x;
