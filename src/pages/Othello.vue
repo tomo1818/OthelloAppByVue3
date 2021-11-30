@@ -419,7 +419,7 @@ export default {
         } else if (store.state.aroundStone.length == 0) {
           winLoseJudgment('gameEnd');
         }
-        if (actionState.value == 'reset') actionState.value == '';
+        if (actionState.value == 'reset') actionState.value = '';
       }, 5);
     });
 
