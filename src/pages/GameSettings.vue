@@ -469,6 +469,10 @@ export default {
   .settings {
     margin-top: 50px;
   }
+  
+  .mb-3 {
+    margin-bottom: 3rem; !important
+  }
 
   .title {
     font-size: 60px;
