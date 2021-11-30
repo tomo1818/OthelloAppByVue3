@@ -1,7 +1,7 @@
 <template>
-  <div class="gemeSettings backImg pt-3 vh-100">
-    <div class="container">
-      <h1 class="font-sans title mb-3 text-4xl">設定</h1>
+  <div class="gemeSettings backImg lg:pt-1 vh-100">
+    <div class="container settings">
+      <h1 class="font-sans title title font-bold mb-3 text-4xl">設定</h1>
       <div class="flex justify-center">
         <div
           class="
@@ -10,11 +10,14 @@
             bg-blue-200
             rounded-2xl
             choseOpponent
-            mb-3
+            lg:pb-10
             shadow-2xl
+            lg:mr-auto lg:ml-7
           "
         >
-          <h2 class="font-sans h4 mb-2 pt-2">対戦形式を選択してください</h2>
+          <h2 class="font-sans h4 font-semibold lg:mt-3 mb-2 pt-2">
+            対戦形式を選択してください
+          </h2>
           <input
             type="radio"
             value="vsPlayer"
@@ -24,7 +27,15 @@
             checked
             @change="changeOpponent"
           />
-          <label for="vsPlayer" class="text-lg font-sans radioPlayer mr-5"
+          <label
+            for="vsPlayer"
+            class="
+              lg:text-2xl lg:mt-5 lg:font-medium
+              text-lg
+              font-sans
+              radioPlayer
+              mr-5
+            "
             >vs Player</label
           >
           <input
@@ -35,7 +46,11 @@
             v-model="setting.opponent"
             @change="changeOpponent"
           />
-          <label class="font-sans text-lg" for="vsCpu">vs CPU</label>
+          <label
+            class="font-sans lg:text-2xl lg:font-medium text-lg"
+            for="vsCpu"
+            >vs CPU</label
+          >
         </div>
       </div>
       <div class="flex justify-center">
@@ -44,21 +59,26 @@
             frame
             shadow-2xl
             mb-2
-            pb-2
             pt-2
             rounded-xl
             border-4 border-pink-500
             bg-pink-200
+            lg:ml-auto lg:pb-10
+            playerChoice
+            lg:mr-10
           "
           :class="{ displayNone: setting.chosePlayer }"
         >
-          <h3 class="font-sans h4">プレイヤー名を入力してください</h3>
+          <h3 class="font-sans font-semibold h4 lg:mt-3">
+            プレイヤー名を入力してください
+          </h3>
           <div class="mb-2 mt-2">
-            <span class="font-sans text-lg mr-3">Player Name 1: </span>
+            <span class="font-sans lg:text-2xl lg:font-medium text-lg mr-3"
+              >Player Name 1:
+            </span>
             <input
               class="
                 pl-4
-                leading-tight
                 border-gray-500
                 shadow-xl
                 text-gray-800
@@ -72,11 +92,12 @@
             />
           </div>
           <div>
-            <span class="font-sans text-lg mr-3">Player Name 2: </span>
+            <span class="font-sans lg:text-2xl lg:font-medium text-lg mr-3"
+              >Player Name 2:
+            </span>
             <input
               class="
                 shadow-xl
-                leading-tight
                 border-2
                 text-gray-800
                 pl-4
@@ -90,7 +111,6 @@
           </div>
         </div>
       </div>
-
       <div class="flex justify-center">
         <div
           class="
@@ -100,12 +120,16 @@
             border-4 border-pink-500
             rounded-2xl
             choseCpuStrength
-            mb-3
+            mb-1
             bg-pink-200
+            lg:ml-auto lg:pb-10 lg:mr-2
+            cpuLevel
           "
           :class="{ displayNone: setting.choseCpu }"
         >
-          <h3 class="font-sans h5">コンピュータの強さを選択してください</h3>
+          <h3 class="font-sans font-semibold h4 lg:mt-4 lg:mb-7">
+            コンピュータの強さを選択してください
+          </h3>
           <input
             type="radio"
             value="easy"
@@ -113,7 +137,9 @@
             v-model="setting.difficulty"
             checked
           />
-          <label class="font-sans ml-2" for="easy">Easy</label>
+          <label class="font-sans lg:text-2xl lg:font-medium ml-2" for="easy"
+            >Easy</label
+          >
           <input
             class="ml-5 text-green-600"
             type="radio"
@@ -121,7 +147,9 @@
             id="normal"
             v-model="setting.difficulty"
           />
-          <label class="font-sans ml-2" for="normal">Normal</label>
+          <label class="font-sans lg:text-2xl lg:font-medium ml-2" for="normal"
+            >Normal</label
+          >
           <input
             class="ml-5 text-red-600"
             type="radio"
@@ -129,10 +157,11 @@
             id="hard"
             v-model="setting.difficulty"
           />
-          <label class="font-sans ml-2" for="hard">Hard</label>
+          <label class="font-sans lg:text-2xl lg:font-medium ml-2" for="hard"
+            >Hard</label
+          >
         </div>
       </div>
-
       <div class="flex justify-center">
         <div
           class="
@@ -144,10 +173,13 @@
             bg-green-200
             determinFirstMove
             mb-3
+            lg:mr-auto lg:ml-8
           "
           :class="{ displayNone: setting.chosePlayer }"
         >
-          <h3 class="font-sans h4 pb-1">先攻(黒石)のプレイヤーを決定します</h3>
+          <h3 class="font-sans font-semibold lg:mt-3 h4 pb-1">
+            先攻(黒石)のプレイヤーを決定します
+          </h3>
           <input
             type="radio"
             value="player1"
@@ -157,7 +189,11 @@
             @change="determineFirstMove"
             checked
           />
-          <label class="font-sans text-lg" for="player1">Player1</label>
+          <label
+            class="font-sans lg:font-medium lg:text-2xl text-lg"
+            for="player1"
+            >Player1</label
+          >
           <input
             type="radio"
             value="Player2"
@@ -166,13 +202,16 @@
             v-model="setting.firstMove"
             @change="determineFirstMove"
           />
-          <label class="font-sans text-lg" for="player2">Player2</label>
-          <p class="font-sans text-lg mb-2 pb-1">
+          <label
+            class="font-sans lg:text-2xl lg:font-medium text-lg"
+            for="player2"
+            >Player2</label
+          >
+          <p class="lg:text-2xl lg:font-medium font-sans text-lg mb-2 pb-1">
             first move: {{ setting.firstMove }}
           </p>
         </div>
       </div>
-
       <div class="flex justify-center">
         <div
           class="
@@ -184,10 +223,13 @@
             rounded-2xl
             determinFirstMove
             mb-3
+            lg:mr-auto lg:mt-7 lg:ml-8
           "
           :class="{ displayNone: setting.choseCpu }"
         >
-          <h3 class="font-sans h5 mb-3">先攻(黒石)のプレイヤーを決定します</h3>
+          <h3 class="font-sans lg:text-2xl font-semibold lg:mt-3 h4 mb-3">
+            先攻(黒石)のプレイヤーを決定します
+          </h3>
           <input
             type="radio"
             value="player1"
@@ -197,7 +239,11 @@
             @change="determineFirstMove"
             checked
           />
-          <label class="font-sans mr-24 text-lg" for="player1">Player1</label>
+          <label
+            class="font-sans lg:text-2xl lg:font-medium mr-24 text-lg"
+            for="player1"
+            >Player1</label
+          >
           <input
             type="radio"
             value="CPU"
@@ -206,28 +252,47 @@
             v-model="setting.firstMove"
             @change="determineFirstMove"
           />
-          <label class="font-sans text-lg" for="player2">CPU</label>
-          <p class="font-sans pb-2">first move: {{ setting.firstMove }}</p>
+          <label
+            class="font-sans lg:text-2xl lg:font-medium text-lg"
+            for="player2"
+            >CPU</label
+          >
+          <p class="lg:text-2xl font-sans lg:font-medium text-lg pb-2">
+            first move: {{ setting.firstMove }}
+          </p>
         </div>
       </div>
-
       <div class="flex justify-center">
         <div
           class="
             frame
             shadow-2xl
             pt-2
-            pb-2
-            mb-2
+            pb-1
+            mb-3
             rounded-2xl
             border-4 border-purple-500
             selectColorTheme
             bg-purple-200
+            lg:ml-auto
+            boardColor
+            lg:mr-10 lg:w-64
           "
         >
-          <h3 class="font-sans h4">オセロ盤の色を選んでください</h3>
+          <h3 class="font-sans font-semibold h4 lg:mt-4">
+            オセロ盤の色を選んでください
+          </h3>
           <select
-            class="font-sans text-lg mt-2 text-gray-800 w-40 rounded-full"
+            class="
+              selectColor
+              font-sans
+              text-lg
+              mt-2
+              text-gray-800
+              w-40
+              rounded-full
+              lg:font-medium
+            "
             v-model="setting.colorTheme"
           >
             <option
@@ -247,12 +312,14 @@
           font-sans
           text-lg
           p-3
-          hover:bg-gray-100 hover:bg-opacity-25
+          hover:bg-blue-500
           btn
-          border-gray-100
-          hover:border-gray-100
+          border-blue-500
+          hover:border-blue-500
           text-white
           rounded-full
+          font-bold
+          border-4
           shadow-3xl
         "
         :to="{
@@ -271,12 +338,13 @@
           font-sans
           text-lg
           p-3
-          hover:bg-gray-100 hover:bg-opacity-25
+          hover:bg-blue-500
           btn
-          border-gray-100
-          hover:border-gray-100
+          border-4 border-blue-500
+          hover:border-blue-500
           text-white
           rounded-full
+          font-bold
           shadow-3xl
         "
         :to="{
@@ -377,10 +445,61 @@ export default {
 
 .backImg div {
   background-position: center;
-  text-align:center
+  text-align: center;
 }
 
 .frame {
-  width: 27rem;
+  width: 28rem;
+}
+
+@media screen and (max-width: 1000px) {
+  .cpuLevel {
+    margin-top: 10px;
+  }
+  .playerChoice {
+    margin-top: 20px;
+    padding-bottom: 10px;
+  }
+  .title {
+    padding-top: 10px;
+  }
+}
+
+@media screen and (min-width: 1200px) {
+  .settings {
+    margin-top: 50px;
+  }
+
+  .title {
+    font-size: 60px;
+  }
+  .choseOpponent {
+    padding-bottom: 60px;
+    margin-top: 20px;
+  }
+  .cpuLevel {
+    margin-top: -210px;
+    width: 600px;
+    height: 210px;
+  }
+
+  .playerChoice {
+    margin-top: -220px;
+    /* padding-bottom:20px; */
+  }
+  .determinFirstMove {
+    padding-bottom: 30px;
+    margin-top: 40px;
+  }
+  .boardColor {
+    margin-top: -220px;
+  }
+
+  .selectColor {
+    margin-bottom: -12px;
+  }
+  .selectColorTheme {
+    margin-top: -240px;
+  }
 }
 </style>
