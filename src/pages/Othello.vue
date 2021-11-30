@@ -2,7 +2,7 @@
   <div class="othello">
     <div class="othelloContainer">
       <div class="pageTitle">
-        <router-link class="h1 mb-5" to="/" exact>オセロゲーム</router-link>
+        <router-link @click.prevent="changeActionState(), backHome()" class="h1 mb-5" to="/" exact>オセロゲーム</router-link>
       </div>
       <div class="othelloTableContainer">
         <div class="infoBox">
@@ -109,7 +109,6 @@
                           returnStone({ y: rowNum, x: columnNum }),
                           changeTurn(),
                           showPlaceStoneCanBePut(),
-                          winLoseJudgment(),
                           cpuAction()
                       "
                     >
@@ -140,15 +139,33 @@
               <img src="@/assets/othelloPage/stop.png" alt="待ったのアイコン" />
               <p>待った</p>
             </button>
+            <button @click="reset()" class="commandItem button" v-if="state.player.black.name == 'CPU'">
+              <img
+                src="@/assets/othelloPage/othelloIcon.png"
+                alt="オセロのアイコン"
+              />
+              <p>新規対局</p>
+            </button>
             <button
+              v-else
               class="commandItem button"
-              @click="resetGame(), showPlaceStoneCanBePut()"
+              @click="newGame()"
             >
               <img
                 src="@/assets/othelloPage/othelloIcon.png"
                 alt="オセロのアイコン"
               />
               <p>新規対局</p>
+            </button>
+            <button
+              class="commandItem button"
+              @click="changeActionState(), winLoseJudgment('concede')"
+            >
+              <img
+                src="@/assets/othelloPage/concede.png"
+                alt="降参のアイコン"
+              />
+              <p>降参</p>
             </button>
           </div>
           <div class="playerInfo blackSide">
@@ -185,7 +202,7 @@ import {
 } from 'vue';
 import { useStore } from 'vuex';
 import { key } from '../store';
-import { useRoute } from 'vue-router';
+import { useRoute, useRouter } from 'vue-router';
 import { State, Coordinate, Directions, Color } from '@/types/type'; // 型定義を読み取る
 
 export default {
@@ -195,10 +212,14 @@ export default {
     const store = useStore(key);
     // this.$routeと同義
     const route = useRoute();
+    const router = useRouter()
+
     // settingPageからのデータ
     const settingData = route.params;
 
-    const turn: ComputedRef<number> = computed(() => store.state.turn);
+    const turn: ComputedRef<number> = computed(() => store.getters.getTurn);
+    const actionState = ref<string>('');
+    const skipCount = ref<number>(0);
     const directions: Directions = {
       top: { y: -1, x: 0 },
       bottom: { y: 1, x: 0 },
@@ -209,9 +230,14 @@ export default {
       bottomLeft: { y: 1, x: -1 },
       bottomRight: { y: 1, x: 1 },
     };
+
+    const changeActionState = (): void => {
+      actionState.value = 'reset';
+    }
     // optionAPIのdataと同様の扱い
     const state = reactive<State>({
-      player: store.state.player,
+      player: store.getters.getPlayer,
+      turn: store.state.turn,
       mode: store.state.mode,
       cpuStrength: store.state.cpuStrength,
       table: store.getters.getTable,
@@ -227,6 +253,10 @@ export default {
     //   if (row % 2 == 0) return column % 2 == 0 ? "#008833" : "#009900";
     //   else return column % 2 == 0 ? "#009900" : "#008833";
     // }
+
+    const reset = (): void => {
+      location.assign('/setting');
+    }
 
     const addTableData = (): void => {
       store.commit('addTableData');
@@ -272,11 +302,22 @@ export default {
         });
     };
 
-    const winLoseJudgment = (): void => {
-      if (store.state.aroundStone.length == 0) {
-        store.commit('winLoseJudgment');
-      }
+    const winLoseJudgment = (judgeString: string): void => {
+      store.commit('winLoseJudgment', { judgeString: judgeString });
+      if (state.player.black.name === 'CPU') reset();
     };
+
+    const newGame = (): void => {
+      resetGame();
+      showPlaceStoneCanBePut();
+      if (state.player.black.name === 'CPU') {
+        changeTurn();
+      }
+    }
+
+    const backHome = (): void => {
+      store.commit('backHome');
+    }
 
     const cpuAction = (): void => {
       if (
@@ -299,7 +340,7 @@ export default {
           allDirections: Object.values(directions),
         });
         if (store.state.aroundStone.length == 0) {
-          store.commit('winLoseJudgment');
+          store.commit('winLoseJudgment', {judgeString: 'gameEnd'});
         }
       }
     };
@@ -376,35 +417,52 @@ export default {
       store.commit('changeTurn');
       showPlaceStoneCanBePut();
       if (settingData.mode !== 'vsCpu') {
-        winLoseJudgment(), cpuAction();
+        cpuAction();
       }
     };
 
     onMounted(() => {
       showPlaceStoneCanBePut();
-      if (state.player.black.name === 'CPU') cpuAction();
+      if (state.player.black.name === 'CPU') {
+        cpuAction();
+      }
       store.watch(
         (state, getters) => [
           getters.getTable,
           getters.getPlayerChoices,
           getters.getSimulationPlayerChoices,
+          getters.getTurn,
+          getters.getPlayer,
         ],
         (newValue) => {
           state.table = newValue[0];
           state.playerChoices = newValue[1];
           state.simulationPlayerChoices = newValue[2];
+          state.turn = newValue[3];
+          state.player = newValue[4];
         }
       );
     });
 
     onUpdated(() => {
-      if (
-        store.state.playerChoices.length == 0 &&
-        store.state.aroundStone.length != 0
-      ) {
-        skipTurn();
-      }
+      setTimeout(function () {
+        if (
+          store.state.playerChoices.length == 0 &&
+          store.state.aroundStone.length != 0 &&
+          actionState.value == '' &&
+          skipCount.value != 1
+        ) {
+          skipTurn();
+          skipCount.value++;
+        } else if (store.state.aroundStone.length == 0 || skipCount.value) {
+          winLoseJudgment('gameEnd');
+        } else {
+          skipCount.value = 0;
+        }
+        if (actionState.value == 'reset') actionState.value = '';
+      }, 5);
     });
+
     // computed
     //選択肢から色のオブジェクト取得
     const colorObj = computed((): Color => {
@@ -416,6 +474,7 @@ export default {
       });
       return obj;
     });
+
     //持ち石の側面CSS
     const createStoneGradientString = computed((): string => {
       return `linear-gradient(90deg, ${colorObj.value.frontStone} 0%, ${colorObj.value.frontStone} 50%, ${colorObj.value.backStone} 50%, ${colorObj.value.backStone} 100% )`;
@@ -446,6 +505,10 @@ export default {
       cpuAction,
       colorObj,
       createStoneGradientString,
+      changeActionState,
+      newGame,
+      backHome,
+      reset,
       // bgColor,
       /*石をひっくり返すモーションをつける関数
         flip: function() => {
@@ -463,7 +526,7 @@ export default {
 .othello {
   background-image: url('../assets/othelloPage/bg.jpeg');
   background-size: cover;
-  height: 100vh;
+  min-height: 100vh;
   display: flex;
   justify-content: center;
   -webkit-box-pack: center;
@@ -535,6 +598,7 @@ table.othelloTable tr:first-child td {
   -ms-flex-wrap: wrap;
   border-radius: 3px;
   background: #333;
+  background: linear-gradient(#333,#777);
 }
 .stoneBox.user1 .box {
   justify-content: flex-end;
@@ -549,7 +613,9 @@ table.othelloTable tr:first-child td {
   box-shadow: -2px -2px 8px -1px #ccc inset;
 }
 .stoneBox .box .stone {
-  width: 3.12374%;
+  /* width: 3.12374%; */
+  width: 2.5%;
+  margin-right: 0.62374%;
   height: 100%;
   background: linear-gradient(90deg, #fff 0%, #fff 50%, #000 50%, #000 100%);
   border-radius: 5px;
@@ -698,9 +764,9 @@ table.othelloTable tr:first-child td {
   border: 3px solid black;
 }
 
-.mr10 {
+/* .mr10 {
   margin-right: 10px;
-}
+} */
 
 .commandItem img {
   width: 60%;
@@ -708,10 +774,23 @@ table.othelloTable tr:first-child td {
   margin-top: 10px;
 }
 
+.commandItem:nth-child(2n + 1) {
+  margin-right: 10px;
+}
+
+.commandItem:nth-child(n + 3) {
+  margin-top: 10px;
+}
 @media screen and (min-width: 1281px) {
-  .othelloContainer[data-v-114e02ce] {
+  .othelloContainer {
     max-width: 1200px;
   }
+
+  table.othelloTable tr td {
+    width: 70px;
+    height: 70px;
+  }
+
   .stoneBox {
     max-width: 587px;
     height: 62px;
@@ -727,6 +806,18 @@ table.othelloTable tr:first-child td {
 }
 
 @media screen and (max-width: 880px) {
+
+  .commandItem:nth-child(n + 3) {
+    margin-top: 0px;
+  }
+
+  .commandItem:nth-child(2n + 1) {
+    margin-right: 0px;
+  }
+
+  .commandItem:nth-child(-n + 2) {
+    margin-right: 5px;
+  }
   .othello {
     height: 100%;
     min-height: 100vh;
@@ -800,7 +891,7 @@ table.othelloTable tr:first-child td {
   }
 
   .button {
-    width: calc((100% - 10px) / 3);
+    width: calc((100% - 10px) / 3.1);
   }
 }
 </style>

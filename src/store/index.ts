@@ -5,6 +5,7 @@ import { weight } from '@/consts/weight';
 import { directions } from '@/consts/directions';
 import isReturn from '@/functions/IsReturn';
 import countCorner from '@/functions/CountCorner';
+import {initialState} from '@/consts/initialState';
 
 export const allDirections = Object.values(directions);
 
@@ -426,33 +427,18 @@ export const store = createStore<Table>({
         state.player.white.stoneNum += 1;
       }
     },
-    winLoseJudgment(state: Table): void {
-      let countPlayer1 = 0;
-      let countPlayer2 = 0;
-      const squares = 64;
-
-      for (const i in state.table) {
-        for (const j in state.table[i]) {
-          if (state.table[i][j] == 1) {
-            countPlayer1++;
-          } else if (state.table[i][j] == 0) {
-            countPlayer2++;
-          }
-        }
+    winLoseJudgment(state: Table, payload: { judgeString: string }): void {
+      let resultString = '引き分け';
+      if (payload.judgeString == 'concede') {
+        resultString = state.turn == 1 ? state.player.white.name + 'の勝ち' : state.player.black.name + 'の勝ち';
+        store.commit('resetGame')
+        store.commit('showPlaceStoneCanBePut', { allDirections: allDirections })
+      } else if (state.player.black.stoneNum > state.player.white.stoneNum) {
+        resultString = state.player.black.name + 'の勝ち';
+      } else if (state.player.black.stoneNum < state.player.white.stoneNum) {
+        resultString = state.player.white.name + 'の勝ち';
       }
-      const restSquares = squares - (countPlayer1 + countPlayer2);
-
-      if (
-        countPlayer2 == 0 ||
-        (restSquares == 0 && countPlayer1 > countPlayer2)
-      )
-        alert('Player1の勝ち');
-      if (
-        countPlayer1 == 0 ||
-        (restSquares == 0 && countPlayer1 < countPlayer2)
-      )
-        alert('Player2の勝ち');
-      if (countPlayer1 == 32 && countPlayer2 == 32) alert('引き分け');
+      alert(resultString);
     },
     showPlaceStoneCanBePut(
       state: Table,
@@ -728,13 +714,14 @@ export const store = createStore<Table>({
       }
       state.playerChoices = [];
     },
+    backHome(state: Table): void {
+      Object.assign(state, initialState)
+    },
     changeMode(state: Table, payload: { mode: string }) {
       state.mode = payload.mode;
-      console.log(state.mode);
     },
     changeCpuStrength(state: Table, payload: { strength: string }) {
       state.cpuStrength = payload.strength;
-      console.log(state.cpuStrength);
     },
     changeGameStatus(state: Table) {
       state.gameStatus = 'endGame';
@@ -756,6 +743,12 @@ export const store = createStore<Table>({
     getSimulationPlayerChoices(state) {
       return state.simulationPlayerChoices;
     },
+    getTurn(state) {
+      return state.turn;
+    },
+    getPlayer(state) {
+      return state.player;
+    }
   },
 });
 
