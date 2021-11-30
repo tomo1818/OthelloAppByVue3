@@ -220,8 +220,7 @@ export default {
     };
 
     const changeActionState = (): void => {
-      if (actionState.value == '') actionState.value = 'reset';
-      else actionState.value = '';
+      actionState.value = 'reset';
     }
     // optionAPIのdataと同様の扱い
     const state = reactive<State>({
@@ -420,7 +419,7 @@ export default {
         } else if (store.state.aroundStone.length == 0) {
           winLoseJudgment('gameEnd');
         }
-        changeActionState()
+        if (actionState.value == 'reset') actionState.value == '';
       }, 5);
     });
 

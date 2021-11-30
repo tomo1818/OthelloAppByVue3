@@ -429,13 +429,13 @@ export const store = createStore<Table>({
     winLoseJudgment(state: Table, payload: { judgeString: string }): void {
       let resultString = '引き分け';
       if (payload.judgeString == 'concede') {
-        resultString = state.turn == 1 ? 'Player2の勝ち' : 'Player1の勝ち';
+        resultString = state.turn == 1 ? state.player.black.name + 'の勝ち' : state.player.black.name + 'の勝ち';
         store.commit('resetGame')
         store.commit('showPlaceStoneCanBePut', { allDirections: allDirections })
       } else if (state.player.black.stoneNum > state.player.white.stoneNum) {
-        resultString = 'Player1の勝ち';
+        resultString = state.player.black.name + 'の勝ち';
       } else if (state.player.black.stoneNum < state.player.white.stoneNum) {
-        resultString = 'Player2の勝ち';
+        resultString = state.player.black.name + 'の勝ち';
       }
       alert(resultString);
     },
