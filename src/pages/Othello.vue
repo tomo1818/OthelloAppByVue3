@@ -2,7 +2,7 @@
   <div class="othello">
     <div class="othelloContainer">
       <div class="pageTitle">
-        <router-link @click="changeActionState(), resetGame()" class="h1 mb-5" to="/" exact>オセロゲーム</router-link>
+        <router-link @click.prevent="changeActionState(), backHome()" class="h1 mb-5" to="/" exact>オセロゲーム</router-link>
       </div>
       <div class="othelloTableContainer">
         <div class="infoBox">
@@ -139,9 +139,17 @@
               <img src="@/assets/othelloPage/stop.png" alt="待ったのアイコン" />
               <p>待った</p>
             </button>
+            <button @click="reset()" class="commandItem button" v-if="state.player.black.name == 'CPU'">
+              <img
+                src="@/assets/othelloPage/othelloIcon.png"
+                alt="オセロのアイコン"
+              />
+              <p>新規対局</p>
+            </button>
             <button
+              v-else
               class="commandItem button"
-              @click="resetGame(), showPlaceStoneCanBePut()"
+              @click="newGame()"
             >
               <img
                 src="@/assets/othelloPage/othelloIcon.png"
@@ -194,7 +202,7 @@ import {
 } from 'vue';
 import { useStore } from 'vuex';
 import { key } from '../store';
-import { useRoute } from 'vue-router';
+import { useRoute, useRouter } from 'vue-router';
 import { State, Coordinate, Directions, Color } from '@/types/type'; // 型定義を読み取る
 
 export default {
@@ -203,11 +211,14 @@ export default {
     const store = useStore(key);
     // this.$routeと同義
     const route = useRoute();
+    const router = useRouter()
+
     // settingPageからのデータ
     const settingData = route.params;
 
-    const turn: ComputedRef<number> = computed(() => store.state.turn);
+    const turn: ComputedRef<number> = computed(() => store.getters.getTurn);
     const actionState = ref<string>('');
+    const skipCount = ref<number>(0);
     const directions: Directions = {
       top: { y: -1, x: 0 },
       bottom: { y: 1, x: 0 },
@@ -224,7 +235,8 @@ export default {
     }
     // optionAPIのdataと同様の扱い
     const state = reactive<State>({
-      player: store.state.player,
+      player: store.getters.getPlayer,
+      turn: store.state.turn,
       mode: store.state.mode,
       cpuStrength: store.state.cpuStrength,
       table: store.getters.getTable,
@@ -240,6 +252,10 @@ export default {
     //   if (row % 2 == 0) return column % 2 == 0 ? "#008833" : "#009900";
     //   else return column % 2 == 0 ? "#009900" : "#008833";
     // }
+
+    const reset = (): void => {
+      location.assign('/setting');
+    }
 
     const addTableData = (): void => {
       store.commit('addTableData');
@@ -287,7 +303,20 @@ export default {
 
     const winLoseJudgment = (judgeString: string): void => {
       store.commit('winLoseJudgment', { judgeString: judgeString });
+      if (state.player.black.name === 'CPU') reset();
     };
+
+    const newGame = (): void => {
+      resetGame();
+      showPlaceStoneCanBePut();
+      if (state.player.black.name === 'CPU') {
+        changeTurn();
+      }
+    }
+
+    const backHome = (): void => {
+      store.commit('backHome');
+    }
 
     const cpuAction = (): void => {
       if (
@@ -393,17 +422,23 @@ export default {
 
     onMounted(() => {
       showPlaceStoneCanBePut();
-      if (state.player.black.name === 'CPU') cpuAction();
+      if (state.player.black.name === 'CPU') {
+        cpuAction();
+      }
       store.watch(
         (state, getters) => [
           getters.getTable,
           getters.getPlayerChoices,
           getters.getSimulationPlayerChoices,
+          getters.getTurn,
+          getters.getPlayer,
         ],
         (newValue) => {
           state.table = newValue[0];
           state.playerChoices = newValue[1];
           state.simulationPlayerChoices = newValue[2];
+          state.turn = newValue[3];
+          state.player = newValue[4];
         }
       );
     });
@@ -413,11 +448,15 @@ export default {
         if (
           store.state.playerChoices.length == 0 &&
           store.state.aroundStone.length != 0 &&
-          actionState.value == ''
+          actionState.value == '' &&
+          skipCount.value != 1
         ) {
           skipTurn();
-        } else if (store.state.aroundStone.length == 0) {
+          skipCount.value++;
+        } else if (store.state.aroundStone.length == 0 || skipCount.value) {
           winLoseJudgment('gameEnd');
+        } else {
+          skipCount.value = 0;
         }
         if (actionState.value == 'reset') actionState.value = '';
       }, 5);
@@ -466,6 +505,9 @@ export default {
       colorObj,
       createStoneGradientString,
       changeActionState,
+      newGame,
+      backHome,
+      reset,
       // bgColor,
       /*石をひっくり返すモーションをつける関数
         flip: function() => {
@@ -483,7 +525,7 @@ export default {
 .othello {
   background-image: url('../assets/othelloPage/bg.jpeg');
   background-size: cover;
-  height: 100vh;
+  min-height: 100vh;
   display: flex;
   justify-content: center;
   -webkit-box-pack: center;

@@ -5,6 +5,7 @@ import { weight } from '@/consts/weight';
 import { directions } from '@/consts/directions';
 import isReturn from '@/functions/IsReturn';
 import countCorner from '@/functions/CountCorner';
+import {initialState} from '@/consts/initialState';
 
 export const allDirections = Object.values(directions);
 
@@ -429,13 +430,13 @@ export const store = createStore<Table>({
     winLoseJudgment(state: Table, payload: { judgeString: string }): void {
       let resultString = '引き分け';
       if (payload.judgeString == 'concede') {
-        resultString = state.turn == 1 ? state.player.black.name + 'の勝ち' : state.player.black.name + 'の勝ち';
+        resultString = state.turn == 1 ? state.player.white.name + 'の勝ち' : state.player.black.name + 'の勝ち';
         store.commit('resetGame')
         store.commit('showPlaceStoneCanBePut', { allDirections: allDirections })
       } else if (state.player.black.stoneNum > state.player.white.stoneNum) {
         resultString = state.player.black.name + 'の勝ち';
       } else if (state.player.black.stoneNum < state.player.white.stoneNum) {
-        resultString = state.player.black.name + 'の勝ち';
+        resultString = state.player.white.name + 'の勝ち';
       }
       alert(resultString);
     },
@@ -713,13 +714,14 @@ export const store = createStore<Table>({
       }
       state.playerChoices = [];
     },
+    backHome(state: Table): void {
+      Object.assign(state, initialState)
+    },
     changeMode(state: Table, payload: { mode: string }) {
       state.mode = payload.mode;
-      console.log(state.mode);
     },
     changeCpuStrength(state: Table, payload: { strength: string }) {
       state.cpuStrength = payload.strength;
-      console.log(state.cpuStrength);
     },
     changeGameStatus(state: Table) {
       state.gameStatus = 'endGame';
@@ -741,6 +743,12 @@ export const store = createStore<Table>({
     getSimulationPlayerChoices(state) {
       return state.simulationPlayerChoices;
     },
+    getTurn(state) {
+      return state.turn;
+    },
+    getPlayer(state) {
+      return state.player;
+    }
   },
 });
 

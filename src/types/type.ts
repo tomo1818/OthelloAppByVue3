@@ -1,4 +1,5 @@
 export interface State {
+  turn: number;
   mode: string;
   cpuStrength: string;
   player: { [key: string]: { name: string; stoneNum: number } };
@@ -19,7 +20,7 @@ export interface State {
 }
 
 export interface Table extends State {
-  turn: number;
+
   colorCollections: { [key: string]: Color };
   tableData: {
     table: { [key: number]: { [key: number]: number | null } };
