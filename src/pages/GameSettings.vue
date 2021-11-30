@@ -471,7 +471,7 @@ export default {
   }
   
   .addMb {
-    margin-bottom: 3rem; !important
+    margin-bottom: 3rem!important;
   }
 
   .title {
