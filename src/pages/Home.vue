@@ -7,13 +7,15 @@
       <router-link
         class="
           p-3
-          hover:bg-gray-100 hover:bg-opacity-25
+          hover:bg-blue-500
           btn
-          border-gray-100
-          hover:border-gray-100
+          border-4
+          border-blue-500
+          hover:border-blue-500
           text-white
           rounded-full
           shadow-3xl
+          font-bold
         "
         to="/setting"
         >スタート</router-link
@@ -26,6 +28,7 @@
 import { useRoute } from 'vue-router';
 
 export default {
+  name,
   // eslint-disable-next-line @typescript-eslint/explicit-module-boundary-types
   setup() {
     const route = useRoute();
@@ -33,10 +36,9 @@ export default {
 
     return {
       settingData,
-    }
-  }
-}
-
+    };
+  },
+};
 </script>
 
 <style scoped>

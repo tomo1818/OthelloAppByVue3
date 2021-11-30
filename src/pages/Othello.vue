@@ -206,6 +206,7 @@ import { useRoute, useRouter } from 'vue-router';
 import { State, Coordinate, Directions, Color } from '@/types/type'; // 型定義を読み取る
 
 export default {
+  name,
   // eslint-disable-next-line @typescript-eslint/explicit-module-boundary-types
   setup() {
     const store = useStore(key);
@@ -582,11 +583,11 @@ table.othelloTable tr:first-child td {
 }
 .stoneBox.user1 {
   padding-top: 2px;
-  background: linear-gradient( #333333 0%, #555555 100%);
+  background: linear-gradient(#333333 0%, #555555 100%);
 }
 .stoneBox.user2 {
   padding-bottom: 2px;
-  background: linear-gradient( #333333 0%, #555555 100%);
+  background: linear-gradient(#333333 0%, #555555 100%);
 }
 .stoneBox .box {
   width: 80%;
@@ -781,7 +782,6 @@ table.othelloTable tr:first-child td {
   margin-top: 10px;
 }
 @media screen and (min-width: 1281px) {
-
   .othelloContainer {
     max-width: 1200px;
   }
