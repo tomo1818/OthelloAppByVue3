@@ -126,7 +126,7 @@
         <p>first move: {{ setting.firstMove }}</p>
       </div>
       <div class="selectColorTheme mb-3">
-        <h3 class="h3">オセロ版の色オプションを選んでください</h3>
+        <h3 class="h3">オセロのカラーテーマを選んでください</h3>
         <select v-model="setting.colorTheme">
           <option
             v-for="(option, key) in $store.state.colorCollections"

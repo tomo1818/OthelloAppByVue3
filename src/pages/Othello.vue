@@ -2,14 +2,17 @@
   <div class="othello">
     <div class="othelloContainer">
       <div class="pageTitle">
-        <router-link class="h1 mb-5" to="/" exact>オセロゲーム</router-link>
+        <router-link @click.prevent="changeActionState(), backHome()" class="h1 mb-5" to="/" exact>オセロゲーム</router-link>
       </div>
       <div class="othelloTableContainer">
         <div class="infoBox">
           <div class="playerInfo whiteSide">
             <div class="stoneImage">
               <div class="stoneCon">
-                <p class="front whiteShadow" style="background-color: rgb(255, 255, 255);"></p>
+                <p
+                  class="front whiteShadow"
+                  style="background-color: rgb(255, 255, 255)"
+                ></p>
               </div>
             </div>
             <div class="someInfo">
@@ -18,17 +21,37 @@
             </div>
           </div>
           <div class="commandContainer">
-            <div v-if="state.mode == 'vsPlayer'" class="commandItem display mr10">
-              <img src="@/assets/othelloPage/vsPlayer.png" style="margin-bottom: 6.12%;" alt="対人戦のアイコン">
+            <div
+              v-if="state.mode == 'vsPlayer'"
+              class="commandItem display mr10"
+            >
+              <img
+                src="@/assets/othelloPage/vsPlayer.png"
+                style="margin-bottom: 6.12%"
+                alt="対人戦のアイコン"
+              />
               <p>対人戦</p>
             </div>
             <div v-else class="commandItem display mr10">
-              <img src="@/assets/othelloPage/vsCpu.png" alt="CPU対戦のアイコン">
+              <img
+                src="@/assets/othelloPage/vsCpu.png"
+                alt="CPU対戦のアイコン"
+              />
               <p>{{ state.cpuStrength }}</p>
             </div>
             <div class="commandItem display">
-              <div v-if="turn == 1"><img src="@/assets/othelloPage/blackStone.png" alt="黒石のアイコン"></div>
-              <div v-else><img src="@/assets/othelloPage/whiteStone.png" alt="白石のアイコン"></div>
+              <div v-if="turn == 1">
+                <img
+                  src="@/assets/othelloPage/blackStone.png"
+                  alt="黒石のアイコン"
+                />
+              </div>
+              <div v-else>
+                <img
+                  src="@/assets/othelloPage/whiteStone.png"
+                  alt="白石のアイコン"
+                />
+              </div>
               <p>手番</p>
             </div>
           </div>
@@ -86,7 +109,6 @@
                           returnStone({ y: rowNum, x: columnNum }),
                           changeTurn(),
                           showPlaceStoneCanBePut(),
-                          winLoseJudgment(),
                           cpuAction()
                       "
                     >
@@ -110,19 +132,52 @@
         </div>
         <div class="infoBox">
           <div class="commandContainer justify-start">
-            <button class="commandItem button mr10" @click="moveBack(), showPlaceStoneCanBePut()">
-              <img src="@/assets/othelloPage/stop.png" alt="待ったのアイコン">
+            <button
+              class="commandItem button mr10"
+              @click="moveBack(), showPlaceStoneCanBePut()"
+            >
+              <img src="@/assets/othelloPage/stop.png" alt="待ったのアイコン" />
               <p>待った</p>
             </button>
-            <button class="commandItem button" @click="resetGame(), showPlaceStoneCanBePut()">
-              <img src="@/assets/othelloPage/othelloIcon.png" alt="オセロのアイコン">
+            <button @click="reset()" class="commandItem button" v-if="state.player.black.name == 'CPU'">
+              <img
+                src="@/assets/othelloPage/othelloIcon.png"
+                alt="オセロのアイコン"
+              />
               <p>新規対局</p>
+            </button>
+            <button
+              v-else
+              class="commandItem button"
+              @click="newGame()"
+            >
+              <img
+                src="@/assets/othelloPage/othelloIcon.png"
+                alt="オセロのアイコン"
+              />
+              <p>新規対局</p>
+            </button>
+            <button
+              class="commandItem button"
+              @click="changeActionState(), winLoseJudgment('concede')"
+            >
+              <img
+                src="@/assets/othelloPage/concede.png"
+                alt="降参のアイコン"
+              />
+              <p>降参</p>
             </button>
           </div>
           <div class="playerInfo blackSide">
             <div class="stoneImage">
               <div class="stoneCon">
-                <p class="front" style="background-color: rgb(0, 0, 0); box-shadow: 0 0 5px white;"></p>
+                <p
+                  class="front"
+                  style="
+                    background-color: rgb(0, 0, 0);
+                    box-shadow: 0 0 5px white;
+                  "
+                ></p>
               </div>
             </div>
             <div class="someInfo">
@@ -147,7 +202,7 @@ import {
 } from 'vue';
 import { useStore } from 'vuex';
 import { key } from '../store';
-import { useRoute } from 'vue-router';
+import { useRoute, useRouter } from 'vue-router';
 import { State, Coordinate, Directions, Color } from '@/types/type'; // 型定義を読み取る
 
 export default {
@@ -156,10 +211,14 @@ export default {
     const store = useStore(key);
     // this.$routeと同義
     const route = useRoute();
+    const router = useRouter()
+
     // settingPageからのデータ
     const settingData = route.params;
 
-    const turn: ComputedRef<number> = computed(() => store.state.turn);
+    const turn: ComputedRef<number> = computed(() => store.getters.getTurn);
+    const actionState = ref<string>('');
+    const skipCount = ref<number>(0);
     const directions: Directions = {
       top: { y: -1, x: 0 },
       bottom: { y: 1, x: 0 },
@@ -170,9 +229,14 @@ export default {
       bottomLeft: { y: 1, x: -1 },
       bottomRight: { y: 1, x: 1 },
     };
+
+    const changeActionState = (): void => {
+      actionState.value = 'reset';
+    }
     // optionAPIのdataと同様の扱い
     const state = reactive<State>({
-      player: store.state.player,
+      player: store.getters.getPlayer,
+      turn: store.state.turn,
       mode: store.state.mode,
       cpuStrength: store.state.cpuStrength,
       table: store.getters.getTable,
@@ -188,6 +252,10 @@ export default {
     //   if (row % 2 == 0) return column % 2 == 0 ? "#008833" : "#009900";
     //   else return column % 2 == 0 ? "#009900" : "#008833";
     // }
+
+    const reset = (): void => {
+      location.assign('/setting');
+    }
 
     const addTableData = (): void => {
       store.commit('addTableData');
@@ -233,11 +301,22 @@ export default {
         });
     };
 
-    const winLoseJudgment = (): void => {
-      if (store.state.aroundStone.length == 0) {
-        store.commit('winLoseJudgment');
-      }
+    const winLoseJudgment = (judgeString: string): void => {
+      store.commit('winLoseJudgment', { judgeString: judgeString });
+      if (state.player.black.name === 'CPU') reset();
     };
+
+    const newGame = (): void => {
+      resetGame();
+      showPlaceStoneCanBePut();
+      if (state.player.black.name === 'CPU') {
+        changeTurn();
+      }
+    }
+
+    const backHome = (): void => {
+      store.commit('backHome');
+    }
 
     const cpuAction = (): void => {
       if (
@@ -260,7 +339,7 @@ export default {
           allDirections: Object.values(directions),
         });
         if (store.state.aroundStone.length == 0) {
-          store.commit('winLoseJudgment');
+          store.commit('winLoseJudgment', {judgeString: 'gameEnd'});
         }
       }
     };
@@ -337,35 +416,52 @@ export default {
       store.commit('changeTurn');
       showPlaceStoneCanBePut();
       if (settingData.mode !== 'vsCpu') {
-        winLoseJudgment(), cpuAction();
+        cpuAction();
       }
     };
 
     onMounted(() => {
       showPlaceStoneCanBePut();
-      if (state.player.black.name === 'CPU') cpuAction();
+      if (state.player.black.name === 'CPU') {
+        cpuAction();
+      }
       store.watch(
         (state, getters) => [
           getters.getTable,
           getters.getPlayerChoices,
           getters.getSimulationPlayerChoices,
+          getters.getTurn,
+          getters.getPlayer,
         ],
         (newValue) => {
           state.table = newValue[0];
           state.playerChoices = newValue[1];
           state.simulationPlayerChoices = newValue[2];
+          state.turn = newValue[3];
+          state.player = newValue[4];
         }
       );
     });
 
     onUpdated(() => {
-      if (
-        store.state.playerChoices.length == 0 &&
-        store.state.aroundStone.length != 0
-      ) {
-        skipTurn();
-      }
+      setTimeout(function () {
+        if (
+          store.state.playerChoices.length == 0 &&
+          store.state.aroundStone.length != 0 &&
+          actionState.value == '' &&
+          skipCount.value != 1
+        ) {
+          skipTurn();
+          skipCount.value++;
+        } else if (store.state.aroundStone.length == 0 || skipCount.value) {
+          winLoseJudgment('gameEnd');
+        } else {
+          skipCount.value = 0;
+        }
+        if (actionState.value == 'reset') actionState.value = '';
+      }, 5);
     });
+
     // computed
     //選択肢から色のオブジェクト取得
     const colorObj = computed((): Color => {
@@ -377,6 +473,7 @@ export default {
       });
       return obj;
     });
+
     //持ち石の側面CSS
     const createStoneGradientString = computed((): string => {
       return `linear-gradient(90deg, ${colorObj.value.frontStone} 0%, ${colorObj.value.frontStone} 50%, ${colorObj.value.backStone} 50%, ${colorObj.value.backStone} 100% )`;
@@ -407,6 +504,10 @@ export default {
       cpuAction,
       colorObj,
       createStoneGradientString,
+      changeActionState,
+      newGame,
+      backHome,
+      reset,
       // bgColor,
       /*石をひっくり返すモーションをつける関数
         flip: function() => {
@@ -421,11 +522,10 @@ export default {
 </script>
 
 <style scoped>
-
 .othello {
   background-image: url('../assets/othelloPage/bg.jpeg');
   background-size: cover;
-  height: 100vh;
+  min-height: 100vh;
   display: flex;
   justify-content: center;
   -webkit-box-pack: center;
@@ -450,8 +550,6 @@ export default {
   max-width: 459px;
   margin: 0 auto;
 }
-
-
 
 table.othelloTable {
   border: solid 2px #000;
@@ -499,6 +597,7 @@ table.othelloTable tr:first-child td {
   -ms-flex-wrap: wrap;
   border-radius: 3px;
   background: #333;
+  background: linear-gradient(#333,#777);
 }
 .stoneBox.user1 .box {
   justify-content: flex-end;
@@ -513,7 +612,9 @@ table.othelloTable tr:first-child td {
   box-shadow: -2px -2px 8px -1px #ccc inset;
 }
 .stoneBox .box .stone {
-  width: 3.12374%;
+  /* width: 3.12374%; */
+  width: 2.5%;
+  margin-right: 0.62374%;
   height: 100%;
   background: linear-gradient(90deg, #fff 0%, #fff 50%, #000 50%, #000 100%);
   border-radius: 5px;
@@ -573,7 +674,7 @@ table.othelloTable tr:first-child td {
   background: -webkit-linear-gradient(left, #333 0%, #333 30%, #ffffff 100%);
   background: -o-linear-gradient(left, #333 0%, #333 30%, #ffffff 100%);
   background: -ms-linear-gradient(left, #333 0%, #333 30%, #ffffff 100%);
-  background: linear-gradient(to left, rgba(0,0,0,0.5),rgba(0,0,0,1));
+  background: linear-gradient(to left, rgba(0, 0, 0, 0.5), rgba(0, 0, 0, 1));
 }
 
 .blackSide {
@@ -662,9 +763,9 @@ table.othelloTable tr:first-child td {
   border: 3px solid black;
 }
 
-.mr10 {
+/* .mr10 {
   margin-right: 10px;
-}
+} */
 
 .commandItem img {
   width: 60%;
@@ -672,11 +773,24 @@ table.othelloTable tr:first-child td {
   margin-top: 10px;
 }
 
+.commandItem:nth-child(2n + 1) {
+  margin-right: 10px;
+}
+
+.commandItem:nth-child(n + 3) {
+  margin-top: 10px;
+}
 @media screen and (min-width: 1281px) {
 
-  .othelloContainer[data-v-114e02ce] {
+  .othelloContainer {
     max-width: 1200px;
   }
+
+  table.othelloTable tr td {
+    width: 70px;
+    height: 70px;
+  }
+
   .stoneBox {
     max-width: 587px;
     height: 62px;
@@ -692,6 +806,18 @@ table.othelloTable tr:first-child td {
 }
 
 @media screen and (max-width: 880px) {
+
+  .commandItem:nth-child(n + 3) {
+    margin-top: 0px;
+  }
+
+  .commandItem:nth-child(2n + 1) {
+    margin-right: 0px;
+  }
+
+  .commandItem:nth-child(-n + 2) {
+    margin-right: 5px;
+  }
   .othello {
     height: 100%;
     min-height: 100vh;
@@ -765,7 +891,7 @@ table.othelloTable tr:first-child td {
   }
 
   .button {
-    width: calc((100% - 10px) / 3);
+    width: calc((100% - 10px) / 3.1);
   }
 }
 </style>
