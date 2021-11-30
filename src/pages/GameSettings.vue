@@ -256,17 +256,16 @@
           shadow-3xl
         "
         :to="{
-          name: 'Home',
+          name: 'Othello',
           params: {
             mode: setting.opponent,
             strength: setting.strength,
             colorTheme: setting.colorTheme,
           },
         }"
-        >戻る</router-link
+        >ゲームスタート</router-link
       >
       <router-link
-        disabled
         v-else
         class="
           font-sans
@@ -281,7 +280,7 @@
           shadow-3xl
         "
         :to="{
-          name: 'Home',
+          name: 'Othello',
           params: {
             mode: setting.opponent,
             name1: setting.playerName1,
@@ -291,7 +290,7 @@
           },
           props: setting.colorTheme,
         }"
-        >戻る</router-link
+        >ゲームスタート</router-link
       >
     </div>
   </div>
@@ -311,7 +310,7 @@ export default {
       opponent: 'vsPlayer',
       playerName1: 'Player1',
       playerName2: 'Player2',
-      difficulty: 'easy',
+      strength: 'easy',
       chosePlayer: false,
       choseCpu: true,
       firstMove: 'Player1',
@@ -343,9 +342,18 @@ export default {
         });
       }
     };
+    const changeMode = (): void => {
+      store.commit('changeMode', { mode: setting.opponent });
+    };
+
+    const changeCpuStrength = (): void => {
+      store.commit('changeCpuStrength', { strength: setting.strength });
+    };
     return {
       setting,
       changeOpponent,
+      changeMode,
+      changeCpuStrength,
       determineFirstMove,
     };
   },
@@ -364,8 +372,12 @@ export default {
   background-size: cover;
   background-repeat: no-repeat;
   background-position: center center;
-  height: 100%;
   margin: 0 auto;
+}
+
+.backImg div {
+  background-position: center;
+  text-align:center
 }
 
 .frame {

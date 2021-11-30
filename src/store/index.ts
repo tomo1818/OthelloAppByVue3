@@ -1,6 +1,12 @@
 import { InjectionKey } from 'vue';
 import { createStore, Store } from 'vuex';
 import { Table, Coordinate } from '@/types/type';
+import { weight } from '@/consts/weight';
+import { directions } from '@/consts/directions';
+import isReturn from '@/functions/IsReturn';
+import countCorner from '@/functions/CountCorner';
+
+export const allDirections = Object.values(directions);
 
 // インジェクションキーを定義します
 export const key: InjectionKey<Store<Table>> = Symbol();
@@ -19,6 +25,7 @@ export const store = createStore<Table>({
       },
     },
     mode: 'vsPlayer',
+    cpuStrength: 'easy',
     colorCollections: {
       Basic: { table: '#090', frontStone: '#000', backStone: '#fff' },
       Striking: {
@@ -136,12 +143,185 @@ export const store = createStore<Table>({
     playerChoices: [],
     aroundStoneData: [],
     tableData: [],
+    cpuPosition: {
+      y: 0,
+      x: 0,
+    },
+    gameStatus: 'opening',
+    gameProgress: 0,
+    simulationFlag: false,
+    simulationTurn: 1,
+    simulationMaxEvaluationStatus: {},
+    simulationTable: {},
+    simulationPlayerChoices: [],
+    simulationAroundStone: [],
   },
   mutations: {
     putStone(state: Table, payload: { position: Coordinate }): void {
+      // const table = state.simulationFlag ? state.simulationTable : state.table;
       state.table[payload.position.y][payload.position.x] = state.turn;
       if (state.turn === 1) state.player.black.stoneNum += 1;
       else state.player.white.stoneNum += 1;
+      store.commit('addGameProgress');
+    },
+    putStoneSimulation(
+      state: Table,
+      payload: { position: Coordinate; turn: number }
+    ): void {
+      state.simulationTable[payload.position.y][payload.position.x] =
+        payload.turn;
+    },
+    determinePutPositionOfCpu(state: Table) {
+      const choicesNum: number = state.playerChoices.length;
+      if (state.cpuStrength === 'easy') {
+        const randomNum: number = Math.floor(Math.random() * choicesNum);
+        state.cpuPosition = state.playerChoices[randomNum].position;
+      } else if (state.cpuStrength === 'normal') {
+        let max: number = state.playerChoices[0].returnNum;
+        let maxIndex = 0;
+        for (let i = 1; i < choicesNum; i++) {
+          if (state.playerChoices[i].returnNum > max) {
+            max = state.playerChoices[i].returnNum;
+            maxIndex = i;
+          }
+        }
+        state.cpuPosition = state.playerChoices[maxIndex].position;
+      } else {
+        if (state.gameStatus === 'endGame') {
+          let max = state.playerChoices[0];
+          store.commit('cpuSimulation', { position: max.position }); // ここでsimulationMaxEvaluationStatusが埋まる。
+          if (state.playerChoices.length > 1) {
+            let maxEvaluationValue =
+              max.evaluationValue -
+              Number(state.simulationMaxEvaluationStatus.evaluationValue);
+            let maxReturnNum =
+              max.returnNum -
+              Number(state.simulationMaxEvaluationStatus.returnNum);
+            for (let i = 1; i < choicesNum; i++) {
+              const curr = state.playerChoices[i];
+              store.commit('cpuSimulation', { position: curr.position });
+              const currMaxEvaluationValue =
+                curr.evaluationValue -
+                Number(state.simulationMaxEvaluationStatus.evaluationValue);
+              const currMaxReturnNum =
+                curr.returnNum -
+                Number(state.simulationMaxEvaluationStatus.returnNum);
+              if (currMaxReturnNum > maxReturnNum) {
+                max = curr;
+                maxReturnNum = currMaxReturnNum;
+              } else if (
+                currMaxReturnNum === maxReturnNum &&
+                currMaxEvaluationValue > maxEvaluationValue
+              ) {
+                max = curr;
+                maxEvaluationValue = currMaxEvaluationValue;
+              }
+            }
+          }
+          state.cpuPosition = max.position;
+        } else {
+          let max = state.playerChoices[0];
+          if (choicesNum > 1) {
+            store.commit('cpuSimulation', { position: max.position }); // ここでsimulationMaxEvaluationStatusが埋まる。
+            let maxEvaluationValue =
+              max.evaluationValue -
+              Number(state.simulationMaxEvaluationStatus.evaluationValue);
+            let maxReturnNum =
+              max.returnNum -
+              Number(state.simulationMaxEvaluationStatus.returnNum);
+            for (let i = 1; i < choicesNum; i++) {
+              const curr = state.playerChoices[i];
+              store.commit('cpuSimulation', { position: curr.position });
+              const currMaxEvaluationValue =
+                curr.evaluationValue -
+                Number(state.simulationMaxEvaluationStatus.evaluationValue);
+              const currMaxReturnNum =
+                curr.returnNum -
+                Number(state.simulationMaxEvaluationStatus.returnNum);
+              if (currMaxEvaluationValue > maxEvaluationValue) {
+                max = curr;
+                maxEvaluationValue = currMaxEvaluationValue;
+              } else if (
+                currMaxEvaluationValue === maxEvaluationValue &&
+                currMaxReturnNum > maxReturnNum
+              ) {
+                max = curr;
+                maxReturnNum = currMaxReturnNum;
+              }
+            }
+          }
+          state.cpuPosition = max.position;
+        }
+      }
+    },
+    putStoneByCpu(
+      state: Table,
+      payload: { allDirections: Coordinate[] }
+    ): void {
+      store.commit('determinePutPositionOfCpu');
+      state.table[state.cpuPosition.y][state.cpuPosition.x] = state.turn;
+      if (state.turn === 1) state.player.black.stoneNum += 1;
+      else state.player.white.stoneNum += 1;
+      store.commit('reduceStone');
+      store.commit('checkAroundStone', {
+        position: state.cpuPosition,
+        allDirections: payload.allDirections,
+      });
+      store.commit('addGameProgress');
+    },
+    cpuSimulation(state: Table, payload: { position: Coordinate }) {
+      // any型todo
+      state.simulationTable = JSON.parse(JSON.stringify(state.table));
+      state.simulationTurn = JSON.parse(JSON.stringify(state.turn));
+      state.simulationAroundStone = JSON.parse(
+        JSON.stringify(state.aroundStone)
+      );
+      store.commit('putStoneSimulation', {
+        position: { y: payload.position.y, x: payload.position.x },
+        turn: state.simulationTurn,
+      });
+      store.commit('checkAroundStoneSimulation', {
+        position: { y: payload.position.y, x: payload.position.x },
+        allDirections: allDirections,
+      });
+      for (const key in directions) {
+        store.commit('returnStoneSimulation', {
+          position: payload.position,
+          isReturn: isReturn(
+            payload.position,
+            directions[key],
+            state.simulationTurn,
+            state.simulationTable
+          ),
+          direction: directions[key],
+        });
+      }
+      store.commit('changeTurnSimulation');
+      store.commit('showPlaceStoneCanBePutSimulation');
+      let max = state.simulationPlayerChoices[0];
+      for (let i = 1; i < state.simulationPlayerChoices.length; i++) {
+        const curr = state.simulationPlayerChoices[i];
+        if (state.gameStatus === 'endGame') {
+          if (curr.returnNum > max.returnNum) {
+            max = curr;
+          } else if (
+            curr.returnNum === max.returnNum &&
+            curr.evaluationValue > max.evaluationValue
+          ) {
+            max = curr;
+          }
+        } else {
+          if (curr.evaluationValue > max.evaluationValue) {
+            max = curr;
+          } else if (
+            curr.evaluationValue === max.evaluationValue &&
+            curr.returnNum > max.returnNum
+          ) {
+            max = curr;
+          }
+        }
+      }
+      state.simulationMaxEvaluationStatus = max;
     },
     reduceStone(state: Table): void {
       if (state.turn == 1) state.stone1.pop();
@@ -151,6 +331,7 @@ export const store = createStore<Table>({
       state: Table,
       payload: { position: Coordinate; allDirections: Coordinate[] }
     ): void {
+      // let aroundStone = state.simulationFlag ? state.simulationAroundStone : state.aroundStone;
       if (state.aroundStoneData.length === 0)
         state.aroundStoneData.push(
           JSON.parse(JSON.stringify(state.aroundStone))
@@ -173,6 +354,32 @@ export const store = createStore<Table>({
           state.aroundStone.push({ y: yCheck, x: xCheck });
       }
     },
+    checkAroundStoneSimulation(
+      state: Table,
+      payload: { position: Coordinate; allDirections: Coordinate[] }
+    ): void {
+      state.simulationAroundStone = state.simulationAroundStone.filter(
+        function (e) {
+          return !(e.y == payload.position.y && e.x == payload.position.x);
+        }
+      );
+      for (const value of payload.allDirections) {
+        const yCheck: number = Number(payload.position.y) + value.y;
+        const xCheck: number = Number(payload.position.x) + value.x;
+        if (
+          yCheck < 1 ||
+          xCheck < 1 ||
+          yCheck > 8 ||
+          xCheck > 8 ||
+          state.simulationAroundStone.some(
+            (e) => e.y == yCheck && e.x == xCheck
+          )
+        )
+          continue;
+        else if (state.simulationTable[yCheck][xCheck] == null)
+          state.simulationAroundStone.push({ y: yCheck, x: xCheck });
+      }
+    },
     returnStone(
       state: Table,
       payload: {
@@ -187,6 +394,24 @@ export const store = createStore<Table>({
         while (state.table[row][column] != state.turn) {
           state.table[row][column] = state.turn;
           store.commit('addStoneNum');
+          row += payload.direction.y;
+          column += payload.direction.x;
+        }
+      }
+    },
+    returnStoneSimulation(
+      state: Table,
+      payload: {
+        position: Coordinate;
+        isReturn: boolean;
+        direction: Coordinate;
+      }
+    ): void {
+      if (payload.isReturn) {
+        let row = Number(payload.position.y) + Number(payload.direction.y);
+        let column = Number(payload.position.x) + Number(payload.direction.x);
+        while (state.simulationTable[row][column] != state.simulationTurn) {
+          state.simulationTable[row][column] = state.simulationTurn;
           row += payload.direction.y;
           column += payload.direction.x;
         }
@@ -251,6 +476,23 @@ export const store = createStore<Table>({
         }
       );
     },
+    showPlaceStoneCanBePutSimulation(state: Table): void {
+      for (const value of state.simulationAroundStone) {
+        if (state.simulationTable[value.y][value.x] == 3)
+          state.simulationTable[value.y][value.x] = null;
+        store.commit('findOpponentSimulation', {
+          position: value,
+        });
+      }
+      state.simulationPlayerChoices = state.simulationPlayerChoices.filter(
+        (element, index, self) => {
+          const positionList = self.map((element) => element.position);
+          if (positionList.indexOf(element.position) === index) {
+            return element;
+          }
+        }
+      );
+    },
     findOpponent(
       state: Table,
       payload: { allDirections: Coordinate[]; value: Coordinate }
@@ -279,6 +521,34 @@ export const store = createStore<Table>({
         }
       }
     },
+    findOpponentSimulation(
+      state: Table,
+      payload: { position: Coordinate }
+    ): void {
+      const opponent: number = state.simulationTurn == 1 ? 0 : 1;
+      for (const direction of allDirections) {
+        const yCheck: number = payload.position.y + direction.y;
+        const xCheck: number = payload.position.x + direction.x;
+        if (
+          yCheck < 1 ||
+          xCheck < 1 ||
+          yCheck > 8 ||
+          xCheck > 8 ||
+          state.simulationTable[payload.position.y][payload.position.x] == 3
+        )
+          continue;
+        else if (state.simulationTable[yCheck][xCheck] == opponent) {
+          store.commit('isPlaceableSimulation', {
+            turn: state.simulationTurn,
+            opponent: opponent,
+            yCheck: yCheck,
+            xCheck: xCheck,
+            position: payload.position,
+            direction: direction,
+          });
+        }
+      }
+    },
     isPlaceable(
       state: Table,
       payload: {
@@ -290,6 +560,7 @@ export const store = createStore<Table>({
       }
     ): void {
       let countNum = 0;
+      let evaluationValue = weight[payload.value.y][payload.value.x];
       while (
         payload.xCheck < 9 &&
         payload.yCheck < 9 &&
@@ -301,6 +572,7 @@ export const store = createStore<Table>({
           state.playerChoices.push({
             position: payload.value,
             returnNum: countNum,
+            evaluationValue: evaluationValue,
           });
           break;
         } else if (
@@ -309,6 +581,48 @@ export const store = createStore<Table>({
           break;
         }
         countNum += 1;
+        evaluationValue += weight[payload.yCheck][payload.xCheck];
+        payload.yCheck = payload.yCheck + payload.direction.y;
+        payload.xCheck = payload.xCheck + payload.direction.x;
+      }
+    },
+    isPlaceableSimulation(
+      state: Table,
+      payload: {
+        opponent: number;
+        yCheck: number;
+        xCheck: number;
+        position: Coordinate;
+        direction: Coordinate;
+      }
+    ): void {
+      let countNum = 0;
+      let evaluationValue = weight[payload.position.y][payload.position.x];
+      while (
+        payload.xCheck < 9 &&
+        payload.yCheck < 9 &&
+        payload.xCheck > 0 &&
+        payload.yCheck > 0
+      ) {
+        if (
+          state.simulationTable[payload.yCheck][payload.xCheck] ==
+          state.simulationTurn
+        ) {
+          state.simulationTable[payload.position.y][payload.position.x] = 3;
+          state.simulationPlayerChoices.push({
+            position: payload.position,
+            returnNum: countNum,
+            evaluationValue: evaluationValue,
+          });
+          break;
+        } else if (
+          state.simulationTable[payload.yCheck][payload.xCheck] !=
+          payload.opponent
+        ) {
+          break;
+        }
+        countNum += 1;
+        evaluationValue += weight[payload.yCheck][payload.xCheck];
         payload.yCheck = payload.yCheck + payload.direction.y;
         payload.xCheck = payload.xCheck + payload.direction.x;
       }
@@ -316,6 +630,13 @@ export const store = createStore<Table>({
     changeTurn(state: Table) {
       state.turn = state.turn == 1 ? 0 : 1;
       state.playerChoices = [];
+      if (countCorner(state.table) >= 3 && state.gameProgress >= 44) {
+        store.commit('changeGameStatus');
+      }
+    },
+    changeTurnSimulation(state: Table) {
+      state.simulationTurn = state.simulationTurn === 1 ? 0 : 1;
+      state.simulationPlayerChoices = [];
     },
     determineStoneColor(
       state: Table,
@@ -375,7 +696,15 @@ export const store = createStore<Table>({
         state.aroundStone = beforeAroundStone;
         state.tableData.pop();
         state.aroundStoneData.pop();
-        store.commit('changeTurn');
+        if (state.mode === 'vsPlayer') {
+          store.commit('changeTurn');
+          state.turn === 1 ? state.stone1.push(0) : state.stone2.push(0);
+        } else {
+          state.stone1.push(0);
+          state.stone2.push(0);
+        }
+        state.playerChoices = [];
+        state.gameProgress -= 1;
       }
     },
     resetGame(state: Table): void {
@@ -390,8 +719,28 @@ export const store = createStore<Table>({
         state.player.white.stoneNum = 2;
         state.tableData = [];
         state.turn = 1;
+        state.gameProgress = 0;
+        state.gameStatus = 'opening';
+        while (state.stone1.length < 30 || state.stone2.length < 30) {
+          if (state.stone1.length < 30) state.stone1.push(0);
+          if (state.stone2.length < 30) state.stone2.push(0);
+        }
       }
       state.playerChoices = [];
+    },
+    changeMode(state: Table, payload: { mode: string }) {
+      state.mode = payload.mode;
+      console.log(state.mode);
+    },
+    changeCpuStrength(state: Table, payload: { strength: string }) {
+      state.cpuStrength = payload.strength;
+      console.log(state.cpuStrength);
+    },
+    changeGameStatus(state: Table) {
+      state.gameStatus = 'endGame';
+    },
+    addGameProgress(state: Table) {
+      state.gameProgress += 1;
     },
   },
   getters: {
@@ -400,6 +749,12 @@ export const store = createStore<Table>({
     },
     getPlayerChoices(state) {
       return state.playerChoices;
+    },
+    getCpuPosition(state) {
+      return state.cpuPosition;
+    },
+    getSimulationPlayerChoices(state) {
+      return state.simulationPlayerChoices;
     },
   },
 });
