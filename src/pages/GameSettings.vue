@@ -1,7 +1,7 @@
 <template>
   <div class="gemeSettings backImg lg:pt-1 vh-100">
     <div class="container settings">
-      <h1 class="font-sans title title font-bold mb-3 text-4xl">設定</h1>
+      <h1 class="font-sans title title font-bold mb-3 addMb text-4xl">設定</h1>
       <div class="flex justify-center">
         <div
           class="
@@ -468,6 +468,10 @@ export default {
 @media screen and (min-width: 1200px) {
   .settings {
     margin-top: 50px;
+  }
+  
+  .addMb {
+    margin-bottom: 3rem!important;
   }
 
   .title {
