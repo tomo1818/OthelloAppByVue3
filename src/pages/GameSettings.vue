@@ -25,7 +25,7 @@
             class="mr-2"
             v-model="setting.opponent"
             checked
-            @change="changeOpponent"
+            @change="changeOpponent(), changeMode()"
           />
           <label
             for="vsPlayer"
@@ -44,7 +44,7 @@
             id="vsCpu"
             class="text-red-600 mr-2"
             v-model="setting.opponent"
-            @change="changeOpponent"
+            @change="changeOpponent(), changeMode()"
           />
           <label
             class="font-sans lg:text-2xl lg:font-medium text-lg"
@@ -134,8 +134,9 @@
             type="radio"
             value="easy"
             id="easy"
-            v-model="setting.difficulty"
+            v-model="setting.strength"
             checked
+            @change="changeCpuStrength"
           />
           <label class="font-sans lg:text-2xl lg:font-medium ml-2" for="easy"
             >Easy</label
@@ -145,7 +146,8 @@
             type="radio"
             value="normal"
             id="normal"
-            v-model="setting.difficulty"
+            v-model="setting.strength"
+            @change="changeCpuStrength"
           />
           <label class="font-sans lg:text-2xl lg:font-medium ml-2" for="normal"
             >Normal</label
@@ -155,7 +157,8 @@
             type="radio"
             value="hard"
             id="hard"
-            v-model="setting.difficulty"
+            v-model="setting.strength"
+            @change="changeCpuStrength"
           />
           <label class="font-sans lg:text-2xl lg:font-medium ml-2" for="hard"
             >Hard</label
@@ -469,7 +472,7 @@ export default {
   .settings {
     margin-top: 50px;
   }
-  
+
   .addMb {
     margin-bottom: 3rem!important;
   }
