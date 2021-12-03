@@ -224,12 +224,21 @@ export default {
       if (state.player.black.name === 'CPU') reset();
     };
 
+    const isCpuTurn = (): boolean => {
+      console.log(state.player.black.name);
+      console.log(state.player.white.name);
+      if ((turn.value == 1 && state.player.black.name == 'CPU') || (turn.value == 1 && state.player.white.name == 'CPU')) {
+        return true;
+      }
+      return false;
+    }
+
     //おける石がなくなっったらスキップ
     const skipTurn = (): void => {
       alert("You can't put stone, skip your turn");
       store.commit('changeTurn');
       showPlaceStoneCanBePut();
-      if (state.mode === 'vsCpu') {
+      if (state.mode === 'vsCpu' && isCpuTurn()) {
         cpuAction();
       }
     };
