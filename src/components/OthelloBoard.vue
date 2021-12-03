@@ -179,9 +179,9 @@ export default {
           store.commit('showPlaceStoneCanBePut', {
             allDirections: Object.values(directions),
           });
-          if (store.state.aroundStone.length == 0) {
-            store.commit('winLoseJudgment', {judgeString: 'gameEnd'});
-          }
+          // if (store.state.aroundStone.length == 0) {
+          //   store.commit('winLoseJudgment', {judgeString: 'gameEnd'});
+          // }
         }
       }, 500);
     };
@@ -229,7 +229,7 @@ export default {
       alert("You can't put stone, skip your turn");
       store.commit('changeTurn');
       showPlaceStoneCanBePut();
-      if (state.mode !== 'vsCpu') {
+      if (state.mode === 'vsCpu') {
         cpuAction();
       }
     };
@@ -240,11 +240,11 @@ export default {
           store.state.playerChoices.length == 0 &&
           store.state.aroundStone.length != 0 &&
           actionState.value == '' &&
-          skipCount.value != 1
+          skipCount.value <= 1
         ) {
           skipTurn();
           skipCount.value++;
-        } else if (store.state.aroundStone.length == 0 || skipCount.value) {
+        } else if (store.state.aroundStone.length == 0 || skipCount.value == 2) {
           winLoseJudgment('gameEnd');
         } else {
           skipCount.value = 0;
