@@ -48,10 +48,7 @@
                 class="full massBtn"
                 @click="
                   addTableData(),
-                    putStone({ y: rowNum, x: columnNum }),
-                    returnStone({ y: rowNum, x: columnNum }),
-                    changeTurn(),
-                    showPlaceStoneCanBePut(),
+                    playerAction(rowNum, columnNum),
                     cpuAction()
                 "
               >
@@ -154,36 +151,61 @@ export default {
       store.commit('changeTurn');
     };
 
+    const playerAction = (y: number, x: number): void => {
+      if (
+        store.state.playerChoices.length == 0 &&
+        store.state.aroundStone.length != 0 &&
+        actionState.value == ''
+      ) {
+        skipTurnV2();
+      } else {
+        skipCount.value = 0;
+        putStone({ y: y, x: x });
+        returnStone({ y: y, x: x });
+        changeTurn();
+        showPlaceStoneCanBePut();
+      }
+    }
+
     const cpuAction = (): void => {
-      setTimeout(() => {
-        if (
-          state.mode === 'vsCpu' &&
-          store.state.playerChoices.length != 0 &&
-          store.state.aroundStone.length > 0
-        ) {
-          store.commit('putStoneByCpu', {
-            allDirections: Object.values(directions),
-          });
-          const putPosition = store.getters.getCpuPosition;
-          for (let key in directions)
-            store.commit('returnStone', {
-              position: putPosition,
-              isReturn: isReturn(putPosition,
-              directions[key],
-              turn.value,
-              state.table
-            ),
-              direction: directions[key],
+      if (
+        store.state.playerChoices.length == 0 &&
+        store.state.aroundStone.length != 0 &&
+        actionState.value == ''
+      ) {
+        skipTurnV2();
+      } else {
+        skipCount.value = 0;
+        setTimeout(() => {
+          if (
+            state.mode === 'vsCpu' &&
+            store.state.playerChoices.length != 0 &&
+            store.state.aroundStone.length > 0
+          ) {
+            store.commit('putStoneByCpu', {
+              allDirections: Object.values(directions),
             });
-          store.commit('changeTurn');
-          store.commit('showPlaceStoneCanBePut', {
-            allDirections: Object.values(directions),
-          });
-          // if (store.state.aroundStone.length == 0) {
-          //   store.commit('winLoseJudgment', {judgeString: 'gameEnd'});
-          // }
-        }
-      }, 500);
+            const putPosition = store.getters.getCpuPosition;
+            for (let key in directions)
+              store.commit('returnStone', {
+                position: putPosition,
+                isReturn: isReturn(putPosition,
+                directions[key],
+                turn.value,
+                state.table
+              ),
+                direction: directions[key],
+              });
+            store.commit('changeTurn');
+            store.commit('showPlaceStoneCanBePut', {
+              allDirections: Object.values(directions),
+            });
+            // if (store.state.aroundStone.length == 0) {
+            //   store.commit('winLoseJudgment', {judgeString: 'gameEnd'});
+            // }
+          }
+        }, 500);
+      }
     };
 
     onMounted(() => {
@@ -224,39 +246,29 @@ export default {
       if (state.player.black.name === 'CPU') reset();
     };
 
-    const isCpuTurn = (): boolean => {
-      console.log(state.player.black.name);
-      console.log(state.player.white.name);
-      if ((turn.value == 1 && state.player.black.name == 'CPU') || (turn.value == 1 && state.player.white.name == 'CPU')) {
-        return true;
-      }
-      return false;
-    }
-
     //おける石がなくなっったらスキップ
     const skipTurn = (): void => {
       alert("You can't put stone, skip your turn");
       store.commit('changeTurn');
       showPlaceStoneCanBePut();
-      if (state.mode === 'vsCpu' && isCpuTurn()) {
-        cpuAction();
-      }
     };
 
-    onUpdated(() => {
-      setTimeout(function () {
-        if (
-          store.state.playerChoices.length == 0 &&
-          store.state.aroundStone.length != 0 &&
-          actionState.value == '' &&
-          skipCount.value <= 1
-        ) {
+    const skipTurnV2 = (): void => {
+      if (
+        skipCount.value <= 1
+      ) {
           skipTurn();
           skipCount.value++;
         } else if (store.state.aroundStone.length == 0 || skipCount.value == 2) {
           winLoseJudgment('gameEnd');
-        } else {
-          skipCount.value = 0;
+        }
+        if (actionState.value == 'reset') actionState.value = '';
+    }
+
+    onUpdated(() => {
+      setTimeout(function () {
+        if (store.state.aroundStone.length == 0 || skipCount.value == 2) {
+          winLoseJudgment('gameEnd');
         }
         if (actionState.value == 'reset') actionState.value = '';
       }, 5);
@@ -272,6 +284,7 @@ export default {
       changeTurn,
       showPlaceStoneCanBePut,
       cpuAction,
+      playerAction
     }
   }
 }
