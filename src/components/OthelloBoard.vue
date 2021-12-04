@@ -15,14 +15,8 @@
       v-bind:style="{ backgroundColor: colorObj.table }"
     >
       <tbody>
-        <tr
-          v-for="(value, rowNum, index) in state.table"
-          v-bind:key="index"
-        >
-          <td
-            v-for="(value2, columnNum, index2) in value"
-            v-bind:key="index2"
-          >
+        <tr v-for="(value, rowNum, index) in state.table" v-bind:key="index">
+          <td v-for="(value2, columnNum, index2) in value" v-bind:key="index2">
             <div ref="root" class="stoneCon" v-if="value2 == 1">
               <p
                 class="front blackShadow"
@@ -47,9 +41,7 @@
               <button
                 class="full massBtn"
                 @click="
-                  addTableData(),
-                    playerAction(rowNum, columnNum),
-                    cpuAction()
+                  addTableData(), playerAction(rowNum, columnNum), cpuAction()
                 "
               >
                 <i v-if="value2 == 3" class="far fa-circle fa-xs"></i>
@@ -110,7 +102,7 @@ export default {
 
     const reset = (): void => {
       location.assign('/setting');
-    }
+    };
 
     const showPlaceStoneCanBePut = (): void => {
       store.commit('showPlaceStoneCanBePut', {
@@ -138,7 +130,8 @@ export default {
       for (let key in directions)
         store.commit('returnStone', {
           position: position,
-          isReturn: isReturn(position,
+          isReturn: isReturn(
+            position,
             directions[key],
             turn.value,
             state.table
@@ -165,7 +158,7 @@ export default {
         changeTurn();
         showPlaceStoneCanBePut();
       }
-    }
+    };
 
     const cpuAction = (): void => {
       if (
@@ -189,11 +182,12 @@ export default {
             for (let key in directions)
               store.commit('returnStone', {
                 position: putPosition,
-                isReturn: isReturn(putPosition,
-                directions[key],
-                turn.value,
-                state.table
-              ),
+                isReturn: isReturn(
+                  putPosition,
+                  directions[key],
+                  turn.value,
+                  state.table
+                ),
                 direction: directions[key],
               });
             store.commit('changeTurn');
@@ -214,10 +208,7 @@ export default {
         cpuAction();
       }
       store.watch(
-        (state, getters) => [
-          getters.getTable,
-          getters.getPlayer,
-        ],
+        (state, getters) => [getters.getTable, getters.getPlayer],
         (newValue) => {
           state.table = newValue[0];
           state.player = newValue[1];
@@ -254,16 +245,14 @@ export default {
     };
 
     const skipTurnV2 = (): void => {
-      if (
-        skipCount.value <= 1
-      ) {
-          skipTurn();
-          skipCount.value++;
-        } else if (store.state.aroundStone.length == 0 || skipCount.value == 2) {
-          winLoseJudgment('gameEnd');
-        }
-        if (actionState.value == 'reset') actionState.value = '';
-    }
+      if (skipCount.value <= 1) {
+        skipTurn();
+        skipCount.value++;
+      } else if (store.state.aroundStone.length == 0 || skipCount.value == 2) {
+        winLoseJudgment('gameEnd');
+      }
+      if (actionState.value == 'reset') actionState.value = '';
+    };
 
     onUpdated(() => {
       setTimeout(function () {
@@ -284,8 +273,8 @@ export default {
       changeTurn,
       showPlaceStoneCanBePut,
       cpuAction,
-      playerAction
-    }
-  }
-}
+      playerAction,
+    };
+  },
+};
 </script>

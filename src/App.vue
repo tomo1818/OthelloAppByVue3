@@ -28,7 +28,7 @@
 
 @media screen and (max-width: 880px) {
   #app {
-    min-height:100vh
+    min-height: 100vh;
   }
 }
 </style>

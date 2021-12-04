@@ -1,4 +1,4 @@
-import { Table } from '@/types/type'
+import { Table } from '@/types/type';
 
 export const initialState: Table = {
   turn: 1,
@@ -143,4 +143,4 @@ export const initialState: Table = {
   simulationTable: {},
   simulationPlayerChoices: [],
   simulationAroundStone: [],
-}
+};

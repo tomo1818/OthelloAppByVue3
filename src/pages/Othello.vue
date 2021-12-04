@@ -23,7 +23,7 @@ export default {
   components: {
     OthelloBoard,
     LeftInfoBox,
-    RightInfoBox
+    RightInfoBox,
   },
   // eslint-disable-next-line @typescript-eslint/explicit-module-boundary-types
   setup() {
@@ -36,7 +36,7 @@ export default {
 
     const goHome = (): void => {
       location.assign('/');
-    }
+    };
 
     // const stone1Num = computed((): number => state.stone1.length)
     // const stone2Num = computed((): number => state.stone2.length)
@@ -49,7 +49,7 @@ export default {
     // const flip = () => {el.classList.toggle("flipped")}
 
     return {
-      goHome
+      goHome,
       // bgColor,
       /*石をひっくり返すモーションをつける関数
         flip: function() => {
@@ -149,7 +149,7 @@ table.othelloTable tr:first-child td {
   -ms-flex-wrap: wrap;
   border-radius: 3px;
   background: #333;
-  background: linear-gradient(#333,#777);
+  background: linear-gradient(#333, #777);
 }
 .stoneBox.user1 .box {
   justify-content: flex-end;
@@ -357,7 +357,6 @@ table.othelloTable tr:first-child td {
 }
 
 @media screen and (max-width: 880px) {
-
   .commandItem:nth-child(n + 3) {
     margin-top: 0px;
   }

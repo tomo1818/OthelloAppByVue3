@@ -8,18 +8,18 @@
         <img src="@/assets/othelloPage/stop.png" alt="待ったのアイコン" />
         <p>待った</p>
       </button>
-      <button @click="reset()" class="commandItem button" v-if="infoBox.player.black.name == 'CPU'">
+      <button
+        @click="reset()"
+        class="commandItem button"
+        v-if="infoBox.player.black.name == 'CPU'"
+      >
         <img
           src="@/assets/othelloPage/othelloIcon.png"
           alt="オセロのアイコン"
         />
         <p>新規対局</p>
       </button>
-      <button
-        v-else
-        class="commandItem button"
-        @click="newGame()"
-      >
+      <button v-else class="commandItem button" @click="newGame()">
         <img
           src="@/assets/othelloPage/othelloIcon.png"
           alt="オセロのアイコン"
@@ -30,10 +30,7 @@
         class="commandItem button"
         @click="changeActionState(), winLoseJudgment('concede')"
       >
-        <img
-          src="@/assets/othelloPage/concede.png"
-          alt="降参のアイコン"
-        />
+        <img src="@/assets/othelloPage/concede.png" alt="降参のアイコン" />
         <p>降参</p>
       </button>
     </div>
@@ -42,10 +39,7 @@
         <div class="stoneCon">
           <p
             class="front"
-            style="
-              background-color: rgb(0, 0, 0);
-              box-shadow: 0 0 5px white;
-            "
+            style="background-color: rgb(0, 0, 0); box-shadow: 0 0 5px white"
           ></p>
         </div>
       </div>
@@ -58,12 +52,7 @@
 </template>
 
 <script lang="ts">
-import {
-  computed,
-  ref,
-  reactive,
-  ComputedRef,
-} from 'vue';
+import { computed, ref, reactive, ComputedRef } from 'vue';
 import { useStore } from 'vuex';
 import { key } from '../store';
 import { InfoBox } from '@/types/type'; // 型定義を読み取る
@@ -78,8 +67,8 @@ export default {
     const infoBox = reactive<InfoBox>({
       player: store.state.player,
       mode: store.state.mode,
-      cpuStrength: store.state.cpuStrength
-    })
+      cpuStrength: store.state.cpuStrength,
+    });
 
     const moveBack = (): void => {
       store.commit('moveBack');
@@ -87,7 +76,7 @@ export default {
 
     const reset = (): void => {
       location.assign('/setting');
-    }
+    };
 
     const resetGame = (): void => {
       store.commit('resetGame');
@@ -103,7 +92,7 @@ export default {
       if (infoBox.player.black.name === 'CPU') {
         changeTurn();
       }
-    }
+    };
 
     const showPlaceStoneCanBePut = (): void => {
       store.commit('showPlaceStoneCanBePut', {
@@ -113,7 +102,7 @@ export default {
 
     const changeActionState = (): void => {
       actionState.value = 'reset';
-    }
+    };
 
     const winLoseJudgment = (judgeString: string): void => {
       store.commit('winLoseJudgment', { judgeString: judgeString });
@@ -129,7 +118,7 @@ export default {
       newGame,
       changeActionState,
       winLoseJudgment,
-    }
-  }
-}
+    };
+  },
+};
 </script>
