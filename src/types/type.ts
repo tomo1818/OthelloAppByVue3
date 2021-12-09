@@ -1,3 +1,17 @@
+export interface OthelloBoard {
+  player: { [key: string]: { name: string; stoneNum: number } };
+  mode: string;
+  table: { [key: number]: { [key: number]: number | null } };
+  stone1: number[];
+  stone2: number[];
+}
+
+export interface InfoBox {
+  player: { [key: string]: { name: string; stoneNum: number } };
+  mode: string;
+  cpuStrength: string;
+}
+
 export interface State {
   turn: number;
   mode: string;
@@ -20,7 +34,6 @@ export interface State {
 }
 
 export interface Table extends State {
-
   colorCollections: { [key: string]: Color };
   tableData: {
     table: { [key: number]: { [key: number]: number | null } };
@@ -36,11 +49,6 @@ export interface Table extends State {
     [key: string]: Coordinate | number;
   };
   simulationTable: { [key: number]: { [key: number]: number | null } };
-  // simulationPlayerChoices: {
-  //   position: Coordinate;
-  //   returnNum: number;
-  //   evaluationValue: number;
-  // }[];
   simulationAroundStone: { y: number; x: number }[];
 }
 

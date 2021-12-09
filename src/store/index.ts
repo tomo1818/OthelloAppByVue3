@@ -5,7 +5,7 @@ import { weight } from '@/consts/weight';
 import { directions } from '@/consts/directions';
 import isReturn from '@/functions/IsReturn';
 import countCorner from '@/functions/CountCorner';
-import {initialState} from '@/consts/initialState';
+import { initialState } from '@/consts/initialState';
 
 export const allDirections = Object.values(directions);
 
@@ -190,8 +190,8 @@ export const store = createStore<Table>({
       } else {
         if (state.gameStatus === 'endGame') {
           let max = state.playerChoices[0];
-          store.commit('cpuSimulation', { position: max.position }); // ここでsimulationMaxEvaluationStatusが埋まる。
-          if (state.playerChoices.length > 1) {
+          if (choicesNum > 1) {
+            store.commit('cpuSimulation', { position: max.position }); // ここでsimulationMaxEvaluationStatusが埋まる。
             let maxEvaluationValue =
               max.evaluationValue -
               Number(state.simulationMaxEvaluationStatus.evaluationValue);
@@ -230,9 +230,12 @@ export const store = createStore<Table>({
             let maxReturnNum =
               max.returnNum -
               Number(state.simulationMaxEvaluationStatus.returnNum);
+            console.log('choicesNum : ' + (choicesNum - 1));
             for (let i = 1; i < choicesNum; i++) {
               const curr = state.playerChoices[i];
               store.commit('cpuSimulation', { position: curr.position });
+              console.log(state.simulationMaxEvaluationStatus);
+              console.log(state.simulationMaxEvaluationStatus.evaluationValue);
               const currMaxEvaluationValue =
                 curr.evaluationValue -
                 Number(state.simulationMaxEvaluationStatus.evaluationValue);
@@ -299,30 +302,32 @@ export const store = createStore<Table>({
       }
       store.commit('changeTurnSimulation');
       store.commit('showPlaceStoneCanBePutSimulation');
-      let max = state.simulationPlayerChoices[0];
-      for (let i = 1; i < state.simulationPlayerChoices.length; i++) {
-        const curr = state.simulationPlayerChoices[i];
-        if (state.gameStatus === 'endGame') {
-          if (curr.returnNum > max.returnNum) {
-            max = curr;
-          } else if (
-            curr.returnNum === max.returnNum &&
-            curr.evaluationValue > max.evaluationValue
-          ) {
-            max = curr;
-          }
-        } else {
-          if (curr.evaluationValue > max.evaluationValue) {
-            max = curr;
-          } else if (
-            curr.evaluationValue === max.evaluationValue &&
-            curr.returnNum > max.returnNum
-          ) {
-            max = curr;
+      if (state.simulationPlayerChoices.length > 0) {
+        let max = state.simulationPlayerChoices[0];
+        for (let i = 1; i < state.simulationPlayerChoices.length; i++) {
+          const curr = state.simulationPlayerChoices[i];
+          if (state.gameStatus === 'endGame') {
+            if (curr.returnNum > max.returnNum) {
+              max = curr;
+            } else if (
+              curr.returnNum === max.returnNum &&
+              curr.evaluationValue > max.evaluationValue
+            ) {
+              max = curr;
+            }
+          } else {
+            if (curr.evaluationValue > max.evaluationValue) {
+              max = curr;
+            } else if (
+              curr.evaluationValue === max.evaluationValue &&
+              curr.returnNum > max.returnNum
+            ) {
+              max = curr;
+            }
           }
         }
+        state.simulationMaxEvaluationStatus = max;
       }
-      state.simulationMaxEvaluationStatus = max;
     },
     reduceStone(state: Table): void {
       if (state.turn == 1) state.stone1.pop();
@@ -430,9 +435,14 @@ export const store = createStore<Table>({
     winLoseJudgment(state: Table, payload: { judgeString: string }): void {
       let resultString = '引き分け';
       if (payload.judgeString == 'concede') {
-        resultString = state.turn == 1 ? state.player.white.name + 'の勝ち' : state.player.black.name + 'の勝ち';
-        store.commit('resetGame')
-        store.commit('showPlaceStoneCanBePut', { allDirections: allDirections })
+        resultString =
+          state.turn == 1
+            ? state.player.white.name + 'の勝ち'
+            : state.player.black.name + 'の勝ち';
+        store.commit('resetGame');
+        store.commit('showPlaceStoneCanBePut', {
+          allDirections: allDirections,
+        });
       } else if (state.player.black.stoneNum > state.player.white.stoneNum) {
         resultString = state.player.black.name + 'の勝ち';
       } else if (state.player.black.stoneNum < state.player.white.stoneNum) {
@@ -715,7 +725,7 @@ export const store = createStore<Table>({
       state.playerChoices = [];
     },
     backHome(state: Table): void {
-      Object.assign(state, initialState)
+      Object.assign(state, initialState);
     },
     changeMode(state: Table, payload: { mode: string }) {
       state.mode = payload.mode;
@@ -748,7 +758,7 @@ export const store = createStore<Table>({
     },
     getPlayer(state) {
       return state.player;
-    }
+    },
   },
 });
 

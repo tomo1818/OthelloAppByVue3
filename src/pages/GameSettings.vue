@@ -250,14 +250,12 @@
           <input
             type="radio"
             value="CPU"
-            id="player2"
+            id="CPU"
             class="mr-2 text-red-600"
             v-model="setting.firstMove"
             @change="determineFirstMove"
           />
-          <label
-            class="font-sans lg:text-2xl lg:font-medium text-lg"
-            for="player2"
+          <label class="font-sans lg:text-2xl lg:font-medium text-lg" for="CPU"
             >CPU</label
           >
           <p class="lg:text-2xl font-sans lg:font-medium text-lg pb-2">
@@ -474,7 +472,7 @@ export default {
   }
 
   .addMb {
-    margin-bottom: 3rem!important;
+    margin-bottom: 3rem !important;
   }
 
   .title {
