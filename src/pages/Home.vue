@@ -9,8 +9,7 @@
           p-3
           hover:bg-blue-500
           btn
-          border-4
-          border-blue-500
+          border-4 border-blue-500
           hover:border-blue-500
           text-white
           rounded-full
